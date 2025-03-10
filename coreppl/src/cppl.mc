@@ -10,6 +10,7 @@ include "dppl-arg.mc"
 
 -- Backends
 include "coreppl-to-mexpr/compile.mc"
+include "inference/mcmc.mc"
 
 include "bool.mc"
 include "option.mc"
@@ -22,6 +23,7 @@ include "ocaml/mcore.mc"
 
 lang CPPLLang = CorePPLFileTypeLoader
   + MExprAst + UtestLoader + ODELoader + MExprGenerateEq
+  + AutoDriftKernelHook
   + MExprLowerNestedPatterns + MCoreCompileLang
   + PhaseStats + MExprGeneratePprint
 end
@@ -54,6 +56,9 @@ match result with ParseOK r then
       [ ODEHook {options = options}
       , StripUtestHook ()
       ] in
+    let loader = if options.driftKernel
+      then addHook loader (AutoDriftKernelHook {driftScale = options.driftScale})
+      else loader in
     let loader = enableCPPLCompilation options loader in
     let loader = enableUtestGeneration (if options.test then isFromModelFileOrStatic else lam. false) loader in
     let loader = enablePprintGeneration loader in
