@@ -309,9 +309,9 @@ let run : Unknown -> (State Result -> Result) -> use RuntimeDistBase in Dist Res
             modref state.unalignedTraces prevUnalignedTraces;
             (prevWeight, prevSample)
         with (weight, sample) in
-        let samples = if config.keepSample iter then snoc samples sample else samples in
-        mh samples weight sample (config.continue.1 continueState sample) (addi iter 1)
-      else (weights, samples)
+        let keptSamples = if config.keepSample iter then snoc keptSamples sample else keptSamples in
+        mh keptSamples weight sample (config.continue.1 continueState sample) (addi iter 1)
+      else (weights, keptSamples)
   in
 
   -- Used to keep track of acceptance ratio
@@ -337,7 +337,7 @@ let run : Unknown -> (State Result -> Result) -> use RuntimeDistBase in Dist Res
     let res = [sample] in
     use RuntimeDist in
     constructDistEmpirical res [1.]
-      (EmpMCMC { acceptRate = mcmcAcceptRate runs })
+      (EmpMCMC { acceptRate = mcmcAcceptRate 1 })
   else
 
   let iter = 0 in
