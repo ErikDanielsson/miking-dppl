@@ -14,7 +14,7 @@ lang BPFMethod = MExprPPL
   sem inferMethodFromCon info bindings =
   | "BPF" ->
     let expectedFields = [
-      ("particles", int_ defaultArgs.particles)
+      ("particles", int_ _modelOptionsTempDefault.particles)
     ] in
     match getFields info bindings expectedFields with [particles] in
     BPF {particles = particles}
@@ -27,11 +27,7 @@ lang BPFMethod = MExprPPL
   | BPF {particles = particles} ->
     fieldsToRecord info [("particles", particles)]
 
-  sem inferMethodConfigType info =
-  | BPF _ ->
-    tyRecord info [("particles", ityint_ info)]
-
-  sem typeCheckInferMethod env info =
+  sem typeCheckInferMethod env info sampleType =
   | BPF {particles = particles} ->
     let int = TyInt {info = info} in
     let particles = typeCheckExpr env particles in

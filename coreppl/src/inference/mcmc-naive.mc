@@ -16,7 +16,7 @@ lang NaiveMCMCMethod = MExprPPL
   sem inferMethodFromCon info bindings =
   | "NaiveMCMC" ->
     let expectedFields = [
-      ("iterations", int_ defaultArgs.particles)
+      ("iterations", int_ _modelOptionsTempDefault.particles)
     ] in
     match getFields info bindings expectedFields with [iterations] in
     NaiveMCMC { iterations = iterations }
@@ -35,13 +35,7 @@ lang NaiveMCMCMethod = MExprPPL
       ("iterations", t.iterations)
     ]
 
-  sem inferMethodConfigType info =
-  | NaiveMCMC _ ->
-    tyRecord info [
-      ("iterations", ityint_ info)
-    ]
-
-  sem typeCheckInferMethod env info =
+  sem typeCheckInferMethod env info sampleType =
   | NaiveMCMC t ->
     let int = TyInt {info = info} in
     let iterations = typeCheckExpr env t.iterations in

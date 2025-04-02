@@ -14,7 +14,7 @@ lang APFMethod = MExprPPL
   sem inferMethodFromCon info bindings =
   | "APF" ->
     let expectedFields = [
-      ("particles", int_ defaultArgs.particles)
+      ("particles", int_ _modelOptionsTempDefault.particles)
     ] in
     match getFields info bindings expectedFields with [particles] in
     APF {particles = particles}
@@ -27,11 +27,7 @@ lang APFMethod = MExprPPL
   | APF {particles = particles} ->
     fieldsToRecord info [("particles", particles)]
 
-  sem inferMethodConfigType info =
-  | APF _ ->
-    tyRecord info [("particles", ityint_ info)]
-
-  sem typeCheckInferMethod env info =
+  sem typeCheckInferMethod env info sampleType =
   | APF {particles = particles} ->
     let int = TyInt {info = info} in
     let particles = typeCheckExpr env particles in

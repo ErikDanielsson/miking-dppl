@@ -19,8 +19,8 @@ lang PIMHMethod = MExprPPL
   sem inferMethodFromCon info bindings =
   | "PIMH" ->
     let expectedFields = [
-      ("particles", int_ defaultArgs.particles),
-      ("iterations", int_ defaultArgs.pmcmcParticles)
+      ("particles", int_ _modelOptionsTempDefault.particles),
+      ("iterations", int_ _modelOptionsTempDefault.pmcmcParticles)
     ] in
     match getFields info bindings expectedFields with [particles, iterations] in
     PIMH {particles = particles, iterations = iterations}
@@ -38,14 +38,7 @@ lang PIMHMethod = MExprPPL
   | PIMH {iterations = iterations, particles = particles} ->
     fieldsToRecord info [("iterations",iterations), ("particles", particles)]
 
-  sem inferMethodConfigType info =
-  | PIMH _ ->
-    tyRecord info [
-      ("iterations", ityint_ info),
-      ("particles", ityint_ info)
-    ]
-
-  sem typeCheckInferMethod env info =
+  sem typeCheckInferMethod env info sampleType =
   | PIMH {iterations = iterations, particles = particles} ->
     let int = TyInt {info = info} in
     let iterations = typeCheckExpr env iterations in

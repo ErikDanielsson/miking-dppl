@@ -14,7 +14,7 @@ lang ImportanceSamplingMethod = MExprPPL
   sem inferMethodFromCon info bindings =
   | "Importance" ->
     let expectedFields = [
-      ("particles", int_ defaultArgs.particles)
+      ("particles", int_ _modelOptionsTempDefault.particles)
     ] in
     match getFields info bindings expectedFields with [particles] in
     Importance {particles = particles}
@@ -27,11 +27,7 @@ lang ImportanceSamplingMethod = MExprPPL
   | Importance {particles = particles} ->
     fieldsToRecord info [("particles", particles)]
 
-  sem inferMethodConfigType info =
-  | Importance _ ->
-    tyRecord info [("particles", ityint_ info)]
-
-  sem typeCheckInferMethod env info =
+  sem typeCheckInferMethod env info sampleType =
   | Importance {particles = particles} ->
     let int = TyInt {info = info} in
     let particles = typeCheckExpr env particles in
