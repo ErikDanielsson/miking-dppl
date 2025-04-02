@@ -431,7 +431,7 @@ type Options = {
   dpplTypeCheck: Bool
 }
 
-let backcompatOptions : SeparatedOptions -> (String, Options) = lam options.
+let mkBackcompatOptions : SeparatedOptions -> (String, Options) = lam options.
   ( options.frontend.input
   , { particles = options.transformations.defaultMethod.particles
     , method = options.transformations.defaultMethod.method
@@ -465,6 +465,6 @@ let backcompatOptions : SeparatedOptions -> (String, Options) = lam options.
     }
   )
 
-let backcompatOptions : OptParser (String, Options) = optMap backcompatOptions options
+let backcompatOptions : OptParser (String, Options) = optMap mkBackcompatOptions options
 let cpplName = "cppl"
 let cpplDescription = ""
