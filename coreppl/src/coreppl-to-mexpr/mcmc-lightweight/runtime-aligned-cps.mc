@@ -344,7 +344,7 @@ let run : Unknown -> (State Result -> Result) -> use RuntimeDistBase in Dist Res
   let samples = if config.keepSample iter then [sample] else [] in
 
   -- Sample the rest
-  let samples = mh samples weight (config.continue.1 config.continue.0 sample) (addi iter 1) in
+  let samples = mh samples weight sample (config.continue.1 config.continue.0 sample) (addi iter 1) in
 
   -- printLn (join ["Number of reused aligned samples:", int2string (deref countReuse)]);
   -- printLn (join ["Number of reused unaligned samples:", int2string (deref countReuseUnaligned)]);
