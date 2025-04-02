@@ -311,7 +311,7 @@ let run : Unknown -> (State Result -> Result) -> use RuntimeDistBase in Dist Res
         with (weight, sample) in
         let keptSamples = if config.keepSample iter then snoc keptSamples sample else keptSamples in
         mh keptSamples weight sample (config.continue.1 continueState sample) (addi iter 1)
-      else (weights, keptSamples)
+      else keptSamples
   in
 
   -- Used to keep track of acceptance ratio
