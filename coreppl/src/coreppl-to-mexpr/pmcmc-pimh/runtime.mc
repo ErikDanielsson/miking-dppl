@@ -18,7 +18,12 @@ let resample = lam k. Resample {k = k}
 let updateWeight = lam weight. lam state.
   modref state (addf (deref state) weight)
 
-let run : all a. Unknown -> (State -> Checkpoint a) -> use RuntimeDistBase in Dist a =
+type Config =
+  { particles : Int
+  , iterations : Int
+  }
+
+let run : all a. Config -> (State -> Checkpoint a) -> use RuntimeDistBase in Dist a =
   lam config. lam model.
   use RuntimeDist in
 
@@ -140,7 +145,7 @@ let run : all a. Unknown -> (State -> Checkpoint a) -> use RuntimeDistBase in Di
   let runs = config.iterations in
 
   -- Used to keep track of acceptance ratio
-  mcmcAcceptInit runs;
+  mcmcAcceptInit ();
 
   -- Initial sample
   match runSMC () with (weights, samples) in
@@ -171,4 +176,4 @@ let run : all a. Unknown -> (State -> Checkpoint a) -> use RuntimeDistBase in Di
 
   -- Return
   constructDistEmpirical samples weights
-    (EmpMCMC { acceptRate = mcmcAcceptRate () })
+    (EmpMCMC { acceptRate = mcmcAcceptRate runs })

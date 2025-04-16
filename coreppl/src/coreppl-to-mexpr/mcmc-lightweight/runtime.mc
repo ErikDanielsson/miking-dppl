@@ -11,6 +11,8 @@ include "map.mc"
 include "../runtime-common.mc"
 include "../runtime-dists.mc"
 
+include "./config.mc"
+
 -- Any-type, used for samples
 type Any = ()
 
@@ -111,7 +113,7 @@ let sample: all a. Address -> use RuntimeDistBase in Dist a -> a = lam addr. lam
   unsafeCoerce (sample.0)
 
 -- Function to propose db changes between MH iterations.
-let modDb: Unknown -> () = lam config.
+let modDb: all acc. all dAcc. all res. Config res acc dAcc -> () = lam config.
 
   let db = deref state.db in
 
@@ -136,18 +138,14 @@ let modDb: Unknown -> () = lam config.
          sample
       ) db)
 
-let run : all a. Unknown -> (State -> a) -> use RuntimeDistBase in Dist a =
+let run : all acc. all dAcc. all a. Config a acc dAcc -> (State -> a) -> use RuntimeDistBase in Dist a =
   lam config. lam model.
-  use RuntimeDist in
 
-  recursive let mh : [Float] -> [a] -> Int -> ([Float], [a]) =
-    lam weights. lam samples. lam iter.
-      if leqi iter 0 then (weights, samples)
-      else
+  recursive let mh : [a] -> Float -> a -> dAcc -> (acc, Bool) -> Int -> [a] =
+    lam samples. lam prevWeight. lam prevSample. lam debugState. lam continueState. lam iter.
+      match continueState with (continueState, true) then
         let prevDb = deref state.db in
-        let prevSample = head samples in
         let prevTraceLength = deref state.traceLength in
-        let prevWeight = head weights in
         modDb config;
         modref state.weight 0.;
         modref state.weightReused 0.;
@@ -173,44 +171,44 @@ let run : all a. Unknown -> (State -> a) -> use RuntimeDistBase in Dist a =
         -- print "prevWeightReused: "; printLn (float2string prevWeightReused);
         -- print "prevTraceLength: "; printLn (float2string (int2float prevTraceLength));
         -- print "traceLength: "; printLn (float2string (int2float traceLength));
-        let iter = subi iter 1 in
-        if bernoulliSample (exp logMhAcceptProb) then
-          mcmcAccept ();
-          mh
-            (cons weight weights)
-            (cons sample samples)
-            iter
-        else
+        match
+          if bernoulliSample (exp logMhAcceptProb) then
+            mcmcAccept ();
+            (true, weight, sample)
+          else
           -- NOTE(dlunde,2022-10-06): VERY IMPORTANT: Restore previous database
           -- and trace length as we reject and reuse the old sample.
-          modref state.db prevDb;
-          modref state.traceLength prevTraceLength;
-          mh
-            (cons prevWeight weights)
-            (cons prevSample samples)
-            iter
+            modref state.db prevDb;
+            modref state.traceLength prevTraceLength;
+            (false, prevWeight, prevSample)
+        with (accepted, weight, sample) in
+        let samples = if config.keepSample iter then snoc samples sample else samples in
+        let debugInfo =
+          { accepted = accepted
+          } in
+        mh samples weight sample (config.debug.1 debugState debugInfo) (config.continue.1 continueState sample) (addi iter 1)
+      else samples
   in
 
-  let runs = config.iterations in
-
   -- Used to keep track of acceptance ratio
-  mcmcAcceptInit runs;
+  mcmcAcceptInit ();
 
   -- First sample
   let sample = model state in
-  -- NOTE(dlunde,2022-08-22): Are the weights really meaningful beyond
-  -- computing the MH acceptance ratio?
   let weight = deref state.weight in
-  let iter = subi runs 1 in
+
+  let iter = 0 in
+  let samples = if config.keepSample iter then [sample] else [] in
+
+  let debugInfo =
+    { accepted = true
+    } in
 
   -- Sample the rest
-  let res = mh [weight] [sample] iter in
-
-  -- Reverse to get the correct order
-  let res = match res with (weights,samples) in
-    (reverse weights, reverse samples)
-  in
+  let samples = mh samples weight sample (config.debug.1 config.debug.0 debugInfo) (config.continue.1 config.continue.0 sample) (addi iter 1) in
 
   -- Return
-  constructDistEmpirical res.1 (create runs (lam. 1.))
-    (EmpMCMC { acceptRate = mcmcAcceptRate () })
+  let numSamples = length samples in
+  use RuntimeDist in
+  constructDistEmpirical samples (make numSamples 1.)
+    (EmpMCMC { acceptRate = mcmcAcceptRate numSamples })

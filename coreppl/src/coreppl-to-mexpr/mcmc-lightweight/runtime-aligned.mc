@@ -10,6 +10,8 @@ include "option.mc"
 include "../runtime-common.mc"
 include "../runtime-dists.mc"
 
+include "./config.mc"
+
 -- Any-type, used for traces
 type Any = ()
 
@@ -20,7 +22,8 @@ type State = {
 
   -- The weight of the current execution
   weight: Ref Float,
-  -- 
+  --
+  useDriftKernels : Ref Bool,
   driftPrevValue: Ref (Any, Float),
   -- The Hasting ratio for the driftKernel call
   driftHastingRatio: Ref Float,
@@ -65,6 +68,7 @@ let countReuseUnaligned = ref 0
 -- State (reused throughout inference)
 let state: State = {
   weight = ref 0.,
+  useDriftKernels = ref false,
   driftPrevValue = ref ((), 0.),
   driftHastingRatio = ref 0.,
   prevWeightReused = ref 0.,
@@ -91,27 +95,26 @@ let newSample: all a. use RuntimeDistBase in Dist a -> (Any,Float) = lam dist.
 -- - we have access here to the driftScale parameter compileOptions.driftScale
 -- - modeled on reuseSample
 -- Call one time per run
-let moveSample: all a. use RuntimeDistBase in Dist a -> (Any, Float) = 
-  lam dist.
+let moveSample: all a. use RuntimeDistBase in Dist a -> (a -> use RuntimeDistBase in Dist a) -> (Any, Float) =
+  lam dist. lam drift.
   use RuntimeDistElementary in
 
-  let prevSample = deref state.driftPrevValue in
-  let prev = prevSample.0 in
-  let drift = compileOptions.driftScale in
+  match deref state.driftPrevValue with (prev, prevWeight) in
+  let prev : a = unsafeCoerce prev in
 
-  let kernel = choseKernel dist (unsafeCoerce prev) drift in
+  let kernel = drift prev in
 
   let proposal = sample kernel in
 
-  let proposalPriorProb = logObserve dist (unsafeCoerce proposal) in
-  let reverseKernel = choseKernel dist (unsafeCoerce proposal) drift in
+  let proposalPriorProb = logObserve dist proposal in
+  let reverseKernel = drift proposal in
 
-  let prevToProposalProb = logObserve kernel (unsafeCoerce proposal) in
-  let proposalToPrevProb = logObserve reverseKernel (unsafeCoerce prev) in
+  let prevToProposalProb = logObserve kernel proposal in
+  let proposalToPrevProb = logObserve reverseKernel prev in
 
   modref state.driftHastingRatio (subf proposalToPrevProb prevToProposalProb);
   modref state.weightReused (addf (deref state.weightReused) proposalPriorProb);
-  modref state.prevWeightReused (addf (deref state.prevWeightReused) prevSample.1);
+  modref state.prevWeightReused (addf (deref state.prevWeightReused) prevWeight);
 
   (unsafeCoerce proposal, proposalPriorProb)
 
@@ -126,7 +129,7 @@ let reuseSample: all a. use RuntimeDistBase in Dist a -> Any -> Float -> (Any, F
     (sample, wNew)
 
 -- Procedure at aligned samples
-let sampleAligned: all a. use RuntimeDistBase in Dist a -> a = lam dist.
+let sampleAligned: all a. use RuntimeDistBase in Dist a -> (a -> use RuntimeDistBase in Dist a) -> a = lam dist. lam drift.
   let oldAlignedTrace: [Option (Any,Float)] = deref state.oldAlignedTrace in
   let sample: (Any, Float) =
     match oldAlignedTrace with [sample] ++ oldAlignedTrace then
@@ -136,9 +139,9 @@ let sampleAligned: all a. use RuntimeDistBase in Dist a -> a = lam dist.
         -- print "Aligned ";
         reuseSample dist sample w
       else
-        if compileOptions.driftKernel then
+        if deref state.useDriftKernels then
           -- printLn "Not reused!";
-          let res = moveSample dist in
+          let res = moveSample dist drift in
           modref state.driftPrevValue ((), 0.);
           res
         else
@@ -186,7 +189,7 @@ let sampleUnaligned: all a. Int -> use RuntimeDistBase in Dist a -> a = lam i. l
   unsafeCoerce sample
 
 -- Function to propose aligned trace changes between MH iterations.
-let modTrace: Unknown -> () = lam config.
+let modTrace: all a. all acc. all dAcc. Config a acc dAcc -> () = lam config.
 
   let alignedTraceLength: Int = deref state.alignedTraceLength in
 
@@ -224,17 +227,14 @@ let modTrace: Unknown -> () = lam config.
     ()
 
 -- General inference algorithm for aligned MCMC
-let run : all a. Unknown -> (State -> a) -> use RuntimeDistBase in Dist a =
+let run : all a. all acc. all dAcc. Config a acc dAcc -> (State -> a) -> use RuntimeDistBase in Dist a =
   lam config. lam model.
 
-  recursive let mh : [Float] -> [a] -> Int -> ([Float], [a]) =
-    lam weights. lam samples. lam iter.
-      if leqi iter 0 then (weights, samples)
-      else
+  recursive let mh : [a] -> Float -> a -> dAcc -> (acc, Bool) -> Int -> [a] =
+    lam samples. lam prevWeight. lam prevSample. lam debugState. lam continueState. lam iter.
+      match continueState with (continueState, true) then
         let prevAlignedTrace = deref state.alignedTrace in
         let prevUnalignedTraces = deref state.unalignedTraces in
-        let prevSample = head samples in
-        let prevWeight = head weights in
         modTrace config;
         modref state.weight 0.;
         modref state.driftHastingRatio 0.;
@@ -253,7 +253,7 @@ let run : all a. Unknown -> (State -> a) -> use RuntimeDistBase in Dist a =
         let weightReused = deref state.weightReused in
         let prevWeightReused = deref state.prevWeightReused in
         let logMhAcceptProb =
-          minf 0. (addf 
+          minf 0. (addf
                     (addf
                       (subf weight prevWeight)
                       (subf weightReused prevWeightReused))
@@ -265,51 +265,50 @@ let run : all a. Unknown -> (State -> a) -> use RuntimeDistBase in Dist a =
         -- print "weightReused: "; printLn (float2string (exp weightReused));
         -- print "prevWeightReused: "; printLn (float2string (exp prevWeightReused));
         -- printLn "-----";
-        let iter = subi iter 1 in
-        if bernoulliSample (exp logMhAcceptProb) then
-          mcmcAccept ();
-          mh
-            (cons weight weights)
-            (cons sample samples)
-            iter
-        else
-          -- NOTE(dlunde,2022-10-06): VERY IMPORTANT: Restore previous traces
-          -- as we reject and reuse the old sample.
-          modref state.alignedTrace prevAlignedTrace;
-          modref state.unalignedTraces prevUnalignedTraces;
-          mh
-            (cons prevWeight weights)
-            (cons prevSample samples)
-            iter
+        match
+          if bernoulliSample (exp logMhAcceptProb) then
+            mcmcAccept ();
+            (true, weight, sample)
+          else
+            -- NOTE(dlunde,2022-10-06): VERY IMPORTANT: Restore previous traces
+            -- as we reject and reuse the old sample.
+            modref state.alignedTrace prevAlignedTrace;
+            modref state.unalignedTraces prevUnalignedTraces;
+            (false, prevWeight, prevSample)
+        with (accepted, weight, sample) in
+        let samples = if config.keepSample iter then snoc samples sample else samples in
+        let debugInfo =
+          { accepted = accepted
+          } in
+        mh samples weight sample (config.debug.1 debugState debugInfo) (config.continue.1 continueState sample) (addi iter 1)
+      else samples
   in
 
-  let runs = config.iterations in
-
   -- Used to keep track of acceptance ratio
-  mcmcAcceptInit runs;
+  mcmcAcceptInit ();
 
   -- First sample
   let sample = model state in
-  -- NOTE(dlunde,2022-08-22): Are the weights really meaningful beyond
-  -- computing the MH acceptance ratio?
   let weight = deref state.weight in
-  let iter = subi runs 1 in
 
   -- Set aligned trace length (a constant, only modified here)
   modref state.alignedTraceLength (length (deref state.alignedTrace));
+  modref state.useDriftKernels config.driftKernel;
+
+  let iter = 0 in
+  let samples = if config.keepSample iter then [sample] else [] in
+
+  let debugInfo =
+    { accepted = true
+    } in
 
   -- Sample the rest
-  let res = mh [weight] [sample] iter in
-
-  -- Reverse to get the correct order
-  let res = match res with (weights,samples) in
-    (reverse weights, reverse samples)
-  in
+  let samples = mh samples weight sample (config.debug.1 config.debug.0 debugInfo) (config.continue.1 config.continue.0 sample) (addi iter 1) in
 
   -- printLn (join ["Number of reused aligned samples:", int2string (deref countReuse)]);
   -- printLn (join ["Number of reused unaligned samples:", int2string (deref countReuseUnaligned)]);
   -- Return
+  let numSamples = length samples in
   use RuntimeDist in
-  constructDistEmpirical res.1 (create runs (lam. 1.))
-    (EmpMCMC { acceptRate = mcmcAcceptRate () })
-
+  constructDistEmpirical samples (make numSamples 1.0)
+    (EmpMCMC {acceptRate = mcmcAcceptRate numSamples})

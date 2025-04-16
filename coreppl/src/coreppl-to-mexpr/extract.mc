@@ -29,7 +29,7 @@ lang DPPLExtract =
   --    calls to the inference algorithms.
   -- 2. A map with an entry for each inference method. Every inference method
   --    is mapped to a sequence of records describing each model.
-  sem extractInfer : Options -> Map InferMethod Name -> Expr
+  sem extractInfer : TransformationOptions -> Map InferMethod Name -> Expr
                   -> (Expr, Map Name FinalOrderedLamLiftSolution, Map Name ModelRepr)
   sem extractInfer options runtimes =
   | ast ->
@@ -90,7 +90,7 @@ lang DPPLExtract =
         inexpr = TmApp {
           lhs = TmApp {
             lhs = nvar_ runId,
-            rhs = withType (inferMethodConfigType t.info t.method) (inferMethodConfig t.info t.method),
+            rhs = inferMethodConfig t.info t.method,
             ty = tyunknown_,
             info = t.info},
           rhs = TmVar {ident = inferId, ty = t.ty, info = info, frozen = false},
@@ -104,7 +104,7 @@ lang DPPLExtract =
 
   -- Extracts an AST consisting of the model whose binding has the provided
   -- inference ID.
-  sem extractInferAst : Options -> Name -> Expr -> Expr
+  sem extractInferAst : TransformationOptions -> Name -> Expr -> Expr
   sem extractInferAst options inferId =
   | ast ->
     let ast = extractAst (setOfSeq nameCmp [inferId]) ast in

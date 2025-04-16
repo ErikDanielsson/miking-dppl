@@ -126,42 +126,13 @@ let output = lam res: [[Float]]. lam names: [String].
   printStatistics res names nc expVals varianceVals;
   saveCSV res names "data.csv" expOnLogWeights
 
-let printSamples : all a. (a -> String) -> [Float] -> [a] -> () =
-  lam printFun. lam weights. lam samples.
-    recursive let rec : [Float] -> [a] -> () = lam weights. lam samples.
-      if null weights then () else
-        let w = head weights in
-        let weights = tail weights in
-        let s = head samples in
-        let samples = tail samples in
-        print (printFun s);
-        print " ";
-        print (float2string w); print "\n";
-        rec weights samples
-    in if compileOptions.printSamples then rec weights samples else ()
-
-let printSamplesOption : all a. (a -> String) -> [Float] -> [Option a] -> () =
-  lam printFun. lam weights. lam samples.
-    recursive let rec : [Float] -> [Option a] -> () = lam weights. lam samples.
-      if null weights then () else
-        let w = head weights in
-        let weights = tail weights in
-        let s = head samples in
-        let samples = tail samples in
-        (match s with Some s then print (printFun s)
-         else print ".");
-        print " ";
-        print (float2string w); print "\n";
-        rec weights samples
-    in if compileOptions.printSamples then rec weights samples else ()
-
 -- MCMC acceptance rate
 let _mcmcAccepts = ref 0
-let _mcmcSamples = ref (negi 1)
-let mcmcAcceptInit = lam n. modref _mcmcSamples n; modref _mcmcAccepts 0
+let mcmcAcceptInit = lam. modref _mcmcAccepts 0
 let mcmcAccept = lam. modref _mcmcAccepts (addi (deref _mcmcAccepts) 1)
-let mcmcAcceptRate = lam.
-  divf (int2float (deref _mcmcAccepts)) (int2float (deref _mcmcSamples))
+let mcmcAcceptRate = lam numSamples.
+  divf (int2float (deref _mcmcAccepts)) (int2float numSamples)
+
 
 let seqToStr = lam elToStr. lam seq.
   join ["[", strJoin "," (map elToStr seq), "]"]
