@@ -78,6 +78,9 @@ lang TransformDist = TransformDistBase + InferenceInterface
   | DUniform { a = a, b = b } ->
     let cname = _getConExn "RuntimeDistElementary_DistUniform" env.env in
     i (nconapp_ cname (i (autoty_record_ [("a", a), ("b", b)])))
+  | DReciprocal { a = a, b = b } ->
+    let cname = _getConExn "RuntimeDistElementary_DistReciprocal" env.env in
+    i (nconapp_ cname (i (autoty_record_ [("a", a), ("b", b)])))
   | DUniformDiscrete { a = a, b = b } ->
     let cname = _getConExn "RuntimeDistElementary_DistUniformDiscrete" env.env in
     i (nconapp_ cname (i (autoty_record_ [("a", a), ("b", b)])))
