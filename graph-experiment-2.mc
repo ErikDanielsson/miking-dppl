@@ -237,7 +237,7 @@ end
 -- additional references storing other kinds of state, e.g., some
 -- weight or a reference to a sub-model.
 
-lang MutPVal = PValInterface + PValDefaultSelect
+lang MutPVal = PValInterface
   type IterationID = Int
 
   type PValRec a = {value : Ref a, changeId : Ref IterationID}
@@ -278,6 +278,9 @@ lang MutPVal = PValInterface + PValDefaultSelect
 
   sem instantiate f = | st ->
     match _initModel 0 st f with (st, initWeight, update) in
+    (if eqf initWeight (negf inf) then
+      printLn "WARNING: instantiate returned -inf weight model"
+     else ());
     PVI {st = st, update = update, permanentWeight = initWeight, id = 0}
 
   sem getSt = | PVI x -> x.st
@@ -443,6 +446,35 @@ lang MutPVal = PValInterface + PValDefaultSelect
       , initId = st.initId
       } in
     (PVS st, PVal {value = value, changeId = changeId})
+
+  sem p_select st f a = | refs ->
+    match st with PVS st in
+    match a with PVal a in
+    let pval = f (deref a.value) refs in
+    let value = ref (deref (match pval with PVal x in x.value)) in
+    let pval = ref pval in
+    let changeId = ref (deref a.changeId) in
+    let update = lam st.
+      if eqi st.id (deref a.changeId) then
+        let prevPVal = deref pval in
+        let prevValue = deref value in
+        let newPVal = f (deref a.value) refs in
+        modref pval newPVal;
+        modref value (deref (match newPVal with PVal x in x.value));
+        modref changeId st.id;
+        let reset = lam.
+          modref pval prevPVal;
+          modref value prevValue in
+        modref st.reset (snoc (deref st.reset) reset)
+      else
+        match deref pval with PVal ret in
+        if eqi st.id (deref ret.changeId) then
+          let prevValue = deref value in
+          modref value (deref ret.value);
+          modref changeId st.id;
+          modref st.reset (snoc (deref st.reset) (lam. modref value prevValue))
+        else () in
+    (PVS {st with updates = snoc st.updates update}, PVal {changeId = changeId, value = value})
 
   sem p_weight st store f = | PVal a ->
     match st with PVS st in
@@ -629,6 +661,9 @@ lang SimplePersistentPVal = PValInterface
       } in
     match f st with PVS st in
     let updates = st.update in
+    (if eqf st.initState.permanentWeight (negf inf) then
+      printLn "WARNING: instantiate returned -inf weight model"
+     else ());
     PVI
     { st = st.st
     , state = st.initState
@@ -1086,6 +1121,9 @@ lang SimplePersistentPVal2 = PValInterface
       } in
     match f st with PVS st in
     let updates = st.update in
+    (if eqf st.initState.permanentWeight (negf inf) then
+      printLn "WARNING: instantiate returned -inf weight model"
+     else ());
     PVI
     { st = st.st
     , state = st.initState
@@ -1272,7 +1310,7 @@ lang SimplePersistentPVal2 = PValInterface
           let update = getState updateRef st in
           let innerState = getState stateRef st in
           let prevWeight = innerState.permanentWeight in
-          let innerState = update st specId innerState in
+          let innerState = update st specId {innerState with above = State st} in
           let newWeight = innerState.permanentWeight in
           let st =
             { st with permanentWeight = addf st.permanentWeight (subf newWeight prevWeight)
@@ -2012,7 +2050,6 @@ end
 
 let showHistogram : Bool = true
 
-
 -- === Bern and ==
 
 let baseline = lam.
@@ -2328,6 +2365,24 @@ lang ManualGeometric = SimpleResample
     p_export st simpleExport res
 end
 
+lang ManualGeometricCache = SimpleResample
+  sem run = | st ->
+    match p_pure st (p_bernoulli 0.5) with (st, dist) in
+    match p_assume st simpleStore dist with (st, c) in
+    match p_cache st eqb c with (st, c) in
+    recursive let f : all z. Int -> PValState () z -> Unknown -> PValHList z Unknown -> (PValState () z, PVal z Unknown) = lam i. lam st. lam c. lam list.
+      match list with PVHCons (dist, PVHNil ()) in
+      let recur = lam x. lam y. lam z. f (addi i 1) x y z in
+      if c then
+        match p_assume_ st dist with (st, c) in
+        p_bind_ st #frozen"recur" c (PVHCons (dist, PVHNil ()))
+      else
+        p_pure st i in
+    let start = lam x. f 0 x in
+    match p_bind_ st #frozen"start" c (PVHCons (dist, PVHNil ())) with (st, res) in
+    p_export st simpleExport res
+end
+
 lang RunManualGeometricMut = ManualGeometric + MCMCPVal + MutPVal
 end
 
@@ -2335,6 +2390,15 @@ lang RunManualGeometricPersistent = ManualGeometric + MCMCPVal + SimplePersisten
 end
 
 lang RunManualGeometricPersistent2 = ManualGeometric + MCMCPVal + SimplePersistentPVal2
+end
+
+lang RunManualGeometricCacheMut = ManualGeometricCache + MCMCPVal + MutPVal
+end
+
+lang RunManualGeometricCachePersistent = ManualGeometricCache + MCMCPVal + SimplePersistentPVal
+end
+
+lang RunManualGeometricCachePersistent2 = ManualGeometricCache + MCMCPVal + SimplePersistentPVal2
 end
 
 let result =
@@ -2366,6 +2430,21 @@ let result =
     let instance = instantiate #frozen"run" ([], ()) in
     lam. (mcmc {getSample = simpleRead, step = simpleResample globalProb, iterations = iterations} instance).samples in
   summarizePVal "pval mcmc Persistent2" (timeF run);
+  let run =
+    use RunManualGeometricCacheMut in
+    let instance = instantiate #frozen"run" ([], ()) in
+    lam. (mcmc {getSample = simpleRead, step = simpleResample globalProb, iterations = iterations} instance).samples in
+  summarizePVal "pval mcmc mut cache" (timeF run);
+  let run =
+    use RunManualGeometricCachePersistent in
+    let instance = instantiate #frozen"run" ([], ()) in
+    lam. (mcmc {getSample = simpleRead, step = simpleResample globalProb, iterations = iterations} instance).samples in
+  summarizePVal "pval mcmc Persistent cache" (timeF run);
+  let run =
+    use RunManualGeometricCachePersistent2 in
+    let instance = instantiate #frozen"run" ([], ()) in
+    lam. (mcmc {getSample = simpleRead, step = simpleResample globalProb, iterations = iterations} instance).samples in
+  summarizePVal "pval mcmc Persistent2 cache" (timeF run);
   let run = lam.
     infer (LightweightMCMC {cps = "none", globalProb = globalProb, continue = (iterations, lam r. lam. (subi r 1, neqi r 1))}) baseline in
   summarizeBaseline "mcmc-lw" (timeF run);
