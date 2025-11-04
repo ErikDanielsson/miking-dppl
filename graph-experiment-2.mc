@@ -1100,6 +1100,24 @@ let p_beta : Float -> Float -> PDist Float
     , logObserve = lam x. betaLogPdf a b x
     }
 
+let p_dirichlet : [Float] -> PDist [Float]
+  = lam a.
+    { sample = lam. dirichletSample a
+    , logObserve = lam x. dirichletLogPdf a x
+    }
+
+let p_exponential : Float -> PDist Float
+  = lam m.
+    { sample = lam. exponentialSample m
+    , logObserve = lam x. exponentialLogPdf m x
+    }
+
+let p_categorical : [Float] -> PDist Int
+  = lam ps.
+    { sample = lam. categoricalSample ps
+    , logObserve = lam x. categoricalLogPmf ps x
+    }
+
 let _chooseUniform : all a. [a] -> a
   = lam l. get l (uniformDiscreteSample 0 (subi (length l) 1))
 
