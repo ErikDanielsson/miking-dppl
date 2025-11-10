@@ -51,9 +51,8 @@ lang CTMCBridge = SimpleResample
     match p_map st (lam eMC. lam a. p_categorical (get eMC a)) eMC with (st, gtrans) in
     -- Construct the CTMC recursion
     recursive let ctmc : all z.
-      PValState () z -> (Int, Float) -> PValHList z Unknown -> (PValState () z, PVal z Unknown)
+      PValState () z -> (Int, Float) -> (PValState () z, PVal z Unknown)
       = lam st. lam s. lam list.
-      match list with PVHCons (gtrans, PVHCons (gtime, PVHNil ())) in
       match s with (a, t) in
       if geqf t 0. then
         match p_pure st a with (st, a_) in
