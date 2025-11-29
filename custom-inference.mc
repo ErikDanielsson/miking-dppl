@@ -1,15 +1,35 @@
 include "graph-experiment-2.mc"
+include "stdlib::hashmap.mc"
 
-lang SimpleResample = PValInterface
-  type SimpleState x = ([SomePAssumeRef], x)
+lang HRMResample = PValInterface
+  -- type HRMState x = ([SomePAssumeRef], x)
+  type NodeID = Int
+  type BranchState a =
+    { assumes : [PAssumeRef Repertoire]
+    , x : a
+    }
 
-  sem simpleStore : all a. SimpleState () -> PAssumeRef a -> SimpleState ()
+  type TopState a b =
+    { nodeAssumes : HashMap NodeID (PAssumeRef Repertoire)
+    , leftChildren : HashMap NodeID (SubmodelRef BranchState)
+    , rightChildren : HashMap NodeID (SubmodelRef BranchState)
+    , parent : HashMap NodeID (SubmodelRef BranchState)
+    , globalParamA : a
+    , globalParamB : b
+    }
+
+  sem simpleStore : all a. HRMState () -> PAssumeRef a -> SimpleState ()
   sem simpleStore rs = | r -> (snoc rs.0 (SomePAssumeRef r), rs.1)
 
-  sem simpleExport : all x2. SimpleState () -> PExportRef x2 -> SimpleState (PExportRef x2)
+  sem topStore : all a. NodeID -> NodeID -> HRMState () -> PAssumeRef a -> HRMState ()
+  sem topStore label = | pLabel rs r ->
+    let 
+  (snoc rs.0 (SomePAssumeRef r), rs.1)
+
+  sem simpleExport : all x2. HRMState () -> PExportRef x2 -> SimpleState (PExportRef x2)
   sem simpleExport rs = | r -> (rs.0, r)
 
-  sem simpleResample : all x. Float -> PValInstance Partial (SimpleState x) -> PValInstance Partial (SimpleState x)
+  sem simpleResample : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (SimpleState x)
   sem simpleResample globalProb = | instance ->
     let st = getSt instance in
     let doResample = lam instance. lam someAssume.
@@ -20,32 +40,7 @@ lang SimpleResample = PValInterface
     else
       doResample instance (_chooseUniform st.0)
 
-  sem simpleRead : all x. all complete. PValInstance complete (SimpleState (PExportRef x)) -> x
+  sem simpleRead : all x. all complete. PValInstance complete (HRMState (PExportRef x)) -> x
   sem simpleRead = | instance ->
     readPreviousExport (getSt instance).1 instance
 end
-
-type BranchState =
-  { assumes : [PAssumeRef Repertoire]
-  }
-
-type TopState a b =
-  { assumes : Map ID
-    { inNode : PAssumeRef Repertoire
-    , above : Option (SubmodelRef BranchState)
-    , belowLeft : Option (SubmodelRef BranchState)
-    , belowRight : Option (SubmodelRef BranchState)
-    }
-  , globalParamA : a
-  , globalParamB : b
-  }
-type TopState a b =
-  { nodeAssumes : Map ID (PAssumeRef Repertoire)
-  , leftChildren : Map ID (SubmodelRef BranchState)
-  , rightChildren : Map ID (SubmodelRef BranchState)
-  , parent : Map ID (SubmodelRef BranchState)
-  , globalParamA : a
-  , globalParamB : b
-  }
-instantiate : (PValState (TopState () ()) -> PValState TopState)
-p_bind st (lam branchState. /- insert branchState in TopState relative to parent *and* child -/) {assumes = []} #frozen"f"
