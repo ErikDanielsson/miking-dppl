@@ -95,7 +95,9 @@ let state: State Result = {
 }
 
 -- Function to reset the state when doing a global update
-let resetState : State Result -> () = lam state. (
+let resetState : State Result -> () = lam state.
+  printLn "Resetting state";
+  (
   modref state.oldAlignedTrace (emptyList ());
   modref state.oldUnalignedTraces (emptyList ());
   modref state.weight 0.;
@@ -254,7 +256,9 @@ let runNext: all acc. all dAcc. Config Result acc dAcc -> (State Result -> Resul
 
   if modGlobal then (
     resetState state;
-    model state
+    let result = model state in
+    printLn (join ["Aligned trace length: ", int2string (length (deref state.alignedTrace))]);
+    result
   ) else
 
     recursive let rec: Int -> [(Any,Float,Cont Result)] -> [[(Any, Float, Int)]]
@@ -278,6 +282,7 @@ let runNext: all acc. all dAcc. Config Result acc dAcc -> (State Result -> Resul
             modref state.weightReused 0.;
             modref state.alignedTrace alignedTrace;
             modref state.unalignedTraces unalignedTraces;
+            -- printLn (join ["Current index: ", int2string i]);
             -- printLn (join ["New aligned trace length: ", int2string (length (deref state.alignedTrace))]);
             -- printLn (join ["Old aligned trace length: ", int2string (length (deref state.oldAlignedTrace))]);
             -- printLn (join ["New unaligned traces length: ", int2string (length (deref state.unalignedTraces))]);
@@ -291,17 +296,28 @@ let runNext: all acc. all dAcc. Config Result acc dAcc -> (State Result -> Resul
             else
               sampleAlignedForceNew cont.drift cont.dist cont.cont
           )
-        else error "Impossible"
+        else 
+            printLn "Impossible";
+            printLn (join ["New aligned trace length: ", int2string (length (deref state.alignedTrace))]);
+            printLn (join ["Old aligned trace length: ", int2string (length (deref state.oldAlignedTrace))]);
+            -- printLn (join ["New unaligned traces length: ", int2string (length (deref state.unalignedTraces))]);
+            -- printLn (join ["Old unaligned traces length: ", int2string (length (deref state.oldUnalignedTraces))]);
+            printLn "---";
+            error "Impossible traces in MCMC lightweight aligned"
     in
 
     -- One index must always change
+    printLn (join ["Sampling range: ", int2string 0, " : ", int2string (subi (deref state.alignedTraceLength) 1)]);
     let invalidIndex: Int =
       uniformDiscreteSample 0 (subi (deref state.alignedTraceLength) 1) in
-    -- printLn (join ["Aligned trace length: ", int2string (length (deref state.alignedTrace))]);
-    -- printLn (join ["Unaligned traces length: ", int2string (length (deref state.unalignedTraces))]);
-    -- printLn (join ["The invalid index is: ", int2string invalidIndex]);
-    rec invalidIndex (deref state.alignedTrace) (deref state.unalignedTraces)
+    printLn (join ["The invalid index is: ", int2string invalidIndex]);
+    printLn (join ["Aligned trace length: ", int2string (length (deref state.alignedTrace))]);
+    printLn (join ["Unaligned traces length: ", int2string (length (deref state.unalignedTraces))]);
+    let result = rec invalidIndex (deref state.alignedTrace) (deref state.unalignedTraces)
       (emptyList ()) (emptyList ())
+    printLn (join ["afterrec: Aligned trace length: ", int2string (length (deref state.alignedTrace))]);
+    printLn (join ["afterrec: Unaligned traces length: ", int2string (length (deref state.unalignedTraces))]);
+    result
 
 
 
@@ -318,7 +334,7 @@ let run : all acc. all dAcc. Config Result acc dAcc -> (State Result -> Result) 
         -- Calculate the global probability given the current state
         let globalProb = config.globalProb continueState in
         let sample = runNext config model globalProb in
-      -- print "prevAlignedTrace: ["; print (strJoin ", " (map (lam tup. float2string tup.1) prevAlignedTrace)); printLn "]";
+        -- print "prevAlignedTrace: ["; print (strJoin ", " (map (lam tup. float2string tup.1) prevAlignedTrace)); printLn "]";
         -- print "alignedTrace: ["; print (strJoin ", " (map (lam tup. float2string tup.1) (deref state.alignedTrace))); printLn "]";
         -- print "prevUnalignedTraces: ["; print (strJoin ", " (map (lam ls. join ["[", strJoin "," (map (lam tup. float2string tup.1) ls), "]"]) prevUnalignedTraces)); printLn "]";
         -- print "unalignedTraces: ["; print (strJoin ", " (map (lam ls. join ["[", strJoin "," (map (lam tup. float2string tup.1) ls), "]"]) (deref state.unalignedTraces))); printLn "]";
@@ -372,9 +388,9 @@ let run : all acc. all dAcc. Config Result acc dAcc -> (State Result -> Result) 
       let weightReused = deref state.weightReused in
       let priorWeight = deref state.priorWeight in
       let prevWeightReused = deref state.prevWeightReused in
+      -- printLn (join ["Try ", int2string i, " at sampling positive prob. sample. Sample weight: ", float2string (weight)]);
       if or (leqf weight (log 0.0)) (isNaN weight) then
         resetState state;
-        -- printLn (join ["Try ", int2string i, " at sampling positive prob. sample. Sample weight: ", float2string (weight)]);
         firstSample model state (addi i 1)
       else sample
     in 
@@ -388,6 +404,7 @@ let run : all acc. all dAcc. Config Result acc dAcc -> (State Result -> Result) 
 
   -- Set aligned trace length (a constant, only modified here)
   modref state.alignedTraceLength (length (deref state.alignedTrace));
+  printLn (join ["Aligned trace length: ", int2string (deref state.alignedTraceLength)]);
 
   -- If the program contains no samples at all, then `alignedTrace` is
   -- empty, and `mh` will crash. However, such a program requires no
@@ -399,6 +416,7 @@ let run : all acc. all dAcc. Config Result acc dAcc -> (State Result -> Result) 
     -- value of this function in practice, and the `Dist` type places
     -- no restrictions on the type of its samples this compiles, but
     -- fails at run time
+    printLn "Null trace";
     let res = [sample] in
     use RuntimeDist in
     constructDistEmpirical res [1.]
