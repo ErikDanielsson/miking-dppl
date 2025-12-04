@@ -58,12 +58,14 @@ lang PoissonResample = PValInterface
       let inst = f inst in
       let st = getSt inst in
       match st.bridgeWeight with Some (SomePWeightRef w) in
-      if (neqi n 0) then -- and (neqi n 0) (checkPreviousWeight w instance) then -- Here we should also have a weight check
-        (checkPreviousWeight w instance);
+      printLn (join ["Should we reject? ", bool2string ((not (checkPreviousWeight w instance)) )]);
+      if and (neqi n 0) (not (checkPreviousWeight w instance)) then -- Here we should also have a weight check
+        printLn "Rejection";
         rejectionSampling (subi n 1) f inst 
       else
-        printLn (join ["Rejections: ", int2string n]);
+        (if lti n rejMax then printLn (join ["Rejections: ", int2string (subi rejMax n)]) else ());
         inst in
+    printLn (join ["Rejection move. yay"]);
     rejectionSampling rejMax (poissonResample 0.0) instance
   
   -- Resample the rate parameter with a reciprocal distribution
@@ -79,7 +81,9 @@ lang PoissonResample = PValInterface
   
   sem multResample : all a. all b. all c. Int -> PValInstance Partial (PoissonState c) -> PValInstance Partial (PoissonState c)
   sem multResample rejMax = | instance -> 
-    let moves = [muResample 1., poissonRejectionMove 10] in
+    printLn "";
+    printLn "Starting resample!";
+    let moves = [muResample 1., poissonRejectionMove 1000] in
     -- Here we need could use any distribution as long as each kernel is invariant
     let move = _chooseUniform moves in
     move instance 
@@ -95,7 +99,7 @@ end
 
 let obs_t = 10.
 let obs_n = 5 
-let eta = 0.1
+let eta = 1.0
 
 let analytical = lam. assume (Gamma (int2float (addi obs_n 1)) (divf 1. (addf obs_t 1.)))
 
@@ -125,6 +129,9 @@ lang PoissonBridge = PoissonResample
       if geqf t 0. then
         -- Draw the next time
         match p_assume_ st dist_s with (st, s) in
+        match p_map st (
+          lam s. printLn (join [int2string n, ": ", float2string s])
+        ) s with (st, _) in
         match p_map st (subf t) s with (st, t) in
         -- Set up the recursive call
         p_bind_ st recur t
@@ -136,8 +143,12 @@ lang PoissonBridge = PoissonResample
     match p_map st (subf obs_t) s with (st, t) in
     let start = poisson 0 in
     match p_bind_ st start t with (st, res) in
-    match p_weight st bridgeWeight (lam n. if eqi n obs_n then (int2float n) else log 0.) res with st in
-    p_export st muExport mu
+    match p_map st (lam n. printLn (join ["Should be n: ", int2string obs_n, " sampled n: ", int2string n])) res with (st, _) in
+    match p_weight st bridgeWeight (lam n. if eqi n obs_n then 0.0 else log 0.) res with st in
+    -- match p_weight st bridgeWeight (lam n. int2float n) res with st in
+    -- p_export st muExport mu
+    match p_map st (lam i. divf (int2float i) 50.) res with (st, res) in
+    p_export st muExport res 
   end
 
 lang RunPoissonBridgeMut = PoissonBridge + MCMCPVal + MutPVal
@@ -149,7 +160,7 @@ end
 let result =
   printLn "\n=== Poisson bridge ===";
   let globalProb = 0.0 in
-  let iterations = 10 in
+  let iterations = 1000 in
   let toString = interval2string in
   let mkHisto = bucket 10 0.0 1.0 in
   let summarizePVal = lam label. lam pair.
