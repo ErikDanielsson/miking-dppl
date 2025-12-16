@@ -499,7 +499,7 @@ lang MutPVal = PValInterface
     let checkValid = lam.
       let w = deref w in
       let valid = and (gtf w (negf inf)) (not (isNaN w)) in
-      printLn (join ["Checking valid: ", float2string w, " : ", bool2string valid]);
+      -- printLn (join ["Checking valid: ", float2string w, " : ", bool2string valid]);
       valid in
     let st =
       { st = store st.st (PWeightRef { checkValid = checkValid })
