@@ -35,7 +35,7 @@ lang MCMCPVal = PValInterface
 
   sem mcmc : all st. all a. MCMCConfig st a -> PValInstance Complete st -> MCMCResult st a
   sem mcmc config = | instance ->
-    let acceptPred = lam. lam prob. 
+    let acceptPred = lam prob. 
       -- printLn (join ["Accept prob: ", float2string prob]);
       -- printLn (join ["Current weight: ", float2string (getWeight instance)]);
       bernoulliSample (exp prob) in
@@ -269,7 +269,7 @@ lang HRMState = PValInterface
       lam hKey. lam acc.
         if bernoulliSample p then cons hKey acc else acc
     ) [] (mapKeys hrefs) in
-    -- printLn (join ["Resampling node: ", int2string node, "hosts:", strJoin " " (map int2string hKeys)]);
+    printLn (join ["Resampling node: ", int2string node, "hosts:", strJoin " " (map int2string hKeys)]);
     -- Resample the node
     let instance = foldr (
       lam hKey. lam ist.
@@ -294,7 +294,17 @@ lang HRMState = PValInterface
     match mapLookup hostLabel hostMap with Some href in
     -- Here we only resample from the prior but we could consider doing something fancier
     let branchMove = lam d. lam. d in
-    resampleAssume branchMove href instance
+    printLn (join ["Resampling branch ", int2string nodeLabel, " ", int2string hostLabel]);
+    printJsonLn (hrmStateToDebugJson instance (getSt instance));
+    recursive let rs = lam ist.
+      let ist = resampleAssume branchMove href ist in
+      let newIst = intermediateStep ist in
+      printJsonLn (hrmStateToDebugJson ist (getSt ist));
+      ist
+    in
+    let res = rs instance in
+    printLn "--------------------";
+    res
   
   -- Resample a single host at a single node. Will select one of the other states with equal probability
   sem hrmResampleHost : all x. PAssumeRef Int -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
@@ -307,13 +317,21 @@ lang HRMState = PValInterface
   sem hrmResampleAligned : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
   sem hrmResampleAligned globalProb = | instance ->
     match getSt instance with HRMState st in
+    -- let rbSchedule =
+    --   [ (2., hrmResampleMu 1.0)
+    --   , (5., hrmResampleMu 0.2)
+    --   , (1., hrmResampleBeta 1.)
+    --   , (2., hrmResampleLambda 10.)
+    --   , (5., hrmResampleLambda 25.)
+    --   , (0., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
+    --   ] in
     let rbSchedule =
-      [ (2., hrmResampleMu 1.0)
-      , (5., hrmResampleMu 0.2)
-      , (1., hrmResampleBeta 1.)
-      , (2., hrmResampleLambda 10.)
-      , (5., hrmResampleLambda 25.)
-      , (0., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
+      [ (0., hrmResampleMu 1.0)
+      , (0., hrmResampleMu 0.2)
+      , (0., hrmResampleBeta 1.)
+      , (0., hrmResampleLambda 10.)
+      , (0., hrmResampleLambda 25.)
+      , (1., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
       ] in
     let weights = map (lam t. t.0) rbSchedule in
     let moves = map (lam t. t.1) rbSchedule in
@@ -344,8 +362,8 @@ lang HRMState = PValInterface
       , maybeShowOpt (compose (showSeq showFloat) readA) "lambda" x.lambda
       -- Topology assume refs
       , maybeShowMap int2string (showMap int2string (compose showInt readA)) "nodes" x.nodes
-      -- , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
-      -- , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
+      , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
+      , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
       -- Weight refs
       -- , maybeShowMap int2string (showMap int2string (compose showFloat readW)) "bridge-supp-weights" x.bridgeSuppWeights
       -- , maybeShowMap int2string (showSeq (compose showFloat readW)) "branch-supp-weights" x.branchSuppWeights
