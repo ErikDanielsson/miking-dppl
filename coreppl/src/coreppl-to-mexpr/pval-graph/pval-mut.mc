@@ -19,8 +19,8 @@ lang MutPVal = PValInterface
   syn PVal a = | PVal (PValRec a)
 
   syn PValState st = | PVS {initId : IterationID, updates : [PState -> ()], initWeight : Float, st : st}
-  syn PWeightRef = | PWeightRef {} -- TODO(vipa, 2025-09-23): figure out what we want to be able to do here, and thus what we need to store
-  syn PAssumeRef a = | PAssumeRef {drift : Ref (Option (a -> Dist a)), changeId : Ref IterationID, read : () -> a}
+  syn PWeightRef = | PWeightRef {read : () -> Float} -- NOTE(ed, 2026-01-26): We probably don't want to be able to read the weight, this is only for debug purposes
+  syn PAssumeRef a = | PAssumeRef {drift : Ref (Dist a -> a -> Dist a), changeId : Ref IterationID, read : () -> a}
   syn PExportRef a = | PExportRef {read : () -> a}
   syn PSubmodelRef st = | PSubmodelRef {readSt : () -> st}
 
@@ -141,6 +141,10 @@ lang MutPVal = PValInterface
     modref x.drift driftf;
     modref x.changeId p.id;
     PVIPart {p with dirty = true}
+
+  sem readPreviousWeight wref = | _ ->
+    match wref with PWeightRef x in
+    x.read ()
 
   sem readPreviousAssume aref = | _ ->
     match aref with PAssumeRef x in
@@ -336,7 +340,7 @@ lang MutPVal = PValInterface
   sem p_subMap st store ist f = | PVal a ->
     match st with PVS st in
 
-    let initSt = PVS {initId = st.initId, updates = [], initWeight = 0.0, st = ist} in
+    let initSt = PVS {initId = st.initId, updates = [], initWeight = st.initWeight, st = ist} in
     match f (deref a.value) initSt with (PVS {updates = updates, initWeight = initWeight, st = ist2}, value) in
     let value = ref value in
     let changeId = ref st.initId in
@@ -376,7 +380,7 @@ lang MutPVal = PValInterface
     match st with PVS st in
     match f with PVal f in
 
-    let initSt = PVS {initId = st.initId, updates = [], initWeight = 0.0, st = ist} in
+    let initSt = PVS {initId = st.initId, updates = [], initWeight = st.initWeight, st = ist} in
     match (deref f.value) (deref a.value) initSt
       with (PVS {updates = updates, initWeight = initWeight, st = ist2}, value) in
     let value = ref value in
@@ -440,17 +444,25 @@ lang MutPVal = PValInterface
     match st with PVS st in
     let w = f (deref a.value) in
     let initWeight = addf st.initWeight w in
+    -- printLn (join
+    --   [ "This weight: ", float2string w
+    --   , " initweight:" , float2string initWeight
+    --   , " st.initWeight: ", float2string st.initWeight
+    --   , " st.initId: ", int2string st.initId
+    --   ]
+    -- );
     let w = ref w in
     let update = lam st.
       if eqi st.id (deref a.changeId) then
         let prevWeight = deref w in
         let newWeight = f (deref a.value) in
+        -- printLn (join ["PrevWeight: ", float2string prevWeight, " NewWeight: ", float2string newWeight]);
         modref st.permanentWeight (addf (deref st.permanentWeight) newWeight);
         modref w newWeight;
         modref st.reset (snoc (deref st.reset) (lam. modref w prevWeight))
       else modref st.permanentWeight (addf (deref st.permanentWeight) (deref w)) in
     let st =
-      { st = store st.st (PWeightRef ())
+      { st = store st.st (PWeightRef {read = lam. deref w})
       , updates = snoc st.updates update
       , initWeight = initWeight
       , initId = st.initId
