@@ -7676,9 +7676,9 @@ lam st.
   let input1 =
   { symbiontTree = Node
     { age = 10.0
-    , label = 5
+    , label = 7
     , left = Node
-      { label = 4
+      { label = 5
       , age = 5.0
       , left = Leaf
         { label = 1
@@ -7689,12 +7689,20 @@ lam st.
         , age = 0.0
         }
       }
-    , right = Leaf
-      { label = 3
-      , age = 0.0
+    , right = Node
+      { label = 6
+      , age = 5.0
+      , left = Leaf
+        { label = 3
+        , age = 0.0
+        }
+      , right = Leaf
+        { label = 4
+        , age = 0.0
+        }
       }
     }
-  , interactions = [[2, 0], [1, 2], [2, 1]]
+  , interactions = [[2, 0], [1, 2], [2, 1], [2, 1]]
   , hostDistances = [[1., 1.], [1., 1.]]
   , dMean = 1.
   }

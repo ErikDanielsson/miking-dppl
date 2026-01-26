@@ -269,6 +269,7 @@ lang HRMState = PValInterface
       lam hKey. lam acc.
         if bernoulliSample p then cons hKey acc else acc
     ) [] (mapKeys hrefs) in
+    -- printLn (join ["Resampling node: ", int2string node, "hosts:", strJoin " " (map int2string hKeys)]);
     -- Resample the node
     let instance = foldr (
       lam hKey. lam ist.
@@ -312,7 +313,7 @@ lang HRMState = PValInterface
       , (1., hrmResampleBeta 1.)
       , (2., hrmResampleLambda 10.)
       , (5., hrmResampleLambda 25.)
-      , (8000., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
+      , (0., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
       ] in
     let weights = map (lam t. t.0) rbSchedule in
     let moves = map (lam t. t.1) rbSchedule in
@@ -343,16 +344,16 @@ lang HRMState = PValInterface
       , maybeShowOpt (compose (showSeq showFloat) readA) "lambda" x.lambda
       -- Topology assume refs
       , maybeShowMap int2string (showMap int2string (compose showInt readA)) "nodes" x.nodes
-      , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
-      , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
+      -- , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
+      -- , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
       -- Weight refs
-      , maybeShowMap int2string (showMap int2string (compose showFloat readW)) "bridge-supp-weights" x.bridgeSuppWeights
-      , maybeShowMap int2string (showSeq (compose showFloat readW)) "branch-supp-weights" x.branchSuppWeights
-      , maybeShowMap int2string (showSeq  (compose showFloat readW)) "likr-weights" x.likrWeights
-      -- Topology (abused export (?))
-      , maybeShowMap int2string showLocTop "topology" x.topo
-      -- Submodels
-      , pruneSubmodels submodels
+      -- , maybeShowMap int2string (showMap int2string (compose showFloat readW)) "bridge-supp-weights" x.bridgeSuppWeights
+      -- , maybeShowMap int2string (showSeq (compose showFloat readW)) "branch-supp-weights" x.branchSuppWeights
+      -- , maybeShowMap int2string (showSeq  (compose showFloat readW)) "likr-weights" x.likrWeights
+      -- -- Topology (abused export (?))
+      -- , maybeShowMap int2string showLocTop "topology" x.topo
+      -- -- Submodels
+      -- , pruneSubmodels submodels
       ]
     )) in
     if eqi (mapLength v) 0 then None () else Some (JsonObject v)
