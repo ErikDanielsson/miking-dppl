@@ -5,5 +5,5 @@ and sed -e "/{{HERE}}/{r $argv[1]" -e "d}" \
 and echo fixing complete, compiling model
 and mi compile build/full-temp.mc --output build/full-temp
 and echo compilation complete, running
-and time build/full-temp
+and time OCAMLRUNPARAM=b build/full-temp
 and echo running complete, done
