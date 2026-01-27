@@ -567,6 +567,8 @@ lam st.
       lam row11.
         lam col.
           lam mtx6.
+            match p_map st632 (lam r. lam c. printLn (join ["mtxGet2: row = ", int2string r, ", col = ", int2string c])) col with (st632, pf) in
+            match p_apply st632 pf row11 with (st632, pf) in
             match
               p_map st632 (lam x1013.
                    subi x1013 1) row11
@@ -2739,6 +2741,8 @@ lam st.
             with
               (st511, x841)
             in
+            -- match p_map st511 (f "col") x839 with (st508, _) in
+            -- match p_map st511 (f "row") x841 with (st508, _) in
             match
               mtxGet2
                 st511
@@ -5146,10 +5150,12 @@ lam st.
                                p_map
                                  st203
                                  (lam x315.
-                                    mkCategorical
-                                      (get
+                                    mkCategorical (
+                                      let transprobs = (get
                                          (match embeddedQMatrix11 with EmbeddedMarkovChainMatrix1 x401
                                           then
+                                            printLn (join ["Transition probs11: [", strJoin " | " (map (strJoin ", ") (map (map float2string) x401.transitionProbs)), "]"]);
+                                            printLn (join ["CurrentState: ", int2string x315]);
                                             x401.transitionProbs
                                           else
                                             let #var"145" =
@@ -5157,13 +5163,17 @@ lam st.
                                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 335:16-335:47>:\nField \'transitionProbs\' not found\n[0m    let param = [31membeddedQMatrix.transitionProbs[0m[0m[currentState + 1];\n"
                                             in
                                             exit 1)
-                                         (subi (addi x315 1) 1)))
+                                         (subi (addi x315 1) 1)) in
+                                      printLn (join ["Transition probs from current state: [", strJoin ", " (map float2string transprobs), "]"]);
+                                      transprobs
+                                      )
+                                  )
                                  currentState
                              with
                                (st204, x316)
                              in
-                             match p_assume st204 (hrmStoreBranchState nodeLabel host) x316 with (st205, nextState11)
-                             in
+                             match p_assume st204 (hrmStoreBranchState nodeLabel host) x316 with (st205, nextState11) in
+                             match p_map st205 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState11 with (st205, _) in
                              match
                                p_map
                                  st205
@@ -5247,6 +5257,9 @@ lam st.
                              with
                                (st211, x330)
                              in
+                             let f = lam fs. lam ts. printLn (join ["Event: { fromState = ", int2string fs, ", toState = ", int2string ts, " }"]) in
+                             match p_map st211 f currentState with (st211, f) in
+                             match p_apply st211 f nextState11 with (st211, _) in
                              match
                                cons11
                                  st211
@@ -5299,10 +5312,12 @@ lam st.
                                p_map
                                  st214
                                  (lam x340.
-                                    mkCategorical
-                                      (get
+                                    mkCategorical (
+                                      let transprobs = (get
                                          (match embeddedQMatrix12 with EmbeddedMarkovChainMatrix1 x402
                                           then
+                                            printLn (join ["Transition probs11 [", strJoin " | " (map (strJoin ", ") (map (map float2string) x402.transitionProbs)), "]"]);
+                                            printLn (join ["CurrentState: ", int2string x340]);
                                             x402.transitionProbs
                                           else
                                             let #var"149" =
@@ -5310,13 +5325,17 @@ lam st.
                                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 335:16-335:47>:\nField \'transitionProbs\' not found\n[0m    let param = [31membeddedQMatrix.transitionProbs[0m[0m[currentState + 1];\n"
                                             in
                                             exit 1)
-                                         (subi (addi x340 1) 1)))
+                                         (subi (addi x340 1) 1)) in
+                                      printLn (join ["Transition probs from current state: [", strJoin ", " (map float2string transprobs), "]"]);
+                                      transprobs
+                                      )
+                                 )
                                  currentState1
                              with
                                (st216, x345)
                              in
-                             match p_assume st216 (hrmStoreBranchState nodeLabel1 host1) x345 with (st217, nextState12)
-                             in
+                             match p_assume st216 (hrmStoreBranchState nodeLabel1 host1) x345 with (st217, nextState12) in
+                             match p_map st217 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState12 with (st217, _) in
                              match
                                p_map
                                  st217
@@ -5403,6 +5422,9 @@ lam st.
                              with
                                (st223, x359)
                              in
+                             let f = lam fs. lam ts. printLn (join ["Returning: Event { fromState = ", int2string fs, ", toState = ", int2string ts, " }"]) in
+                             match p_map st223 f currentState1 with (st223, f) in
+                             match p_apply st223 f nextState12 with (st223, _) in
                              match
                                cons11
                                  st223
@@ -6626,6 +6648,7 @@ lam st.
                                                            gti
                                                              (match x504 with Event1 x1303
                                                               then
+                                                                println (join ["getGainRate2 entrypoint: Event { fromState = ", int2string x1303.fromState, ", toState = ", int2string x505, " }"]);
                                                                 x1303.fromState
                                                               else
                                                                 let #var"159" =
@@ -7280,6 +7303,7 @@ lam st.
                                                            gti
                                                              (match x602 with Event1 x1304
                                                               then
+                                                                println (join ["getGainRate2 entrypoint: Event { fromState = ", int2string x1304.fromState, ", toState = ", int2string x603, " }"]);
                                                                 x1304.fromState
                                                               else
                                                                 let #var"174" =
@@ -7702,7 +7726,7 @@ lam st.
         }
       }
     }
-  , interactions = [[2, 0], [1, 2], [2, 1], [2, 1]]
+  , interactions = [[2, 0], [2, 0], [2, 0], [2, 0]]
   , hostDistances = [[1., 1.], [1., 1.]]
   , dMean = 1.
   }
