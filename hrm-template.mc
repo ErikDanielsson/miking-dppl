@@ -117,8 +117,8 @@ let summarizePVal = lam label. lam pair.
 let run =
   setSeed 1234;
   use ComposedVisi in
-  printJsonLn (graphToJson (instantiate model (hrmInit ())));
-  exit 0;
+  -- printJsonLn (graphToJson (instantiate model (hrmInit ())));
+  -- exit 0;
   use ComposedMut in
   let initialize = lam. instantiate model (hrmInit ()) in
   match initialize () with instance in

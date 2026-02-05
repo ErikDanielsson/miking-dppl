@@ -61,6 +61,7 @@ lang PValInterface = RuntimeDistBase
   -- initiated.
   sem readPreviousExport : all complete. all st. all a. PExportRef a -> PValInstance complete st -> a
   sem readPreviousWeight : all complete. all st. all a. PWeightRef -> PValInstance complete st -> Float
+  sem checkPreviousWeight : all complete. all st. all a. PWeightRef -> PValInstance complete st -> Bool
   -- Read the current state of the given sub-model. In a `Partial`
   -- instance this returns the value before the step was initiated.
   sem readPreviousSubmodel : all complete. all st. all st2. PSubmodelRef st2 -> PValInstance complete st -> st2

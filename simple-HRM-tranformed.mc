@@ -5133,7 +5133,11 @@ lam st.
                         (hrmInit {})
                         (lam st203.
                            lam x313.
+<<<<<<< Updated upstream
                             --  printLn (join ["Starting sampleHostHistoryRec: host: ", int2string host, " nodeLabel: ", int2string nodeLabel]);
+=======
+                             printLn (join ["Starting sampleHostHistoryRec: host: ", int2string host, " nodeLabel: ", int2string nodeLabel]);
+>>>>>>> Stashed changes
                              match ltf x313 finalAge2 with true
                              then
                                p_map
@@ -5155,9 +5159,15 @@ lam st.
                                       let transprobs = (get
                                          (match embeddedQMatrix11 with EmbeddedMarkovChainMatrix1 x401
                                           then
+<<<<<<< Updated upstream
                                             -- printLn (join ["Transition probs11: [", strJoin " | " (map (strJoin ", ") (map (map float2string) x401.transitionProbs)), "]"]);
                                             -- printLn (join ["Host: ", int2string host, " nodeLabel: ", int2string nodeLabel]);
                                             -- printLn (join ["CurrentState: ", int2string x315]);
+=======
+                                            printLn (join ["Transition probs11: [", strJoin " | " (map (strJoin ", ") (map (map float2string) x401.transitionProbs)), "]"]);
+                                            printLn (join ["Host: ", int2string host, " nodeLabel: ", int2string nodeLabel]);
+                                            printLn (join ["CurrentState: ", int2string x315]);
+>>>>>>> Stashed changes
                                             x401.transitionProbs
                                           else
                                             let #var"145" =
@@ -5174,7 +5184,11 @@ lam st.
                              with
                                (st204, x316)
                              in
+<<<<<<< Updated upstream
                             --  match p_map st204 (lam ns. printLn "Blup"; ns) x316 with (st204, x316) in
+=======
+                             match p_map st204 (lam ns. printLn "Blup"; ns) x316 with (st204, x316) in
+>>>>>>> Stashed changes
                              match p_assume st204 (hrmStoreBranchState nodeLabel host) x316 with (st205, nextState11) in
                             --  match p_map st205 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState11 with (st205, _) in
                              match
@@ -5292,7 +5306,11 @@ lam st.
                         (hrmInit {})
                         (lam st214.
                            lam x336.
+<<<<<<< Updated upstream
                             --  printLn (join ["Starting sampleHostHistoryRec1: host: ", int2string host1, " nodeLabel: ", int2string nodeLabel1]);
+=======
+                             printLn (join ["Starting sampleHostHistoryRec1: host: ", int2string host1, " nodeLabel: ", int2string nodeLabel1]);
+>>>>>>> Stashed changes
                              match ltf x336 finalAge21 with true
                              then
                                match
@@ -5320,9 +5338,15 @@ lam st.
                                       let transprobs = (get
                                          (match embeddedQMatrix12 with EmbeddedMarkovChainMatrix1 x402
                                           then
+<<<<<<< Updated upstream
                                             -- printLn (join ["Transition probs11 [", strJoin " | " (map (strJoin ", ") (map (map float2string) x402.transitionProbs)), "]"]);
                                             -- printLn (join ["Host: ", int2string host1, " nodeLabel: ", int2string nodeLabel1]);
                                             -- printLn (join ["CurrentState: ", int2string x340]);
+=======
+                                            printLn (join ["Transition probs11 [", strJoin " | " (map (strJoin ", ") (map (map float2string) x402.transitionProbs)), "]"]);
+                                            printLn (join ["Host: ", int2string host1, " nodeLabel: ", int2string nodeLabel1]);
+                                            printLn (join ["CurrentState: ", int2string x340]);
+>>>>>>> Stashed changes
                                             x402.transitionProbs
                                           else
                                             let #var"149" =
@@ -5339,7 +5363,11 @@ lam st.
                              with
                                (st216, x345)
                              in
+<<<<<<< Updated upstream
                             --  match p_map st216 (lam ns. printLn "Blup"; ns) x345 with (st216, x345) in
+=======
+                             match p_map st216 (lam ns. printLn "Blup"; ns) x345 with (st216, x345) in
+>>>>>>> Stashed changes
                              match p_assume st216 (hrmStoreBranchState nodeLabel1 host1) x345 with (st217, nextState12) in
                             --  match p_map st217 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState12 with (st217, _) in
                              match
