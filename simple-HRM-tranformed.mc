@@ -567,8 +567,8 @@ lam st.
       lam row11.
         lam col.
           lam mtx6.
-            match p_map st632 (lam r. lam c. printLn (join ["mtxGet2: row = ", int2string r, ", col = ", int2string c])) col with (st632, pf) in
-            match p_apply st632 pf row11 with (st632, pf) in
+            -- match p_map st632 (lam r. lam c. printLn (join ["mtxGet2: row = ", int2string r, ", col = ", int2string c])) col with (st632, pf) in
+            -- match p_apply st632 pf row11 with (st632, pf) in
             match
               p_map st632 (lam x1013.
                    subi x1013 1) row11
@@ -5133,6 +5133,7 @@ lam st.
                         (hrmInit {})
                         (lam st203.
                            lam x313.
+                            --  printLn (join ["Starting sampleHostHistoryRec: host: ", int2string host, " nodeLabel: ", int2string nodeLabel]);
                              match ltf x313 finalAge2 with true
                              then
                                p_map
@@ -5154,8 +5155,9 @@ lam st.
                                       let transprobs = (get
                                          (match embeddedQMatrix11 with EmbeddedMarkovChainMatrix1 x401
                                           then
-                                            printLn (join ["Transition probs11: [", strJoin " | " (map (strJoin ", ") (map (map float2string) x401.transitionProbs)), "]"]);
-                                            printLn (join ["CurrentState: ", int2string x315]);
+                                            -- printLn (join ["Transition probs11: [", strJoin " | " (map (strJoin ", ") (map (map float2string) x401.transitionProbs)), "]"]);
+                                            -- printLn (join ["Host: ", int2string host, " nodeLabel: ", int2string nodeLabel]);
+                                            -- printLn (join ["CurrentState: ", int2string x315]);
                                             x401.transitionProbs
                                           else
                                             let #var"145" =
@@ -5164,7 +5166,7 @@ lam st.
                                             in
                                             exit 1)
                                          (subi (addi x315 1) 1)) in
-                                      printLn (join ["Transition probs from current state: [", strJoin ", " (map float2string transprobs), "]"]);
+                                      -- printLn (join ["Transition probs from current state: [", strJoin ", " (map float2string transprobs), "]"]);
                                       transprobs
                                       )
                                   )
@@ -5172,8 +5174,9 @@ lam st.
                              with
                                (st204, x316)
                              in
+                            --  match p_map st204 (lam ns. printLn "Blup"; ns) x316 with (st204, x316) in
                              match p_assume st204 (hrmStoreBranchState nodeLabel host) x316 with (st205, nextState11) in
-                             match p_map st205 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState11 with (st205, _) in
+                            --  match p_map st205 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState11 with (st205, _) in
                              match
                                p_map
                                  st205
@@ -5257,9 +5260,9 @@ lam st.
                              with
                                (st211, x330)
                              in
-                             let f = lam fs. lam ts. printLn (join ["Event: { fromState = ", int2string fs, ", toState = ", int2string ts, " }"]) in
-                             match p_map st211 f currentState with (st211, f) in
-                             match p_apply st211 f nextState11 with (st211, _) in
+                            --  let f = lam fs. lam ts. printLn (join ["Event: { fromState = ", int2string fs, ", toState = ", int2string ts, " }"]) in
+                            --  match p_map st211 f currentState with (st211, f) in
+                            --  match p_apply st211 f nextState11 with (st211, _) in
                              match
                                cons11
                                  st211
@@ -5289,6 +5292,7 @@ lam st.
                         (hrmInit {})
                         (lam st214.
                            lam x336.
+                            --  printLn (join ["Starting sampleHostHistoryRec1: host: ", int2string host1, " nodeLabel: ", int2string nodeLabel1]);
                              match ltf x336 finalAge21 with true
                              then
                                match
@@ -5316,8 +5320,9 @@ lam st.
                                       let transprobs = (get
                                          (match embeddedQMatrix12 with EmbeddedMarkovChainMatrix1 x402
                                           then
-                                            printLn (join ["Transition probs11 [", strJoin " | " (map (strJoin ", ") (map (map float2string) x402.transitionProbs)), "]"]);
-                                            printLn (join ["CurrentState: ", int2string x340]);
+                                            -- printLn (join ["Transition probs11 [", strJoin " | " (map (strJoin ", ") (map (map float2string) x402.transitionProbs)), "]"]);
+                                            -- printLn (join ["Host: ", int2string host1, " nodeLabel: ", int2string nodeLabel1]);
+                                            -- printLn (join ["CurrentState: ", int2string x340]);
                                             x402.transitionProbs
                                           else
                                             let #var"149" =
@@ -5326,7 +5331,7 @@ lam st.
                                             in
                                             exit 1)
                                          (subi (addi x340 1) 1)) in
-                                      printLn (join ["Transition probs from current state: [", strJoin ", " (map float2string transprobs), "]"]);
+                                      -- printLn (join ["Transition probs from current state: [", strJoin ", " (map float2string transprobs), "]"]);
                                       transprobs
                                       )
                                  )
@@ -5334,8 +5339,9 @@ lam st.
                              with
                                (st216, x345)
                              in
+                            --  match p_map st216 (lam ns. printLn "Blup"; ns) x345 with (st216, x345) in
                              match p_assume st216 (hrmStoreBranchState nodeLabel1 host1) x345 with (st217, nextState12) in
-                             match p_map st217 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState12 with (st217, _) in
+                            --  match p_map st217 (lam ns. printLn (join ["Sampled nextState: ", int2string ns])) nextState12 with (st217, _) in
                              match
                                p_map
                                  st217
@@ -5422,9 +5428,9 @@ lam st.
                              with
                                (st223, x359)
                              in
-                             let f = lam fs. lam ts. printLn (join ["Returning: Event { fromState = ", int2string fs, ", toState = ", int2string ts, " }"]) in
-                             match p_map st223 f currentState1 with (st223, f) in
-                             match p_apply st223 f nextState12 with (st223, _) in
+                            --  let f = lam fs. lam ts. printLn (join ["Returning: Event { fromState = ", int2string fs, ", toState = ", int2string ts, " }"]) in
+                            --  match p_map st223 f currentState1 with (st223, f) in
+                            --  match p_apply st223 f nextState12 with (st223, _) in
                              match
                                cons11
                                  st223
@@ -6648,7 +6654,7 @@ lam st.
                                                            gti
                                                              (match x504 with Event1 x1303
                                                               then
-                                                                println (join ["getGainRate2 entrypoint: Event { fromState = ", int2string x1303.fromState, ", toState = ", int2string x505, " }"]);
+                                                                -- println (join ["getGainRate2 entrypoint: Event { fromState = ", int2string x1303.fromState, ", toState = ", int2string x505, " }"]);
                                                                 x1303.fromState
                                                               else
                                                                 let #var"159" =
@@ -6855,7 +6861,7 @@ lam st.
                                                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 135:90-135:100>:\nField \'label\' not found\n[0m    logWeight (branchSample.logModelDensity - branchSample.logSamplingDensity) * exp(Real([31mtree.label[0m[0m) * 0.);\n"
                                                in
                                                exit 1))
-                            (/-temp-/lam x547.
+                            (/-temp-/lam x547. printLn (join ["likrweight: ", float2string x547]);
                                x547)
                             x544
                         in
@@ -6950,7 +6956,7 @@ lam st.
                         let st324 =
                           p_weight
                             st323
-                            (hrmStoreBranchSuppWeight (match tree2 with MsgLeaf carried50
+                            (hrmStoreNodeSuppWeight (match tree2 with MsgLeaf carried50
                                            then
                                              carried50.label
                                            else match tree2 with MsgNode carried51
@@ -7303,7 +7309,7 @@ lam st.
                                                            gti
                                                              (match x602 with Event1 x1304
                                                               then
-                                                                println (join ["getGainRate2 entrypoint: Event { fromState = ", int2string x1304.fromState, ", toState = ", int2string x603, " }"]);
+                                                                -- println (join ["getGainRate2 entrypoint: Event { fromState = ", int2string x1304.fromState, ", toState = ", int2string x603, " }"]);
                                                                 x1304.fromState
                                                               else
                                                                 let #var"174" =
@@ -7528,7 +7534,7 @@ lam st.
                                                  "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 163:113-163:123>:\nField \'label\' not found\n[0m    logWeight branchSample.logModelDensity - branchSample.logSamplingDensity - nodeLogSamplingDensity * exp(Real([31mtree.label[0m[0m) * 0.);\n"
                                              in
                                              exit 1))
-                            (/-temp-/lam x654.
+                            (/-temp-/lam x654. printLn (join ["likrweight: ", float2string x654]);
                                x654)
                             x647
                         in
@@ -7700,9 +7706,9 @@ lam st.
   let input1 =
   { symbiontTree = Node
     { age = 10.0
-    , label = 7
+    , label = 9
     , left = Node
-      { label = 5
+      { label = 8
       , age = 5.0
       , left = Leaf
         { label = 1
@@ -7714,20 +7720,40 @@ lam st.
         }
       }
     , right = Node
-      { label = 6
+      { label = 7
       , age = 5.0
       , left = Leaf
         { label = 3
         , age = 0.0
         }
-      , right = Leaf
-        { label = 4
-        , age = 0.0
+      , right = Node
+        { label = 6
+        , age = 3.0
+        , left = Leaf
+          { label = 4
+          , age = 0.0
+          }
+        , right = Leaf
+          { label = 5
+          , age = 0.0
+          }
         }
       }
     }
-  , interactions = [[2, 0], [2, 0], [2, 0], [2, 0]]
-  , hostDistances = [[1., 1.], [1., 1.]]
+  , interactions =
+      [ [2, 0]--, 0, 0, 2]
+      , [0, 2]--, 0, 2, 0]
+      , [2, 0]--, 2, 2, 2]
+      , [2, 2]--, 0, 2, 0]
+      , [2, 0]--, 0, 0, 2]
+      ]
+  , hostDistances =
+      [ [1., 1.]--, 1., 1., 1.]
+      , [1., 1.]--, 1., 1., 1.]
+      -- , [1., 1.]--, 1., 1., 1.]
+      -- , [1., 1.]--, 1., 1., 1.]
+      -- , [1., 1.]--, 1., 1., 1.]
+      ]
   , dMean = 1.
   }
   in
@@ -7744,6 +7770,12 @@ lam st.
   with
     (st387, lambda)
   in
+  recursive let buildTree = lam stree.
+    match stree with Leaf { label = label, age = _ } then 
+      HRMLeaf { label = label }
+    else match stree with Node { label = label, age = _, left = left, right = right } in 
+      HRMNode { label = label, left = buildTree left, right = buildTree right } in
+  match p_export st387 (hrmStoreTree (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st387 in
   match
     p_assume st387 hrmStoreMu (p_pure (mkExponential 10.))
   with
@@ -7906,7 +7938,7 @@ lam st.
   let st404 =
     p_weight
       st403
-      (hrmStoreBranchSuppWeight (match postorderTree with MsgLeaf carried64
+      (hrmStoreNodeSuppWeight (match postorderTree with MsgLeaf carried64
                      then
                        carried64.label
                      else match postorderTree with MsgNode carried65
@@ -8089,9 +8121,18 @@ lam st.
   with
     (st410, x682)
   in
-  match p_map st410 (lam mu. lam beta. lam lambda. {mu = mu, beta = beta, lambda = lambda}) mu with (st, partres) in
-  match p_apply st partres beta with (st, partres) in
-  match p_apply st partres lambda with (st410, res) in
+  match p_map st410 (
+    lam mu. lam beta. lam lambda. lam rootRep1. lam rootRep2.
+      { mu = mu
+      , beta = beta
+      , lambda = lambda
+      , rootRep = [rootRep1, rootRep2]
+      }
+  ) mu with (st410, partres) in
+  match p_apply st410 partres beta with (st410, partres) in
+  match p_apply st410 partres lambda with (st410, partres) in
+  match p_apply st410 partres (get rootRep 0) with (st410, partres) in
+  match p_apply st410 partres (get rootRep 1) with (st410, res) in
   p_export
     st410
     hrmStoreExport

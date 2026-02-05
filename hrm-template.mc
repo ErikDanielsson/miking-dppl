@@ -3,6 +3,7 @@ include "coreppl::coreppl-to-mexpr/pval-graph/pval-mut.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-debug.mc"
 include "ext/mat-ext.mc"
 include "common.mc"
+include "json.mc"
 
 -- NOTE(vipa, 2025-12-09): In lieu of proper distribution translations
 -- I'll make these easy to substitute in
@@ -75,17 +76,24 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 1000 in
+let iterations = 4000 in
 -- let toString = lam. "()" in
--- let mkHisto = histogram (lam. lam. 0) in
+let mkHisto2 = histogram (lam. lam. 0) in
+let toString2 = int2string in
 let toString = interval2string in
 let mkHisto = bucket 10 0.0 1. in
 let summarizePVal = lam label. lam pair.
   match pair with (time, res) in
   printLn (join [float2string time, "ms (", label, ")"]);
-  printLn (float2string res.acceptanceRatio);
+  printLn (join ["Acceptance ratio: ", float2string res.acceptanceRatio]);
   -- printLn (join (map (lam x. join [float2string x, "\t"]) res.samples));
   if showHistogram then
+    -- (map (lam s. printLn (join
+    --   [ "mu:", float2string s.mu
+    --   , ", beta: ", float2string s.beta
+    --   , ", lambda:[", (strJoin "," (map float2string s.lambda)), "]"
+    --   ]))
+    -- res.samples);
     let muSamples = map (lam s. s.mu) res.samples in
     printLn "------ Mu ------";
     printLn (hist2string toString (mkHisto muSamples));
@@ -98,29 +106,37 @@ let summarizePVal = lam label. lam pair.
       printLn (join ["------ Lambda ", int2string i, " ------"]);
       printLn (hist2string toString (mkHisto lamiSamples))
     ) [0, 1, 2, 3];
+    let rootRepSamples = map (lam s. s.rootRep) res.samples in
+    map (lam i. 
+      let rriSamples = map (lam s. get s i) rootRepSamples in
+      printLn (join ["------ Rootrep ", int2string i, " ------"]);
+      printLn (hist2string toString2 (mkHisto2 rriSamples))
+    ) [0, 1];
     ()
   else () in
 let run =
+  setSeed 1234;
   use ComposedVisi in
-  -- printJsonLn (graphToJson (instantiate model (hrmInit ())));
-  -- exit 0;
+  printJsonLn (graphToJson (instantiate model (hrmInit ())));
+  exit 0;
   use ComposedMut in
-  recursive let findGoodInstance = lam.
-    let instance = instantiate model (hrmInit ()) in
-    let w = getWeight instance in
-    -- println (join ["Finding instance. Weight: ", float2string w]);
-    -- printJsonLn (hrmStateToDebugJson instance (getSt instance));
-    -- printLn "----------------";
-    if or (eqf w (negf inf)) (isNaN w)
-    then findGoodInstance ()
-    else instance in
-  match timeF findGoodInstance with (time, instance) in
-  printJsonLn (hrmStateToDebugJson instance (getSt instance));
+  let initialize = lam. instantiate model (hrmInit ()) in
+  match initialize () with instance in
+  match timeF (lam. hrmFindPointInSupport instance) with (time, instance) in
+  printLn (join ["Took ", float2string time, "ms to find point in the support"]);
   printLn (join ["Starting weight: ", float2string (getWeight instance)]);
+  -- printJsonLn (hrmStateToDebugJson instance (getSt instance));
   -- match getSt instance with HRMState st in
   -- printLn (join [int2string (length st.here), ", ", int2string (length st.below)]);
-  printLn (join ["Took ", float2string time, "ms to find good instance."]);
-  lam. mcmc (mkMCMCConfig iterations globalProb) instance in
+  -- printLn (join ["Took ", float2string time, "ms to find good instance."]);
+  lam.
+    let r = mcmc (lam x. if eqi (modi x 100) 0 then hrmPrintState else (lam. lam. ())) (mkMCMCConfig iterations globalProb) instance in
+    printLn "---- Finalize step JSON ----";
+    hrmPrintState true instance; 
+    printLn "----------------------------";
+    let w = getWeight instance in
+    println (join ["Final model weight: ", float2string w]);
+    r in
 summarizePVal "mut" (timeF run);
 
 ()
