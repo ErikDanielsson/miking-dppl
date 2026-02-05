@@ -5,6 +5,7 @@ include "seq.mc"
 include "map.mc"
 include "float.mc"
 include "ext/dist-ext.mc"
+include "common.mc"
 
 -- Weiner process
 let wienerSample : () -> Float -> Float = lam.
@@ -101,7 +102,7 @@ lang RuntimeDistElementary = RuntimeDistBase
   | DistCategorical t -> unsafeCoerce (categoricalSample t.p)
   | DistDirichlet t -> unsafeCoerce (dirichletSample t.a)
   | DistUniform t -> unsafeCoerce (uniformContinuousSample t.a t.b)
-  | DistReciprocal t -> unsafeCoerce (reciprocalSample t.a t.b)
+  | DistReciprocal t -> unsafeCoerce (let s = reciprocalSample t.a t.b in /- printLn (join ["\t reciprocal: ", float2string s]); -/ s)
   | DistUniformDiscrete t -> unsafeCoerce (uniformDiscreteSample t.a t.b)
   | DistWiener {cps = false, a = a} -> unsafeCoerce (wienerSample a)
   | DistWiener {cps = true, a = a} ->

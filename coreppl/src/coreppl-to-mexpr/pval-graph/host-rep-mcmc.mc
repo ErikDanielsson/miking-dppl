@@ -33,8 +33,8 @@ lang MCMCPVal = PValInterface
     , finalInstance : PValInstance Complete st
     }
 
-  sem mcmc : all st. all a. MCMCConfig st a -> PValInstance Complete st -> MCMCResult st a
-  sem mcmc config = | instance ->
+  sem mcmc : all st. all a. (Int -> Bool -> PValInstance Complete st -> ()) -> MCMCConfig st a -> PValInstance Complete st -> MCMCResult st a
+  sem mcmc printer config = | instance ->
     let acceptPred = lam prob. 
       -- printLn (join ["Accept prob: ", float2string prob]);
       -- printLn (join ["Current weight: ", float2string (getWeight instance)]);
@@ -48,6 +48,8 @@ lang MCMCPVal = PValInterface
         , samples = snoc acc.samples (config.getSample instance)
         , instance = instance
         } in
+      
+      printer acc.iterations true instance;
       work acc in
     let res = work {iterations = config.iterations, accepted = 0, samples = [], instance = instance} in
     { samples = res.samples
@@ -91,17 +93,23 @@ let mapInsertOrCreate =
 
 
 lang HRMState = PValInterface
-  
+  syn HRMTree =
+  | HRMNode { left : HRMTree, right : HRMTree, label : Int }
+  | HRMLeaf { label : Int }
+  | HRMEmptyTree ()
+
   syn HRMState x =
   | HRMState
     { mu: Option (PAssumeRef Float)
     , beta: Option (PAssumeRef Float)
     , lambda: Option (PAssumeRef [Float])
     , topo : Map Int {left : Int, right : Int, isRoot : Bool}
+    , tree : HRMTree 
+    , interactions : [[Int]]
     , nodes : Map Int (Map Int (PAssumeRef Int))
     , branchTimes : Map Int (Map Int (PAssumeRef Float))
-    , likrWeights : Map Int [PWeightRef]
-    , branchSuppWeights : Map Int [PWeightRef]
+    , likrWeights : Map Int PWeightRef
+    , nodeSuppWeights : Map Int PWeightRef
     , bridgeSuppWeights : Map Int (Map Int PWeightRef)
     , branches : Map Int (Map Int (Either (PAssumeRef Float) (PAssumeRef Int)))
     , below : [PSubmodelRef (HRMState ())]
@@ -118,12 +126,104 @@ lang HRMState = PValInterface
       , nodes = mapEmpty subi
       , branchTimes = mapEmpty subi
       , likrWeights = mapEmpty subi
-      , branchSuppWeights = mapEmpty subi
+      , nodeSuppWeights = mapEmpty subi
       , bridgeSuppWeights = mapEmpty subi
       , branches = mapEmpty subi
       , below = []
+      , tree = HRMEmptyTree ()
+      , interactions = []
       , export = export
       }
+
+  -- Try finding an initialization of the program with probablity > 0.
+  -- We use the following strategy:
+  -- 1. Resample each node repertoire from prior until it is valid (at least one 2)
+  -- 2. Resample branches until they are valid
+  --   2.1. Resample bridges until they are valid
+  --   2.2. Check importance weight, if invalid resample all bridges again
+  -- 3. If all of the above fails, redraw mu, lambda and beta and go to 1.
+  sem hrmFindPointInSupport : all x. all st. PValInstance Complete (HRMState x) -> PValInstance Complete (HRMState x)
+  sem hrmFindPointInSupport = | instance ->  
+    match startStep instance with instance in
+    match getSt instance with HRMState st in
+
+    --- Node resampling
+    recursive let rsNode = lam label. lam ist. lam wref.
+      let hKeys = match mapLookup label st.nodes with Some hosts in mapKeys hosts in
+      if checkPreviousWeight wref ist then ist
+      else
+        let ist = intermediateStep (hrmResampleNode label hKeys ist) in
+        rsNode label ist wref in
+        -- ist in
+    recursive let postorderResampleNode = lam tree. lam ist.
+      match tree with HRMLeaf _ then ist
+      else match tree with HRMNode t in 
+        match getSt ist with HRMState st in
+        match mapLookup t.label st.nodeSuppWeights with Some wref in
+        let ist = rsNode t.label ist wref in
+        (compose
+          (postorderResampleNode t.left)
+          (postorderResampleNode t.right)
+        ) ist in
+
+    -- Branch resampling
+    recursive let rsBranch : all a. Int -> PWeightRef -> Map Int PWeightRef -> PValInstance Partial (HRMState a)  -> PValInstance Partial (HRMState a) =
+      lam label. lam wref. lam wrefs. lam ist.
+      -- printLn (join ["Resampling branch ", int2string label]);
+      let tryRepairBranch = lam rdepth. lam nodeLabel. lam hrefs. lam wrefs. lam ist. 
+        let checkAndRepairBridge = lam h. lam ist.
+          match mapLookup h wrefs with Some wref in
+          if checkPreviousWeight wref ist then (ist, true) else 
+            -- printLn (join ["Repairing branch ", int2string nodeLabel]);
+            hrmResampleBridge rdepth nodeLabel h ist in
+        foldl (lam acc. lam h. match acc with (_, false) then acc else checkAndRepairBridge h acc.0) (ist, true) (mapKeys hrefs) in
+      let resampleBranch = -- : all a. all b. Int -> Int -> Map Int (PAssumeRef Int) -> Map Int PWeightRef ->  PValInstance Partial (HRMState a) -> (PValInstance Partial (HRMState a), Bool) =
+        lam rdepth. lam nodeLabel. lam hrefs. lam wrefs. lam ist. 
+        -- printLn (join ["Resampling branch ", int2string nodeLabel]);
+        let checkAndRepairBridge = lam h. lam ist.
+          hrmResampleBridge rdepth nodeLabel h ist in
+        foldl (lam acc. lam h. match acc with (_, false) then acc else checkAndRepairBridge h acc.0) (ist, true) (mapKeys hrefs) in
+        match mapLookup label st.branchTimes with Some hrefs in
+        if foldl (lam acc. lam ref. and acc (checkPreviousWeight ref ist)) true (mapValues wrefs) then
+          if checkPreviousWeight wref ist then ist
+          else 
+            match (resampleBranch 100 label hrefs wrefs ist) with (ist, success) in
+            match intermediateStep ist with ist in
+            rsBranch label wref wrefs ist
+        else
+          match (tryRepairBranch 1000 label hrefs wrefs ist) with (ist, success) in
+          match intermediateStep ist with ist in
+          rsBranch label wref wrefs ist in
+
+     
+
+    recursive let postorderResampleBranch = lam tree. lam ist.
+      match tree with HRMLeaf t then
+        match mapLookup t.label st.likrWeights with Some wref in
+        match mapLookup t.label st.bridgeSuppWeights with Some wrefs in
+        rsBranch t.label wref wrefs ist
+      else match tree with HRMNode t in 
+        match getSt ist with HRMState st in
+        match mapLookup t.label st.likrWeights with Some wref in
+        let ist = match mapLookup t.label st.bridgeSuppWeights with Some wrefs then
+          rsBranch t.label wref wrefs ist
+        else ist in
+        (compose
+          (postorderResampleBranch t.left)
+          (postorderResampleBranch t.right)
+        ) ist in
+    
+    hrmPrintState false instance;
+    printLn "Resampling node repertoires...";
+    let instance = postorderResampleNode st.tree instance in
+    printLn "Done resampling node repertoires.";
+    hrmPrintState false instance;
+    printLn "Resampling branches repertoires...";
+    let instance = postorderResampleBranch st.tree instance in
+    printLn "Done resampling node repertoires.";
+    hrmPrintState false instance;
+    -- let instance = postorderResample st.tree instance in
+    (finalizeStep (lam. true) instance).1
 
   --
   -- Assume stores
@@ -165,22 +265,32 @@ lang HRMState = PValInterface
       { st with branches = mapInsertOrCreate nodeLabel hostLabel subi (Right ref) st.branches
       }
 
+  sem hrmStoreAssume : all x. all a. HRMState x -> PAssumeRef a -> HRMState x
+  sem hrmStoreAssume st = | ref ->
+    st
   --
   -- Weight stores
   -- 
+  sem hrmStoreWeight : all x. HRMState x -> PWeightRef -> HRMState x
+  sem hrmStoreWeight st = | ref -> 
+    st 
+
   sem hrmStoreLikrWeight : all x. Int -> HRMState x -> PWeightRef -> HRMState x
   sem hrmStoreLikrWeight nodeLabel st = | ref -> 
     match st with HRMState st in 
-    HRMState {st with likrWeights = mapInsertOrAppend nodeLabel ref st.likrWeights}
+    -- printLn (join ["Likrweight: ", int2string nodeLabel]);
+    HRMState {st with likrWeights = mapInsert nodeLabel ref st.likrWeights}
 
-  sem hrmStoreBranchSuppWeight : all x.Int -> HRMState x -> PWeightRef -> HRMState x
-  sem hrmStoreBranchSuppWeight nodeLabel st = | ref -> 
+  sem hrmStoreNodeSuppWeight : all x.Int -> HRMState x -> PWeightRef -> HRMState x
+  sem hrmStoreNodeSuppWeight nodeLabel st = | ref -> 
     match st with HRMState st in 
-    HRMState {st with branchSuppWeights = mapInsertOrAppend nodeLabel ref st.branchSuppWeights}
+    -- printLn (join ["NodeSuppWeight: ", int2string nodeLabel]);
+    HRMState {st with nodeSuppWeights = mapInsert nodeLabel ref st.nodeSuppWeights}
 
   sem hrmStoreBridgeSuppWeight : all x. Int -> Int -> HRMState x -> PWeightRef -> HRMState x
   sem hrmStoreBridgeSuppWeight nodeLabel hostLabel st = | ref -> 
     match st with HRMState st in 
+    -- printLn (join ["BridgeSuppWeight: ", int2string nodeLabel, ", ", int2string hostLabel]);
     HRMState {st with bridgeSuppWeights = mapInsertOrCreate nodeLabel hostLabel subi ref st.bridgeSuppWeights}
 
   sem hrmStoreSubmodel : all x. HRMState x -> PSubmodelRef (HRMState ()) -> HRMState x
@@ -201,11 +311,13 @@ lang HRMState = PValInterface
       , topo = st.topo
       , nodes = st.nodes
       , likrWeights = st.likrWeights
-      , branchSuppWeights = st.branchSuppWeights
+      , nodeSuppWeights = st.nodeSuppWeights
       , bridgeSuppWeights = st.bridgeSuppWeights
       , branches = st.branches
       , branchTimes= st.branchTimes
       , below = st.below
+      , tree = st.tree
+      , interactions = st.interactions
       , export = ref
       }
   
@@ -221,11 +333,16 @@ lang HRMState = PValInterface
           , isRoot = isRoot
           } st.topo
         }
+  
+  sem hrmStoreTree : all x. HRMTree -> [[Int]] -> HRMState x -> PExportRef () -> HRMState x
+  sem hrmStoreTree tree interactions st = | ref -> 
+    match st with HRMState st in
+    HRMState {st with tree = tree, interactions = interactions}
 
   sem hrmReadExport : all x. all complete. PValInstance complete (HRMState (PExportRef x)) -> x
   sem hrmReadExport = | instance ->
     match getSt instance with HRMState st in
-    readPreviousExport st.export instance
+    readPreviousExport st.export instance 
 
   -- Resample an assume wrapped in an option
   sem optResample : all a. all x. Option (PAssumeRef a) -> (Dist a -> a -> Dist a) -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
@@ -246,7 +363,9 @@ lang HRMState = PValInterface
   sem hrmResampleMu : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
   sem hrmResampleMu l = | instance -> 
     match getSt instance with HRMState st in
-    optResample st.mu (scaleMove l) instance
+    let ist = intermediateStep (optResample st.mu (scaleMove l) instance) in
+    match getSt ist with HRMState newSt in
+    ist
 
   sem hrmResampleBeta : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
   sem hrmResampleBeta l = | instance -> 
@@ -259,59 +378,156 @@ lang HRMState = PValInterface
     optResample st.lambda (simplexMove a) instance
   
   -- Pick an inner node at random and pick each host to be resampled with probability p
-  sem hrmResampleBlockNode : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
-  sem hrmResampleBlockNode p = | instance -> 
+  sem hrmResampleABlockNode : all x. Int -> Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleABlockNode rejectionDepth p = | instance -> 
+
+    -- printLn "Inside blocknode";
     match getSt instance with HRMState st in
     let node = _chooseUniform (mapKeys st.nodes) in
+    -- printLn (join ["Trying to resample node ", int2string node]);
     match mapLookup node st.nodes with Some hrefs in 
+    match mapLookup node st.nodeSuppWeights with Some wref in
     -- Pick which hosts to resample
     let hKeys = foldr (
       lam hKey. lam acc.
         if bernoulliSample p then cons hKey acc else acc
     ) [] (mapKeys hrefs) in
-    printLn (join ["Resampling node: ", int2string node, "hosts:", strJoin " " (map int2string hKeys)]);
-    -- Resample the node
-    let instance = foldr (
-      lam hKey. lam ist.
-        match mapLookup hKey hrefs with Some href in
-        hrmResampleHost href ist
-    ) instance hKeys in
-    -- Resample the incident branches
+    recursive let rsNode = lam label. lam ist. lam wref. lam d.
+      if lti d 0 then ist else
+      let ist = intermediateStep (hrmResampleNode label hKeys ist) in
+      -- hrmPrintState false ist;
+      -- printLn "Resampling";
+      if checkPreviousWeight wref ist
+        then ist
+        else rsNode label ist wref (subi d 1) in
+    -- Loop over hosts
+    -- printLn (join ["Start node sampling: ", int2string node, ", hosts ", strJoin ", " (map int2string hKeys)]);
+    let instance = rsNode node instance wref rejectionDepth in
+    -- printLn "Ends node sampling";
+    instance
+    -- foldr (
+    --    lam hKey. lam instance. hrmResampleBlockNode node hKey rejectionDepth p instance
+    -- ) instance hKeys
+    -- match mapLookup node st.topo with Some {left = left, right = right, isRoot = isRoot} then 
+    -- match mapLookup node st.nodes with Some hrefs in 
+    --   -- printLn (join ["Resampling node: ", int2string node, ", host: ", int2string hKey]);
+    --   -- printLn "---- Start Branches ----";
+    --   -- Resample the incident branches
+    --   let trySampleBranch = lam nodeLabel. lam instance. hrmResampleBranch rejectionDepth nodeLabel hKeys instance in
+    --   let instance = if isRoot then instance else trySampleBranch node instance in
+    --   foldl (lam acc. lam n. trySampleBranch n acc) instance [left, right] 
+    -- else 
+    --   printLn (join ["Node: ", int2string node, " is missing from stored topology"]);
+    --   exit 1
+  
+  sem hrmResampleBlockNode : all x. Int -> Int -> Int -> Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleBlockNode node hKey rejectionDepth p = | instance -> 
+    match getSt instance with HRMState st in
+    -- println "\n --- Start block move--";
+    -- Resample the host
     match mapLookup node st.topo with Some {left = left, right = right, isRoot = isRoot} then 
-      let trySampleBranch = lam nodeLabel. lam ist. foldr (hrmResampleBridge nodeLabel) ist hKeys in
+    match mapLookup node st.nodes with Some hrefs in 
+      -- printLn (join ["Resampling node: ", int2string node, ", host: ", int2string hKey]);
+      -- printLn "---- Start Branches ----";
+      -- Resample the incident branches
+      let trySampleBranch = lam nodeLabel. lam instance. (hrmResampleBridge rejectionDepth nodeLabel hKey instance).0 in
       let instance = if isRoot then instance else trySampleBranch node instance in
-      foldl (lam acc. lam n. trySampleBranch n acc) instance [left, right]
+      let instance = foldl (lam acc. lam n. trySampleBranch n acc) instance [left, right] in
+      -- printLn "---- End branches ----";
+      -- printJsonLn (hrmStateToDebugJson instance (getSt ist));
+      instance
     else 
-      printLn (join ["Node: ", int2string node, " is missing from stored topology"]);
+      -- printLn (join ["Node: ", int2string node, " is missing from stored topology"]);
       exit 1
 
+
   -- Resample the bridge between two nodes for a single host 
-  sem hrmResampleBridge : all x. Int -> Int -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
-  sem hrmResampleBridge nodeLabel hostLabel = | instance -> 
+  sem hrmResampleBridge : all x. Int -> Int -> Int -> PValInstance Partial (HRMState x) -> (PValInstance Partial (HRMState x), Bool)
+  sem hrmResampleBridge rejectionDepth nodeLabel hostLabel = | instance -> 
     match getSt instance with HRMState st in
     -- println (join ["nodeLabel: ", int2string nodeLabel, "hostLabel", int2string hostLabel]);
     match mapLookup nodeLabel st.branchTimes with Some hostMap in
     match mapLookup hostLabel hostMap with Some href in
     -- Here we only resample from the prior but we could consider doing something fancier
     let branchMove = lam d. lam. d in
-    printLn (join ["Resampling branch ", int2string nodeLabel, " ", int2string hostLabel]);
-    printJsonLn (hrmStateToDebugJson instance (getSt instance));
-    recursive let rs = lam ist.
-      let ist = resampleAssume branchMove href ist in
-      let newIst = intermediateStep ist in
-      printJsonLn (hrmStateToDebugJson ist (getSt ist));
-      ist
+    -- printLn (join ["Resampling branch ", int2string nodeLabel, " ", int2string hostLabel]);
+    recursive let rs : PValInstance Partial (HRMState x) -> Int -> (PValInstance Partial (HRMState x), Bool) =
+      lam ist. lam c.
+        let ist = resampleAssume branchMove href ist in
+        let ist = intermediateStep ist in
+        match getSt ist with HRMState st in
+        match mapLookup nodeLabel st.bridgeSuppWeights with Some hostWeights in
+        match mapLookup hostLabel hostWeights with Some wref in
+        if checkPreviousWeight wref ist then (ist, true)
+        else if (gti c rejectionDepth) then (ist, false)
+        else
+          -- printLn (join ["Rejecting: ", int2string c]);
+          -- printLn (join ["Resampling branch ", int2string nodeLabel, " ", int2string hostLabel]);
+          -- printJsonLn (hrmStateToDebugJson ist (getSt ist));
+          rs ist (addi c 1)
     in
-    let res = rs instance in
-    printLn "--------------------";
+    let res = rs instance 1 in
     res
-  
+
+  sem hrmResampleBranch : all x. Int -> Int -> [Int] -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleBranch rejectionDepth nodeLabel hosts = | instance ->
+    match getSt instance with HRMState st in
+    match mapLookup nodeLabel st.likrWeights with Some wref in
+    match mapLookup nodeLabel st.bridgeSuppWeights with Some wrefs in
+    match mapLookup nodeLabel st.branchTimes with Some hrefs in
+    recursive let rsBranch = lam ist. lam depth.
+      if lti depth 0 then ist else
+      -- printLn (join ["Resampling branch ", int2string label]);
+      let tryRepairBranch = lam rdepth. lam ist. 
+        let checkAndRepairBridge = lam h. lam ist.
+          match mapLookup h wrefs with Some wref in
+          if checkPreviousWeight wref ist then (ist, true) else 
+            -- printLn (join ["Repairing branch ", int2string nodeLabel]);
+            hrmResampleBridge rdepth nodeLabel h ist in
+        foldl (lam acc. lam h.
+          match acc with (_, false) then acc
+        else checkAndRepairBridge h acc.0) (ist, true) hosts 
+      in
+      let resampleBranch = -- : all a. all b. Int -> Int -> Map Int (PAssumeRef Int) -> Map Int PWeightRef ->  PValInstance Partial (HRMState a) -> (PValInstance Partial (HRMState a), Bool) =
+        lam rdepth. lam ist. 
+        -- printLn (join ["Resampling branch ", int2string nodeLabel]);
+        foldl (lam acc. lam h.
+          match acc with (_, false) then acc
+        else hrmResampleBridge rdepth nodeLabel h acc.0) (ist, true) hosts 
+      in
+      if foldl (lam acc. lam ref. and acc (checkPreviousWeight ref ist)) true (mapValues wrefs) then
+        if checkPreviousWeight wref ist then ist
+        else 
+          match (resampleBranch rejectionDepth ist) with (ist, success) in
+          match intermediateStep ist with ist in
+          rsBranch ist (subi depth 1)
+      else
+        match (tryRepairBranch rejectionDepth ist) with (ist, success) in
+        match intermediateStep ist with ist in
+        rsBranch ist (subi depth 1)
+    in
+    let ist = rsBranch instance rejectionDepth in
+    instance 
+
   -- Resample a single host at a single node. Will select one of the other states with equal probability
   sem hrmResampleHost : all x. PAssumeRef Int -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
-  sem hrmResampleHost nodeRef =  | instance -> 
+  sem hrmResampleHost nodeRef = | instance -> 
     match getSt instance with HRMState st in
     let catMove = lam. lam x. mkCategorical (normalize (map (lam c. if neqi x c then 1. else 0.) [0, 1, 2])) in
+    -- let catMove = lam. lam x. mkCategorical [0., 0., 1.] in
     resampleAssume catMove nodeRef instance
+
+  -- Resample all hosts at a node from the independence model
+  -- We might want to consider tempering or other perturbations of the
+  -- independence model distribution
+  sem hrmResampleNode : all x. Int -> [Int] -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleNode nodeLabel hKeys = | instance -> 
+    match getSt instance with HRMState st in
+    match mapLookup nodeLabel st.nodes with Some nodes in
+    let hrefs = map (lam s. match mapLookup s nodes with Some href in href) hKeys in
+    let catMove = lam. lam x. mkCategorical (normalize (map (lam c. if neqi x c then 1. else 0.) [0, 1, 2])) in
+    let ist = foldl (flip (resampleAssume catMove)) instance hrefs in
+    ist
 
   -- MCMC move entrypoint
   sem hrmResampleAligned : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
@@ -323,21 +539,131 @@ lang HRMState = PValInterface
     --   , (1., hrmResampleBeta 1.)
     --   , (2., hrmResampleLambda 10.)
     --   , (5., hrmResampleLambda 25.)
-    --   , (0., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
+    --   , (8., hrmResampleABlockNode 100 1.) -- Weight should depend on the number of branches!
     --   ] in
     let rbSchedule =
-      [ (0., hrmResampleMu 1.0)
-      , (0., hrmResampleMu 0.2)
-      , (0., hrmResampleBeta 1.)
-      , (0., hrmResampleLambda 10.)
-      , (0., hrmResampleLambda 25.)
-      , (1., hrmResampleBlockNode 1.) -- Weight should depend on the number of branches!
+      [ (1., hrmResampleMu 1.0)
+      , (1., hrmResampleMu 0.2)
+      , (1., hrmResampleMu 0.01)
+      , (1., hrmResampleBeta 1.)
+      , (1., hrmResampleLambda 10.)
+      , (1., hrmResampleLambda 25.)
+      , (0., hrmResampleABlockNode 1000 1.0) -- Weight should depend on the number of branches!
       ] in
     let weights = map (lam t. t.0) rbSchedule in
     let moves = map (lam t. t.1) rbSchedule in
     let instance = (_chooseNonUniform moves weights) instance in
+    -- recursive let applyn = lam n. lam f. lam x.
+    --   if leqi n 0 then x
+    --   else applyn (subi n 1) f (f x)
+    -- in
+    -- let instance = foldl (lam ist. lam mw. match mw with (w, m) in applyn (roundfi w) m ist) instance rbSchedule in
     -- printJsonLn (hrmStateToDebugJson instance (getSt instance));
+    let instance = intermediateStep instance in
+    -- hrmPrintState false instance;
     instance
+  
+  sem hrmPrintState : all partial. all x. all y. Bool -> PValInstance partial (HRMState x) -> ()
+  sem hrmPrintState mode = | instance ->
+    match getSt instance with HRMState x in
+    let readA = lam ref. readPreviousAssume ref instance in
+    let checkW = lam ref. if checkPreviousWeight ref instance then "  valid" else "invalid" in
+    let readW = lam ref. readPreviousWeight ref instance in
+    let makePrefix = lam isLeft. if isLeft then "├──" else "└──" in
+    let roundf = lam f. lam d.
+      let p = pow 10. (int2float d) in
+      let iPart = int2float (roundfi f) in
+      addf iPart (divf (int2float (roundfi (mulf (subf f iPart) p))) p) in
+    recursive let depth = lam tree.
+      match tree with HRMLeaf _ then 0
+      else match tree with HRMNode t in 
+      addi 1 (maxi (depth t.left) (depth t.right)) in
+    let bridgeVis =
+      lam label.
+       match mapLookup label x.bridgeSuppWeights with Some bridgeWeights then
+       match mapLookup label x.branchTimes with Some branchTimes in
+        let hostVis = lam h.
+          match mapLookup h bridgeWeights with Some w in
+          let padf = match mapLookup h branchTimes with Some t then
+            let f = float2string (roundf (readA t) 1) in
+            concat (make (subi 5 (length f)) ' ') f 
+          else "-----" in
+          join ["b", int2string h, ":{w:", checkW w,",t:", padf , "}"] in
+        strJoin ", " (map hostVis (mapKeys bridgeWeights))
+        else
+          "" in
+    recursive let printTree = lam tree. lam prefix. lam isLeft. lam depth.
+      match tree with HRMLeaf { label = label } then 
+        let ints = get x.interactions (subi label 1) in
+        let hostVis = lam h. lam s.
+          join ["h:", int2string h, "{s:", int2string s, "}"] in
+        [join 
+          [ prefix
+          , makePrefix isLeft
+          , make (subi (muli depth 4) (length prefix)) '─'
+          , " "
+          , int2string label
+          , ":"
+          ," ["
+          , strJoin ", " (map int2string ints)
+          , "], "
+          , bridgeVis label
+          ]]
+      else match tree with HRMNode { label = label, left = left, right = right } in 
+        match mapLookup label x.nodes with Some hosts in
+        let optSuppWeights = mapLookup label x.bridgeSuppWeights in
+        match mapLookup label x.nodeSuppWeights with Some branchWeights in
+        match mapLookup label x.likrWeights with Some likw in
+        let nodeStr = join
+          [ prefix
+          , makePrefix isLeft
+          , " "
+          , int2string label
+          , ":"
+          , join (make (subi (muli depth 4) (length prefix)) " ")
+          ," {"
+          , strJoin ", " (map (compose int2string readA) (mapValues hosts))
+          , "}, "
+          , bridgeVis label
+          , "b: "
+          , checkW branchWeights
+          , ", likr: "
+          , float2string (readW likw)
+          ] in
+        let newPrefix = (join [prefix, if isLeft then "│   " else "    "]) in
+        let leftStr = cons nodeStr (printTree left newPrefix true depth) in
+        concat leftStr (printTree right newPrefix false depth) in
+
+    match x.mu with Some mu in 
+    match x.beta with Some beta in 
+    match x.lambda with Some lambda in 
+    let treelines = printTree x.tree "" false (depth x.tree) in
+    -- let maxLength = foldl maxi 0 (map length lines) in
+    let weightStr = join ["Total weight: ", float2string (getWeight instance)] in
+    let instanceSt = if mode then "Complete" else "Partial" in
+    let header =
+      [ join ["╭──────────┬─", make (length weightStr) '─', "─┬─", make (length instanceSt) '─', "─╮"]
+      , join ["│ HRMState │ ", weightStr,                   " │", instanceSt]
+      , join ["╰──────────┴─", make (length weightStr) '─', "─┴─", make (length instanceSt) '─', "─╯"]
+      ] in
+    let lines = join
+      [ header
+      , [ join ["μ: ", float2string (readA mu)]
+        , join ["β: ", float2string (readA beta)]
+        , join ["λ: [", strJoin ", " (map float2string (readA lambda)), "]"]
+        , "Tree:"
+        ]
+      , treelines
+      , [[]]
+      ] in
+    let maxLength = foldl maxi 0 (map length lines) in
+    let addPadding : [Char] -> [Char] = lam s. concat  s (make (subi maxLength (length s)) ' ')in
+    let paddedLines = map addPadding lines in
+    print (join ["╭", make (addi maxLength 2) '─', "╮\n"]);
+    print (join (map (lam s. join ["│ ", s, " │\n"]) paddedLines));
+    print (join ["╰", make (addi maxLength 2) '─', "╯\n"])
+
+    
 
   sem hrmStateToDebugJson : all partial. all x. all y. PValInstance partial (HRMState x) -> HRMState y -> JsonValue
   sem hrmStateToDebugJson instance = | pvi ->
@@ -357,21 +683,21 @@ lang HRMState = PValInterface
     let submodels = (map (lam ref. hrmStateToDebugJsonHelper instance (readPreviousSubmodel ref instance)) x.below) in
     let v =  (mapFromSeq cmpString (join
       -- Global parameters
-      [ maybeShowOpt (compose showFloat readA) "mu" x.mu 
-      , maybeShowOpt (compose showFloat readA) "beta" x.beta 
-      , maybeShowOpt (compose (showSeq showFloat) readA) "lambda" x.lambda
+      -- [ maybeShowOpt (compose showFloat readA) "mu" x.mu 
+      -- , maybeShowOpt (compose showFloat readA) "beta" x.beta 
+      -- , maybeShowOpt (compose (showSeq showFloat) readA) "lambda" x.lambda
       -- Topology assume refs
-      , maybeShowMap int2string (showMap int2string (compose showInt readA)) "nodes" x.nodes
-      , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
-      , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
+      [ maybeShowMap int2string (showMap int2string (compose showInt readA)) "nodes" x.nodes
+      -- , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
+      -- , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
       -- Weight refs
-      -- , maybeShowMap int2string (showMap int2string (compose showFloat readW)) "bridge-supp-weights" x.bridgeSuppWeights
-      -- , maybeShowMap int2string (showSeq (compose showFloat readW)) "branch-supp-weights" x.branchSuppWeights
-      -- , maybeShowMap int2string (showSeq  (compose showFloat readW)) "likr-weights" x.likrWeights
-      -- -- Topology (abused export (?))
+      , maybeShowMap int2string (showMap int2string (compose showFloat readW)) "bridge-supp-weights" x.bridgeSuppWeights
+      , maybeShowMap int2string (compose showFloat readW) "node-supp-weights" x.nodeSuppWeights
+      , maybeShowMap int2string (compose showFloat readW) "likr-weights" x.likrWeights
+      -- Topology (abused export (?))
       -- , maybeShowMap int2string showLocTop "topology" x.topo
-      -- -- Submodels
-      -- , pruneSubmodels submodels
+      -- Submodels
+      , pruneSubmodels submodels
       ]
     )) in
     if eqi (mapLength v) 0 then None () else Some (JsonObject v)
