@@ -76,7 +76,7 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 4000 in
+let iterations = 40 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (lam. lam. 0) in
 let toString2 = int2string in
