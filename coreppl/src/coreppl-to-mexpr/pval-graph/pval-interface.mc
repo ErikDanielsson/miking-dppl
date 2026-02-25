@@ -172,7 +172,7 @@ lang PValInterface = RuntimeDistBase
     -> PVal a
     -> PValState st2
   -- Draw a value from a distribution.
-  sem p_assume : all st. all st2. all a. PValState st
+  sem p_assume : all st. all st2. all a. String -> PValState st
     -> (st -> PAssumeRef a -> st2)
     -> PVal (Dist a)
     -> (PValState st2, PVal a)

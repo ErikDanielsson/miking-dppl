@@ -8152,6 +8152,11 @@ lam st.
                                               with
                                                 (st385, totalLeavingRate12)
                                               in
+                                              match p_traverseSeq st385 (lam st. lam e. (st, e)) parentRep with (st385, liftedRep) in
+                                              match p_map st385 (lam rep. printLn (strJoin "," (map int2string rep))) liftedRep with (st385, _) in
+                                              match p_map st385 (lam e. lam rep. match e with Event1 e in printLn (join ["8155:From state", int2string e.fromState, " to state ", int2string e.toState, "rep from state: ", int2string (e.host)])) nextEvent2 with (st385, printer) in
+                                              match p_map st385 (lam e. lam rep. match e with Event1 e in printLn (join ["8158:From state", int2string e.fromState, " to state ", int2string e.toState, "rep from state: ", int2string (get rep (subi e.host 1))])) nextEvent3 with (st385, printer) in
+                                              match p_apply st385 printer liftedRep with (st385, _) in
                                               match
                                                 p_map
                                                   st385
@@ -8845,6 +8850,12 @@ lam st.
                                             with
                                               (st445, totalLeavingRate13)
                                             in
+                                            -- match p_map st445 (lam e. match e with Event1 e in get parentRep e.host) nextEvent3 with (st445, repState) in
+                                            match p_traverseSeq st445 (lam st. lam e. (st, e)) parentRep with (st445, liftedRep) in
+                                            match p_map st445 (lam rep. printLn (strJoin "," (map int2string rep))) liftedRep with (st445, _) in
+                                            match p_map st445 (lam e. lam rep. match e with Event1 e in printLn (join ["8849From state", int2string e.fromState, " to state ", int2string e.toState, "rep from state: ", int2string (get rep (subi e.host 1))])) nextEvent3 with (st445, printer) in
+                                            match p_apply st445 printer liftedRep with (st445, _) in
+                                            -- match p_apply st445 printer repState with (st445, _) in
                                             match
                                               p_map
                                                 st445

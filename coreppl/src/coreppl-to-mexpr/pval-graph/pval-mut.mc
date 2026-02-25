@@ -91,7 +91,10 @@ lang MutPVal = PValInterface
     }
 
   sem intermediateStep = | PVIPart x ->
-    if x.dirty then
+    -- printLn "Starting intermediate step";
+    -- printLn (join ["Reset length ", int2string (length x.reset)]);
+    let s = (if x.dirty then
+      -- printLn "Dirty intermediate step";
       let st =
         { id = x.id
         , permanentWeight = ref 0.0
@@ -110,7 +113,10 @@ lang MutPVal = PValInterface
       -- oldest reset to run last
       , reset = concat (deref st.reset) x.reset
       }
-    else PVIPart x
+    else PVIPart x) in
+    match s with PVIPart y in
+    -- print (join ["Post reset length ", int2string (length y.reset), " "]);
+    s
 
   sem finalizeStep pred = | pvi ->
     match intermediateStep pvi with PVIPart x in
@@ -501,7 +507,7 @@ lang MutPVal = PValInterface
       } in
     PVS st
 
-  sem p_assume st store = | PVal dist ->
+  sem p_assume name st store = | PVal dist ->
     match st with PVS st in
     let value = ref (sample (deref dist.value)) in
     let changeId = ref st.initId in
@@ -509,6 +515,10 @@ lang MutPVal = PValInterface
     let drift = ref (None ()) in
     let update = lam st.
       let drawNew = lam drift. lam st.
+        -- printLn "-- Drawing new --";
+        -- print "Distribution: ";
+        -- dprint dist.value;
+
         let prevValue = deref value in
         let prevWeight = deref w in
 
@@ -543,6 +553,7 @@ lang MutPVal = PValInterface
         modref st.temporaryWeight (addf (deref st.temporaryWeight) newTemp) in
       if eqi st.id (deref changeId) then
         -- Draw a new sample, i.e., value changes
+
         drawNew (deref drift) st
       else if eqi st.id (deref dist.changeId) then
         -- Reuse current sample, i.e., value doesn't change
@@ -552,7 +563,11 @@ lang MutPVal = PValInterface
         modref w newWeight;
         modref st.reset (snoc (deref st.reset) (lam. modref w prevWeight));
         modref st.temporaryWeight (addf (deref st.temporaryWeight) (subf newWeight prevWeight))
-      else () in
+      else ());
+      let prevOldDist = deref oldDist in
+      modref st.reset (snoc (deref st.reset) (lam. modref oldDist prevOldDist));
+      modref oldDist (deref dist.value)
+    in
     let st =
       { st = store st.st (PAssumeRef {drift = drift, changeId = changeId, read = lam. deref value})
       , updates = snoc st.updates update

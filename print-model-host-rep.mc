@@ -1,31 +1,30 @@
-mexpr
 let and: Bool -> Bool -> Bool =
-  lam a95: Bool.
-    lam b32: Bool.
-      match a95 with true
+  lam a88: Bool.
+    lam b30: Bool.
+      match a88 with true
       then
-        b32
+        b30
       else
         false
 in
 let isNaN: Float -> Bool =
-  lam a94: Float.
-    match eqf a94 a94 with true
+  lam a87: Float.
+    match eqf a87 a87 with true
     then
       false
     else
       true
 in
 external externalExp : Float -> Float in
-let exp = lam x174: Float.
-    externalExp x174 in
+let exp = lam x173: Float.
+    externalExp x173 in
 external externalLog : Float -> Float in
-let log = lam x173: Float.
-    externalLog x173 in
+let log = lam x172: Float.
+    externalLog x172 in
 external externalPow : Float -> Float -> Float in
-let pow = lam x172: Float.
+let pow = lam x171: Float.
     lam y: Float.
-      externalPow x172 y
+      externalPow x171 y
 in
 recursive
   let rec: all a. all a1. (a -> a1) -> [a] -> [a1] =
@@ -41,9 +40,9 @@ recursive
         in
         cons (f a3) (rec f ss)
 in
-let map1 = lam f33.
+let map1 = lam f28.
     lam s14.
-      rec f33 s14 in
+      rec f28 s14 in
 recursive
   let rec1: all a4. all a5. (Int -> a4 -> a5) -> Int -> [a4] -> [a5] =
     lam f1.
@@ -59,13 +58,13 @@ recursive
           in
           cons (f1 i a7) (rec1 f1 (addi i 1) ss1)
 in
-let mapi1 = lam f32.
+let mapi1 = lam f27.
     lam s13.
-      rec1 f32 0 s13 in
+      rec1 f27 0 s13 in
 let iteri1 =
-  lam f31.
+  lam f26.
     lam s12.
-      let #var"24" = mapi1 f31 s12 in
+      let #var"20" = mapi1 f26 s12 in
       {}
 in
 recursive
@@ -81,10 +80,10 @@ recursive
           rec2 f2 (f2 acc a10) ss2
 in
 let foldl1 =
-  lam f30.
+  lam f25.
     lam acc22.
       lam s11.
-        rec2 f30 acc22 s11
+        rec2 f25 acc22 s11
 in
 recursive
   let rec3: all a11. (Int -> a11) -> Int -> [a11] -> [a11] =
@@ -98,8 +97,8 @@ recursive
             acc1
 in
 let create1 = lam l6.
-    lam f29.
-      rec3 f29 (subi l6 1) ""
+    lam f24.
+      rec3 f24 (subi l6 1) ""
 in
 type Option a12 in
 con Some: all a13. a13 -> Option a13 in
@@ -107,13 +106,13 @@ con None: all a14. () -> Option a14 in
 type Either a15 b in
 con Left: all a16. all b1. a16 -> Either a16 b1 in
 con Right: all a17. all b2. b2 -> Either a17 b2 in
-let anon: all a93. a93 -> Int -> a93 = lam v4.
-    lam #var"23".
-      v4
+let anon: all a86. a86 -> Int -> a86 = lam v3.
+    lam #var"19".
+      v3
 in
-let make: all a92. Int -> a92 -> [a92] = lam n9: Int.
-    lam v3: a92.
-      create1 n9 (anon v3)
+let make: all a85. Int -> a85 -> [a85] = lam n6: Int.
+    lam v2: a85.
+      create1 n6 (anon v2)
 in
 recursive
   let unfoldr: all a18. all c. (a18 -> Option (c, a18)) -> a18 -> [c] =
@@ -130,14 +129,14 @@ in
 let anon1: Int -> Int -> Int -> Option (Int, Int) =
   lam e4.
     lam by1.
-      lam b31.
-        match leqi e4 b31 with true
+      lam b29.
+        match leqi e4 b29 with true
         then
           None
             {}
         else
           Some
-            (b31, addi b31 by1)
+            (b29, addi b29 by1)
 in
 let range: Int -> Int -> Int -> [Int] =
   lam s10: Int.
@@ -145,37 +144,37 @@ let range: Int -> Int -> Int -> [Int] =
       lam by: Int.
         unfoldr (anon1 e3 by) s10
 in
-let g: all c11. all b30. all a91. (a91 -> b30 -> c11 -> a91) -> (a91, [b30]) -> c11 -> (a91, [b30]) =
-  lam f28.
-    lam acc20: (a91, [b30]).
+let g: all c11. all b28. all a84. (a84 -> b28 -> c11 -> a84) -> (a84, [b28]) -> c11 -> (a84, [b28]) =
+  lam f23.
+    lam acc20: (a84, [b28]).
       lam x212.
-        match acc20 with (acc21, [ x171 ] ++ xs1)
+        match acc20 with (acc21, [ x170 ] ++ xs1)
         then
-          (f28 acc21 x171 x212, xs1)
+          (f23 acc21 x170 x212, xs1)
         else
           error "foldl2: Cannot happen!"
 in
-let g1: all c10. all b29. all a90. (a90 -> b29 -> c10 -> a90) -> (a90, [c10]) -> b29 -> (a90, [c10]) =
-  lam f27.
-    lam acc18: (a90, [c10]).
-      lam x170.
+let g1: all c10. all b27. all a83. (a83 -> b27 -> c10 -> a83) -> (a83, [c10]) -> b27 -> (a83, [c10]) =
+  lam f22.
+    lam acc18: (a83, [c10]).
+      lam x169.
         match acc18 with (acc19, [ x211 ] ++ xs2)
         then
-          (f27 acc19 x170 x211, xs2)
+          (f22 acc19 x169 x211, xs2)
         else
           error "foldl2: Cannot happen!"
 in
-let foldl2: all a89. all b28. all c9. (a89 -> b28 -> c9 -> a89) -> a89 -> [b28] -> [c9] -> a89 =
-  lam f26: a89 -> b28 -> c9 -> a89.
-    lam acc15: a89.
-      lam seq11: [b28].
+let foldl2: all a82. all b26. all c9. (a82 -> b26 -> c9 -> a82) -> a82 -> [b26] -> [c9] -> a82 =
+  lam f21: a82 -> b26 -> c9 -> a82.
+    lam acc15: a82.
+      lam seq11: [b26].
         lam seq21: [c9].
           match geqi (length seq11) (length seq21) with true
           then
-            match foldl1 (g f26) (acc15, seq11) seq21 with (acc16, _)
+            match foldl1 (g f21) (acc15, seq11) seq21 with (acc16, _)
             in
             acc16
-          else match foldl1 (g1 f26) (acc15, seq21) seq11 with (acc17, _)
+          else match foldl1 (g1 f21) (acc15, seq21) seq11 with (acc17, _)
           in
           acc17
 in
@@ -191,21 +190,21 @@ recursive
             else
               acc2
 in
-let foldli: all a88. all b27. (a88 -> Int -> b27 -> a88) -> a88 -> [b27] -> a88 =
-  lam fn1: a88 -> Int -> b27 -> a88.
-    lam initAcc: a88.
-      lam seq8: [b27].
+let foldli: all a81. all b25. (a81 -> Int -> b25 -> a81) -> a81 -> [b25] -> a81 =
+  lam fn1: a81 -> Int -> b25 -> a81.
+    lam initAcc: a81.
+      lam seq8: [b25].
         work fn1 initAcc 0 seq8
 in
-let anon2: all c8. all b26. all a87. (a87 -> b26 -> c8) -> [c8] -> a87 -> b26 -> [c8] =
-  lam f25.
+let anon2: all c8. all b24. all a80. (a80 -> b24 -> c8) -> [c8] -> a80 -> b24 -> [c8] =
+  lam f20.
     lam acc14.
-      lam x169.
+      lam x168.
         lam x210.
-          snoc acc14 (f25 x169 x210)
+          snoc acc14 (f20 x168 x210)
 in
-let zipWith: all a86. all b25. all c7. (a86 -> b25 -> c7) -> [a86] -> [b25] -> [c7] = lam f24: a86 -> b25 -> c7.
-    foldl2 (anon2 f24) ""
+let zipWith: all a79. all b23. all c7. (a79 -> b23 -> c7) -> [a79] -> [b23] -> [c7] = lam f19: a79 -> b23 -> c7.
+    foldl2 (anon2 f19) ""
 in
 recursive
   let any: all a20. (a20 -> Bool) -> [a20] -> Bool =
@@ -220,7 +219,7 @@ recursive
         else
           any p (tail seq)
 in
-let join: all a85. [[a85]] -> [a85] = lam seqs: [[a85]].
+let join: all a78. [[a78]] -> [a78] = lam seqs: [[a78]].
     foldl1 concat "" seqs
 in
 recursive
@@ -240,16 +239,16 @@ recursive
             else
               work1 p1 l (cons s4 r) seq2
 in
-let partition: all a84. (a84 -> Bool) -> [a84] -> ([a84], [a84]) =
-  lam p4: a84 -> Bool.
-    lam seq7: [a84].
+let partition: all a77. (a77 -> Bool) -> [a77] -> ([a77], [a77]) =
+  lam p4: a77 -> Bool.
+    lam seq7: [a77].
       work1 p4 "" "" (reverse seq7)
 in
-let anon3: all a83. (a83 -> a83 -> Int) -> a83 -> a83 -> Bool =
+let anon3: all a76. (a76 -> a76 -> Int) -> a76 -> a76 -> Bool =
   lam cmp4.
     lam h5.
-      lam x168.
-        lti (cmp4 x168 h5) 0
+      lam x167.
+        lti (cmp4 x167 h5) 0
 in
 recursive
   let quickSort: all a22. (a22 -> a22 -> Int) -> [a22] -> [a22] =
@@ -264,26 +263,10 @@ recursive
           let lr = partition (anon3 cmp h) t in
           concat (quickSort cmp lr.0) (cons h (quickSort cmp lr.1))
 in
-recursive
-  let rec4 =
-    lam f5.
-      lam n.
-        lam i3.
-          match geqi i3 n with true
-          then
-            {}
-          else
-            (f5 i3)
-            ; rec4 f5 n (addi i3 1)
-in
-let repeati: (Int -> ()) -> Int -> () = lam f23: Int -> ().
-    lam n8: Int.
-      rec4 f23 n8 0
-in
-let eitherEither: all a82. all b24. all c6. (a82 -> c6) -> (b24 -> c6) -> Either a82 b24 -> c6 =
-  lam lf: a82 -> c6.
-    lam rf: b24 -> c6.
-      lam e2: Either a82 b24.
+let eitherEither: all a75. all b22. all c6. (a75 -> c6) -> (b22 -> c6) -> Either a75 b22 -> c6 =
+  lam lf: a75 -> c6.
+    lam rf: b22 -> c6.
+      lam e2: Either a75 b22.
         match e2 with Left content
         then
           lf content
@@ -303,46 +286,31 @@ in
 external externalExtArrSet! : all a29. ExtArr a29 -> Int -> a29 -> ()
 in
 external extArrKindFloat64 : ExtArrKind Float in
-let extArrMakeUninit: all a81. ExtArrKind a81 -> Int -> ExtArr a81 =
-  lam kind2: ExtArrKind a81.
-    lam n7: Int.
-      externalExtArrMakeUninit kind2 n7
+let extArrLength: all a73. ExtArr a73 -> Int = lam a74: ExtArr a73.
+    externalExtArrLength a74
 in
-let extArrLength: all a79. ExtArr a79 -> Int = lam a80: ExtArr a79.
-    externalExtArrLength a80
+let extArrGetExn: all a71. ExtArr a71 -> Int -> a71 =
+  lam a72: ExtArr a71.
+    lam i18: Int.
+      externalExtArrGet a72 i18
 in
-let extArrGetExn: all a77. ExtArr a77 -> Int -> a77 =
-  lam a78: ExtArr a77.
-    lam i23: Int.
-      externalExtArrGet a78 i23
-in
-let extArrSetExn: all a75. ExtArr a75 -> Int -> a75 -> () =
-  lam a76: ExtArr a75.
-    lam i22: Int.
-      lam v2: a75.
-        externalExtArrSet a76 i22 v2
-in
-let extArrOfSeq: all a73. ExtArrKind a73 -> [a73] -> ExtArr a73 =
-  lam kind1: ExtArrKind a73.
-    lam seq6: [a73].
+let extArrOfSeq: all a69. ExtArrKind a69 -> [a69] -> ExtArr a69 =
+  lam kind1: ExtArrKind a69.
+    lam seq6: [a69].
       tmOpaque (let len = length seq6 in
-       let a74 = externalExtArrMakeUninit kind1 len in
+       let a70 = externalExtArrMakeUninit kind1 len in
        recursive
          let work3 =
-           lam i21.
-             match eqi i21 len with true
+           lam i17.
+             match eqi i17 len with true
              then
                {}
              else
-               let #var"21" = externalExtArrSet a74 i21 (get seq6 i21) in
-               work3 (addi i21 1)
+               let #var"17" = externalExtArrSet a70 i17 (get seq6 i17) in
+               work3 (addi i17 1)
        in
-       let #var"22" = work3 0 in
-       a74)
-in
-let extArrToSeq: all a71. ExtArr a71 -> [a71] =
-  lam a72: ExtArr a71.
-    create1 (externalExtArrLength a72) (externalExtArrGet a72)
+       let #var"18" = work3 0 in
+       a70)
 in
 type CBLASLayout in
 external cblasRowMajor : CBLASLayout in
@@ -369,48 +337,36 @@ let matErrorToString: MatError -> [Char] =
 in
 type Mat a33 =
   {m: Int, n: Int, arr: ExtArr a33} in
-type Matrix #var"X" =
-  Mat #var"X" in
-let matMakeUninit: all a70. ExtArrKind a70 -> Int -> Int -> Mat a70 =
-  lam kind: ExtArrKind a70.
+let matMakeUninit: all a68. ExtArrKind a68 -> Int -> Int -> Mat a68 =
+  lam kind: ExtArrKind a68.
     lam m4: Int.
-      lam n6: Int.
-        { n = n6,
-          arr = externalExtArrMakeUninit kind (muli m4 n6),
+      lam n5: Int.
+        { n = n5,
+          arr = externalExtArrMakeUninit kind (muli m4 n5),
           m = m4 }
 in
-let matGetExn: all a68. Mat a68 -> Int -> Int -> a68 =
-  lam a69: Mat a68.
-    lam i20: Int.
-      lam j2: Int.
-        externalExtArrGet a69.arr (addi (muli i20 a69.n) j2)
-in
-let matSetExn: all a66. Mat a66 -> Int -> Int -> a66 -> () =
+let matGetExn: all a66. Mat a66 -> Int -> Int -> a66 =
   lam a67: Mat a66.
-    lam i19: Int.
+    lam i16: Int.
       lam j1: Int.
-        lam v1: a66.
-          externalExtArrSet a67.arr (addi (muli i19 a67.n) j1) v1
+        externalExtArrGet a67.arr (addi (muli i16 a67.n) j1)
 in
-let matFromArrExn: all a64. Int -> Int -> ExtArr a64 -> Mat a64 =
+let matSetExn: all a64. Mat a64 -> Int -> Int -> a64 -> () =
+  lam a65: Mat a64.
+    lam i15: Int.
+      lam j: Int.
+        lam v1: a64.
+          externalExtArrSet a65.arr (addi (muli i15 a65.n) j) v1
+in
+let matFromArrExn: all a62. Int -> Int -> ExtArr a62 -> Mat a62 =
   lam m3: Int.
-    lam n5: Int.
-      lam a65: ExtArr a64.
-        match eqi (muli m3 n5) (extArrLength a65) with true
+    lam n4: Int.
+      lam a63: ExtArr a62.
+        match eqi (muli m3 n4) (extArrLength a63) with true
         then
-          { n = n5, arr = a65, m = m3 }
+          { n = n4, arr = a63, m = m3 }
         else
           error "matFromArrExn: dimensions mismatch"
-in
-let matCopy: all a62. Mat a62 -> Mat a62 =
-  lam a63: Mat a62.
-    let mn1 = muli a63.m a63.n in
-    let b22 =
-      tmOpaque (let b23 = extArrMakeUninit (externalExtArrKind a63.arr) mn1 in
-       let #var"20" = externalCblasCopy mn1 a63.arr 1 b23 1 in
-       b23)
-    in
-    { a63 with arr = b22 }
 in
 let matHasSameShape2 =
   lam a61.
@@ -432,7 +388,7 @@ let matTranposeNoAlloc: Mat Float -> Mat Float -> Either MatError () =
     lam b19: Mat Float.
       match and (eqi a58.m b19.n) (eqi a58.n b19.m) with true
       then
-        let #var"19" = externalMatTranspose a58.m a58.n a58.arr b19.arr
+        let #var"16" = externalMatTranspose a58.m a58.n a58.arr b19.arr
         in
         Right
           {}
@@ -449,7 +405,7 @@ let matElemMulNoAlloc: Mat Float -> Mat Float -> Mat Float -> Either MatError ()
       lam c4: Mat Float.
         match matHasSameShape3 a57 b18 c4 with true
         then
-          let #var"18" = externalMatElemMul a57.m a57.n a57.arr b18.arr c4.arr
+          let #var"15" = externalMatElemMul a57.m a57.n a57.arr b18.arr c4.arr
           in
           Right
             {}
@@ -462,7 +418,7 @@ let matTranspose: Mat Float -> Mat Float =
   lam a56: Mat Float.
     tmOpaque (let b17 = matMakeUninit (externalExtArrKind a56.arr) a56.n a56.m
      in
-     let #var"17" = matTranposeNoAlloc a56 b17 in
+     let #var"14" = matTranposeNoAlloc a56 b17 in
      b17)
 in
 let matElemMul: Mat Float -> Mat Float -> Either MatError (Mat Float) =
@@ -473,7 +429,7 @@ let matElemMul: Mat Float -> Mat Float -> Either MatError (Mat Float) =
         Right
           (tmOpaque (let c3 = matMakeUninit (externalExtArrKind a55.arr) a55.m a55.n
             in
-            let #var"16" = matElemMulNoAlloc a55 b16 c3 in
+            let #var"13" = matElemMulNoAlloc a55 b16 c3 in
             c3))
       else
         Left
@@ -483,8 +439,8 @@ in
 let anon4: MatError -> Mat Float = lam err2.
     error (matErrorToString err2)
 in
-let anon5: Mat Float -> Mat Float = lam x167.
-    x167 in
+let anon5: Mat Float -> Mat Float = lam x166.
+    x166 in
 let matElemMulExn: Mat Float -> Mat Float -> Mat Float =
   lam a54: Mat Float.
     lam b15: Mat Float.
@@ -494,39 +450,39 @@ let matScale: Float -> Mat Float -> Mat Float =
   lam s9: Float.
     lam a53: Mat Float.
       let m2 = a53.m in
-      let n4 = a53.n in
-      let mn = muli m2 n4 in
-      tmOpaque (let b14 = matMakeUninit (externalExtArrKind a53.arr) m2 n4 in
-       let #var"14" = externalCblasCopy mn a53.arr 1 b14.arr 1 in
-       let #var"15" = externalCblasScal mn s9 b14.arr 1 in
+      let n3 = a53.n in
+      let mn = muli m2 n3 in
+      tmOpaque (let b14 = matMakeUninit (externalExtArrKind a53.arr) m2 n3 in
+       let #var"11" = externalCblasCopy mn a53.arr 1 b14.arr 1 in
+       let #var"12" = externalCblasScal mn s9 b14.arr 1 in
        b14)
 in
 let matMul: Mat Float -> Mat Float -> Either MatError (Mat Float) =
   lam a52: Mat Float.
     lam b13: Mat Float.
       let m1 = a52.m in
-      let n3 = b13.n in
+      let n2 = b13.n in
       let k2 = a52.n in
       match eqi k2 b13.m with true
       then
         Right
-          (tmOpaque (let c2 = matMakeUninit (externalExtArrKind b13.arr) m1 n3 in
-            let #var"13" =
+          (tmOpaque (let c2 = matMakeUninit (externalExtArrKind b13.arr) m1 n2 in
+            let #var"10" =
               externalCblasGemm
                 cblasRowMajor
                 cblasNoTrans
                 cblasNoTrans
                 m1
-                n3
+                n2
                 k2
                 1.
                 a52.arr
                 k2
                 b13.arr
-                n3
+                n2
                 0.
                 c2.arr
-                n3
+                n2
             in
             c2))
       else
@@ -537,8 +493,8 @@ in
 let anon6: MatError -> Mat Float = lam err1.
     error (matErrorToString err1)
 in
-let anon7: Mat Float -> Mat Float = lam x166.
-    x166 in
+let anon7: Mat Float -> Mat Float = lam x165.
+    x165 in
 let matMulExn: Mat Float -> Mat Float -> Mat Float =
   lam a51: Mat Float.
     lam b12: Mat Float.
@@ -560,8 +516,8 @@ in
 let anon8: MatError -> Mat Float = lam err.
     error (matErrorToString err)
 in
-let anon9: Mat Float -> Mat Float = lam x165.
-    x165 in
+let anon9: Mat Float -> Mat Float = lam x164.
+    x164 in
 let matExpExn: Mat Float -> Mat Float =
   lam a49: Mat Float.
     eitherEither anon8 anon9 (matExp a49)
@@ -569,18 +525,18 @@ in
 recursive
   let work2: all a34. Int -> (Int -> a34 -> a34) -> Int -> a34 -> a34 =
     lam bound.
-      lam f6.
-        lam i4.
+      lam f5.
+        lam i3.
           lam acc3.
-            match lti i4 bound with true
+            match lti i3 bound with true
             then
-              work2 bound f6 (addi i4 1) (f6 i4 acc3)
+              work2 bound f5 (addi i3 1) (f5 i3 acc3)
             else
               acc3
 in
 let _iterateni = lam bound1.
-    lam f22.
-      work2 bound1 f22 0
+    lam f18.
+      work2 bound1 f18 0
 in
 let seqSnoc = snoc in
 let seqCons = cons in
@@ -593,78 +549,24 @@ let seqFoldli = foldli in
 let seqAny = any in
 let mathExp = exp in
 let mathLog = log in
-let anon10: (Float -> Float) -> Mat Float -> Mat Float -> Int -> () =
-  lam f21.
-    lam mtx12.
-      lam mtx25.
-        lam i18.
-          extArrSetExn mtx25.arr i18 (f21 (extArrGetExn mtx12.arr i18))
-in
-let matMap: all x164. (Float -> Float) -> Mat Float -> Mat Float =
-  lam f20: Float -> Float.
-    lam mtx11: Mat Float.
-      let mtx24 = matCopy mtx11 in
-      let #var"12" = repeati (anon10 f20 mtx11 mtx24) (muli mtx11.m mtx11.n)
-      in
-      mtx24
-in
-let anon11: Mat Float -> [Float] -> Mat Float -> Int -> Int -> () =
-  lam mtx10.
-    lam sums2.
-      lam mtx23.
-        lam i17.
-          lam j.
-            matSetExn mtx23 i17 j (divf (matGetExn mtx10 i17 j) (get sums2 i17))
-in
-let anon12: Mat Float -> [Float] -> Mat Float -> Int -> () =
-  lam mtx9.
-    lam sums1.
-      lam mtx22.
-        lam i16.
-          repeati (anon11 mtx9 sums1 mtx22 i16) mtx9.n
-in
-let matNormalizeRows: Mat Float -> Mat Float =
-  lam mtx8: Mat Float.
-    let sums =
-      extArrToSeq
-        (matMulExn
-           mtx8
-           (matFromArrExn mtx8.m 1 (extArrOfSeq extArrKindFloat64 (make mtx8.m 1.)))).arr
-    in
-    let mtx21 = matCopy mtx8 in
-    let #var"11" = repeati (anon12 mtx8 sums mtx21) mtx8.m in
-    mtx21
-in
-let anon13: Float -> Float =
-  lam f19.
-    match gtf f19 0. with true
-    then
-      f19
-    else
-      0.
-in
-let matExpRateSafe: Mat Float -> Mat Float =
-  lam mtx7: Mat Float.
-    matNormalizeRows (matMap anon13 (matExpExn mtx7))
-in
-let anon14: Matrix Float -> Int -> Float -> Float =
+let anon10: Matrix Float -> Int -> Float -> Float =
   lam t4.
-    lam i15.
+    lam i14.
       lam acc13.
-        addf acc13 (extArrGetExn t4.arr i15)
+        addf acc13 (extArrGetExn t4.arr i14)
 in
 let matMean =
   lam t3.
-    let sum = _iterateni (muli t3.m t3.n) (anon14 t3) 0. in
+    let sum = _iterateni (muli t3.m t3.n) (anon10 t3) 0. in
     divf sum (int2float (muli t3.m t3.n))
 in
-let anon15: all a48. Mat a48 -> Int -> Mat a48 -> Int -> Int -> () =
+let anon11: all a48. Mat a48 -> Int -> Mat a48 -> Int -> Int -> () =
   lam matrix1.
     lam r4.
       lam new1.
-        lam i14.
+        lam i13.
           lam c1.
-            matSetExn new1 0 i14 (matGetExn matrix1 r4 (subi c1 1))
+            matSetExn new1 0 i13 (matGetExn matrix1 r4 (subi c1 1))
 in
 let matRowCols =
   lam matrix.
@@ -674,35 +576,37 @@ let matRowCols =
         let new =
           matMakeUninit (externalExtArrKind matrix.arr) 1 (length cols2)
         in
-        let #var"10" = iteri1 (anon15 matrix r3 new) cols2 in
+        let #var"9" = iteri1 (anon11 matrix r3 new) cols2 in
         new
 in
+type Matrix #var"X" =
+  Mat #var"X" in
 let x1: all #var"B10". all #var"A10". (#var"A10" -> #var"B10" -> #var"A10") -> #var"A10" -> #var"B10" -> #var"A10" =
-  lam f18.
+  lam f17.
     lam a47.
       lam b10: #var"B10".
-        let x163: #var"A10" = f18 a47 b10 in
+        let x163: #var"A10" = f17 a47 b10 in
         x163
 in
 let x2: all #var"B9". all #var"A9". (#var"A9" -> Int -> #var"B9" -> #var"A9") -> #var"A9" -> Int -> #var"B9" -> #var"A9" =
-  lam f17.
+  lam f16.
     lam a46.
       lam idx9.
         lam b9: #var"B9".
-          let x162: #var"A9" = f17 a46 (addi idx9 1) b9 in
+          let x162: #var"A9" = f16 a46 (addi idx9 1) b9 in
           x162
 in
 let x3: all #var"B8". all #var"A8". (#var"A8" -> Int -> #var"B8" -> #var"A8") -> #var"A8" -> Int -> #var"B8" -> #var"A8" =
-  lam f16.
+  lam f15.
     lam a45.
       lam idx8: Int.
-        x2 f16 a45 idx8
+        x2 f15 a45 idx8
 in
 let x4: all #var"C2". all #var"B7". all #var"A7". (#var"A7" -> #var"B7" -> #var"C2") -> #var"A7" -> #var"B7" -> #var"C2" =
-  lam f15.
+  lam f14.
     lam a44.
       lam b8: #var"B7".
-        let x161: #var"C2" = f15 a44 b8 in
+        let x161: #var"C2" = f14 a44 b8 in
         x161
 in
 let x5: all #var"X11". (#var"X11" -> #var"X11" -> Int) -> #var"X11" -> #var"X11" -> Int =
@@ -713,9 +617,9 @@ let x5: all #var"X11". (#var"X11" -> #var"X11" -> Int) -> #var"X11" -> #var"X11"
         x160
 in
 let ifCont = lam acc12.
-    lam #var"9": Int.
+    lam #var"8": Int.
       acc12 in
-let ifCont1 = lam #var"8": Int.
+let ifCont1 = lam #var"7": Int.
     0. in
 let exp1: Float -> Float = lam x159: Float.
     mathExp x159 in
@@ -745,54 +649,54 @@ let length1: all #var"X6". [#var"X6"] -> Int = lam l3: [#var"X6"].
 in
 let sapply: all #var"A6". all #var"B6". [#var"A6"] -> (#var"A6" -> #var"B6") -> [#var"B6"] =
   lam s7: [#var"A6"].
-    lam f14: #var"A6" -> #var"B6".
-      seqMap f14 s7
+    lam f13: #var"A6" -> #var"B6".
+      seqMap f13 s7
 in
-let anon16: all #var"B5". all #var"A5". (#var"A5" -> #var"B5" -> #var"A5") -> #var"A5" -> #var"B5" -> #var"A5" = lam f13.
+let anon12: all #var"B5". all #var"A5". (#var"A5" -> #var"B5" -> #var"A5") -> #var"A5" -> #var"B5" -> #var"A5" = lam f12.
     lam a42: #var"A5".
-      x1 f13 a42
+      x1 f12 a42
 in
 let fold: all #var"A4". all #var"B4". (#var"A4" -> #var"B4" -> #var"A4") -> #var"A4" -> [#var"B4"] -> #var"A4" =
-  lam f12: #var"A4" -> #var"B4" -> #var"A4".
+  lam f11: #var"A4" -> #var"B4" -> #var"A4".
     lam init1: #var"A4".
       lam seq5: [#var"B4"].
-        seqFoldl (anon16 f12) init1 seq5
+        seqFoldl (anon12 f11) init1 seq5
 in
-let anon17: all #var"B3". all #var"A3". (#var"A3" -> Int -> #var"B3" -> #var"A3") -> #var"A3" -> Int -> #var"B3" -> #var"A3" = lam f11.
+let anon13: all #var"B3". all #var"A3". (#var"A3" -> Int -> #var"B3" -> #var"A3") -> #var"A3" -> Int -> #var"B3" -> #var"A3" = lam f10.
     lam a41: #var"A3".
-      x3 f11 a41
+      x3 f10 a41
 in
 let foldi: all #var"A2". all #var"B2". (#var"A2" -> Int -> #var"B2" -> #var"A2") -> #var"A2" -> [#var"B2"] -> #var"A2" =
-  lam f10: #var"A2" -> Int -> #var"B2" -> #var"A2".
+  lam f9: #var"A2" -> Int -> #var"B2" -> #var"A2".
     lam init: #var"A2".
       lam seq4: [#var"B2"].
-        seqFoldli (anon17 f10) init seq4
+        seqFoldli (anon13 f9) init seq4
 in
-let anon18: all #var"C1". all #var"B1". all #var"A1". (#var"A1" -> #var"B1" -> #var"C1") -> #var"A1" -> #var"B1" -> #var"C1" = lam f9.
+let anon14: all #var"C1". all #var"B1". all #var"A1". (#var"A1" -> #var"B1" -> #var"C1") -> #var"A1" -> #var"B1" -> #var"C1" = lam f8.
     lam a40: #var"A1".
-      x4 f9 a40
+      x4 f8 a40
 in
 let zipWith1: all #var"A". all #var"B". all #var"C". (#var"A" -> #var"B" -> #var"C") -> [#var"A"] -> [#var"B"] -> [#var"C"] =
-  lam f8: #var"A" -> #var"B" -> #var"C".
+  lam f7: #var"A" -> #var"B" -> #var"C".
     lam a39: [#var"A"].
       lam b6: [#var"B"].
-        seqZipWith (anon18 f8) a39 b6
+        seqZipWith (anon14 f7) a39 b6
 in
 let any1: all #var"X5". (#var"X5" -> Bool) -> [#var"X5"] -> Bool =
-  lam f7: #var"X5" -> Bool.
+  lam f6: #var"X5" -> Bool.
     lam l2: [#var"X5"].
-      seqAny f7 l2
+      seqAny f6 l2
 in
-let anon19: all #var"X4". (#var"X4" -> #var"X4" -> Int) -> #var"X4" -> #var"X4" -> Int = lam cmp2.
+let anon15: all #var"X4". (#var"X4" -> #var"X4" -> Int) -> #var"X4" -> #var"X4" -> Int = lam cmp2.
     lam a38: #var"X4".
       x5 cmp2 a38
 in
 let qSort: all #var"X3". (#var"X3" -> #var"X3" -> Int) -> [#var"X3"] -> [#var"X3"] =
   lam cmp1: #var"X3" -> #var"X3" -> Int.
     lam l1: [#var"X3"].
-      quickSort (anon19 cmp1) l1
+      quickSort (anon15 cmp1) l1
 in
-let anon20: [Int] -> Int -> Bool -> [Int] =
+let anon16: [Int] -> Int -> Bool -> [Int] =
   lam acc11: [Int].
     lam idx7: Int.
       lam elem: Bool.
@@ -806,7 +710,7 @@ let anon20: [Int] -> Int -> Bool -> [Int] =
         x157
 in
 let whichTrue: [Bool] -> [Int] = lam s6: [Bool].
-    foldi anon20 "" s6
+    foldi anon16 "" s6
 in
 let bool2real: Bool -> Float =
   lam v: Bool.
@@ -842,8 +746,8 @@ in
 let mtxTrans: Matrix Float -> Matrix Float = lam mtx3: Matrix Float.
     matTranspose mtx3
 in
-let mtxExpRateSafe: Matrix Float -> Matrix Float = lam mtx2: Matrix Float.
-    matExpRateSafe mtx2
+let mtxExp: Matrix Float -> Matrix Float = lam mtx2: Matrix Float.
+    matExpExn mtx2
 in
 let mtxMul: Matrix Float -> Matrix Float -> Matrix Float =
   lam a37: Matrix Float.
@@ -869,10 +773,10 @@ let delta =
         0.
 in
 let seqKroneckerDelta: Int -> Int -> [Float] =
-  lam i13: Int.
-    lam n2: Int.
-      let k = subi i13 1 in
-      map1 (delta k) (range 0 n2 1)
+  lam i12: Int.
+    lam n1: Int.
+      let k = subi i12 1 in
+      map1 (delta k) (range 0 n1 1)
 in
 let kroneckerDelta: Int -> Int -> [Float] =
   lam index: Int.
@@ -883,9 +787,9 @@ let isNaN1: Float -> Bool = lam r2: Float.
     mathIsNaN r2 in
 let nestSeqToMtx: [[Float]] -> Matrix Float =
   lam ns: [[Float]].
-    let n1 = length1 ns in
+    let n = length1 ns in
     let m = length1 (get ns (subi 1 1)) in
-    mtxCreate n1 m (paste0 ns)
+    mtxCreate n m (paste0 ns)
 in
 type TreeLabeled in
 type MsgTree in
@@ -941,7 +845,7 @@ recursive
       else
         ""
 in
-let anon21: Int -> Int -> Int =
+let anon17: Int -> Int -> Int =
   lam acc10: Int.
     lam h4: Int.
       let x154: Int =
@@ -954,7 +858,7 @@ let anon21: Int -> Int -> Int =
       x154
 in
 let n2s: [Int] -> Int = lam repertoire2: [Int].
-    fold anon21 0 repertoire2
+    fold anon17 0 repertoire2
 in
 let updateRepertoire: [Int] -> Event -> Int -> [Int] =
   lam currRep8: [Int].
@@ -966,7 +870,7 @@ let updateRepertoire: [Int] -> Event -> Int -> [Int] =
           then
             x153.host
           else
-            let #var"2" =
+            let #var"1" =
               print
                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/helpers.tppl 52:18-52:28>:\nField \'host\' not found\n[0m  let hostIndex = [31mevent.host[0m[0m;\n"
             in
@@ -979,7 +883,7 @@ let updateRepertoire: [Int] -> Event -> Int -> [Int] =
               then
                 x152.toState
               else
-                let #var"2" =
+                let #var"1" =
                   print
                     "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/helpers.tppl 56:7-56:20>:\nField \'toState\' not found\n[0m      [[31mevent.toState[0m[0m],\n"
                 in
@@ -1004,11 +908,11 @@ in
 recursive
   let observationMessage: [Int] -> Int -> Int -> [Float] =
     lam obsRepertoire: [Int].
-      lam i5: Int.
+      lam i4: Int.
         lam max: Int.
-          match leqi i5 max with true
+          match leqi i4 max with true
           then
-            let stateMsg = makeStateMessage (get obsRepertoire (subi i5 1))
+            let stateMsg = makeStateMessage (get obsRepertoire (subi i4 1))
             in
             cons1
               (get stateMsg (subi 1 1))
@@ -1016,7 +920,7 @@ recursive
                  (get stateMsg (subi 2 1))
                  (cons1
                     (get stateMsg (subi 3 1))
-                    (observationMessage obsRepertoire (addi i5 1) max)))
+                    (observationMessage obsRepertoire (addi i4 1) max)))
           else
             ""
 in
@@ -1026,7 +930,7 @@ recursive
       lam qMatrix.
         lam interactions.
           lam nhosts.
-            lam #var"1": Int.
+            lam #var"": Int.
               let left =
                 postorderTraverse
                   (let target9 = tree in
@@ -1034,7 +938,7 @@ recursive
                    then
                      x23.left
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 19:31-19:40>:\nField \'left\' not found\n[0m  let left = postorderTraverse([31mtree.left[0m[0m, qMatrix, interactions, nhosts);\n"
                      in
@@ -1050,7 +954,7 @@ recursive
                    then
                      x22.right
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 20:32-20:42>:\nField \'right\' not found\n[0m  let right = postorderTraverse([31mtree.right[0m[0m, qMatrix, interactions, nhosts);\n"
                      in
@@ -1060,7 +964,7 @@ recursive
                   nhosts
               in
               let leftKernel =
-                mtxExpRateSafe
+                mtxExp
                   (mtxSclrMul
                      (subf
                         (let target6 = tree in
@@ -1071,9 +975,9 @@ recursive
                          then
                            x19.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
-                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 23:45-23:53>:\nField \'age\' not found\n[0m  let leftKernel = mtxExpRateSafe(mtxSclrMul([31mtree.age[0m[0m-left.age, qMatrix));\n"
+                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 23:37-23:45>:\nField \'age\' not found\n[0m  let leftKernel = mtxExp(mtxSclrMul([31mtree.age[0m[0m-left.age, qMatrix));\n"
                            in
                            exit 1)
                         (let target7 = left in
@@ -1084,15 +988,15 @@ recursive
                          then
                            x21.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
-                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 23:54-23:62>:\nField \'age\' not found\n[0m  let leftKernel = mtxExpRateSafe(mtxSclrMul(tree.age-[31mleft.age[0m[0m, qMatrix));\n"
+                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 23:46-23:54>:\nField \'age\' not found\n[0m  let leftKernel = mtxExp(mtxSclrMul(tree.age-[31mleft.age[0m[0m, qMatrix));\n"
                            in
                            exit 1))
                      qMatrix)
               in
               let rightKernel =
-                mtxExpRateSafe
+                mtxExp
                   (mtxSclrMul
                      (subf
                         (let target4 = tree in
@@ -1103,9 +1007,9 @@ recursive
                          then
                            x15.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
-                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 24:46-24:54>:\nField \'age\' not found\n[0m  let rightKernel = mtxExpRateSafe(mtxSclrMul([31mtree.age[0m[0m-right.age, qMatrix));\n"
+                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 24:38-24:46>:\nField \'age\' not found\n[0m  let rightKernel = mtxExp(mtxSclrMul([31mtree.age[0m[0m-right.age, qMatrix));\n"
                            in
                            exit 1)
                         (let target5 = right in
@@ -1116,9 +1020,9 @@ recursive
                          then
                            x17.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
-                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 24:55-24:64>:\nField \'age\' not found\n[0m  let rightKernel = mtxExpRateSafe(mtxSclrMul(tree.age-[31mright.age[0m[0m, qMatrix));\n"
+                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 24:47-24:56>:\nField \'age\' not found\n[0m  let rightKernel = mtxExp(mtxSclrMul(tree.age-[31mright.age[0m[0m, qMatrix));\n"
                            in
                            exit 1))
                      qMatrix)
@@ -1135,7 +1039,7 @@ recursive
                    then
                      x13.outMsg
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 30:25-30:36>:\nField \'outMsg\' not found\n[0m  let leftInMsg = mtxMul([31mleft.outMsg[0m[0m, leftBackwardKernel);\n"
                      in
@@ -1152,7 +1056,7 @@ recursive
                    then
                      x11.outMsg
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 31:26-31:38>:\nField \'outMsg\' not found\n[0m  let rightInMsg = mtxMul([31mright.outMsg[0m[0m, rightBackwardKernel);\n"
                      in
@@ -1170,7 +1074,7 @@ recursive
                     then
                       x7.age
                     else
-                      let #var"2" =
+                      let #var"1" =
                         print
                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 36:10-36:18>:\nField \'age\' not found\n[0m    age = [31mtree.age[0m[0m, label = tree.label,\n"
                       in
@@ -1186,7 +1090,7 @@ recursive
                     then
                       x9.label
                     else
-                      let #var"2" =
+                      let #var"1" =
                         print
                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 36:28-36:38>:\nField \'label\' not found\n[0m    age = tree.age, label = [31mtree.label[0m[0m,\n"
                       in
@@ -1226,7 +1130,7 @@ recursive
                             then
                               x29.label
                             else
-                              let #var"2" =
+                              let #var"1" =
                                 print
                                   "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 9:70-9:80>:\nField \'label\' not found\n[0m    let outmsg = mtxCreate(nhosts, 3, observationMessage(interactions[[31mtree.label[0m[0m], 1, nhosts));\n"
                               in
@@ -1247,7 +1151,7 @@ recursive
                       then
                         x27.label
                       else
-                        let #var"2" =
+                        let #var"1" =
                           print
                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 10:32-10:42>:\nField \'label\' not found\n[0m    let leafInts = interactions[[31mtree.label[0m[0m];\n"
                         in
@@ -1265,7 +1169,7 @@ recursive
                     then
                       x25.label
                     else
-                      let #var"2" =
+                      let #var"1" =
                         print
                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 13:14-13:24>:\nField \'label\' not found\n[0m      label = [31mtree.label[0m[0m,\n"
                       in
@@ -1294,27 +1198,27 @@ let categoricalLogPdf: Int -> [Float] -> Float =
 in
 let mtx3ToSeq: Matrix Float -> Int -> [Float] =
   lam mtx: Matrix Float.
-    lam i12: Int.
-      let p11 = mtxGet i12 1 mtx in
-      let p2 = mtxGet i12 2 mtx in
-      let p3 = mtxGet i12 3 mtx in
+    lam i11: Int.
+      let p11 = mtxGet i11 1 mtx in
+      let p2 = mtxGet i11 2 mtx in
+      let p3 = mtxGet i11 3 mtx in
       let s5 = addf (addf p11 p2) p3 in
       [ divf p11 s5,
         divf p2 s5,
         divf p3 s5 ]
 in
-let anon22: [Int] -> Matrix Float -> Float -> Int -> Float =
+let anon18: [Int] -> Matrix Float -> Float -> Int -> Float =
   lam x149.
     lam samplingProb2.
       lam acc9: Float.
-        lam i11: Int.
+        lam i10: Int.
           let x150: Float =
-            let param6 = mtx3ToSeq samplingProb2 i11 in
-            addf acc9 (categoricalLogPdf (get x149 (subi i11 1)) param6)
+            let param6 = mtx3ToSeq samplingProb2 i10 in
+            addf acc9 (categoricalLogPdf (get x149 (subi i10 1)) param6)
           in
           x150
 in
-let anon23: Int -> Int -> Int = lam start13.
+let anon19: Int -> Int -> Int = lam start13.
     lam idx6.
       addi idx6 start13
 in
@@ -1323,13 +1227,13 @@ let getRepertoireSamplingDensity: [Int] -> Matrix Float -> Int -> Float =
     lam samplingProb1: Matrix Float.
       lam nhosts7: Int.
         fold
-          (anon22 x148 samplingProb1)
+          (anon18 x148 samplingProb1)
           0.
           (let start12 = 1 in
            let end7 = nhosts7 in
-           create1 (addi (subi end7 start12) 1) (anon23 start12))
+           create1 (addi (subi end7 start12) 1) (anon19 start12))
 in
-let anon24: Int -> Int -> Int =
+let anon20: Int -> Int -> Int =
   lam acc8: Int.
     lam h3: Int.
       let x147: Int =
@@ -1349,7 +1253,7 @@ recursive
           lam nEvents.
             lam nhosts2.
               lam event.
-                lam #var"3": Int.
+                lam #var"2": Int.
                   let newRep = updateRepertoire currRep event nhosts2 in
                   allTimesValidBranch newRep eventSeq (addi eventIndex 1) nEvents nhosts2
   let allTimesValidBranch: [Int] -> [Event] -> Int -> Int -> Int -> Bool =
@@ -1370,7 +1274,7 @@ recursive
                      then
                        x30.fromState
                      else
-                       let #var"2" =
+                       let #var"1" =
                          print
                            "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 146:7-146:22>:\nField \'fromState\' not found\n[0m    if [31mevent.fromState[0m[0m == 2 {\n"
                        in
@@ -1379,7 +1283,7 @@ recursive
                 with
                   true
                 then
-                  let n2s1 = fold anon24 0 currRep1 in
+                  let n2s1 = fold anon20 0 currRep1 in
                   match eqi n2s1 1 with true
                   then
                     false
@@ -1394,22 +1298,22 @@ recursive
           lam nEvents2.
             lam nhosts4.
               lam event2.
-                lam #var"4": Int.
+                lam #var"3": Int.
                   ifCont3 currRep2 eventSeq2 eventIndex2 nEvents2 nhosts4 event2 0
 in
-let anon25: Int -> Bool =
-  lam i10: Int.
+let anon21: Int -> Bool =
+  lam i9: Int.
     let x146: Bool =
-      match eqi i10 2 with true
+      match eqi i9 2 with true
       then
         true
       else
-        eqi i10 1
+        eqi i9 1
     in
     x146
 in
-let anon26: Int -> Bool = lam i9: Int.
-    let x145: Bool = eqi i9 2 in
+let anon22: Int -> Bool = lam i8: Int.
+    let x145: Bool = eqi i8 2 in
     x145
 in
 let getGainRate: [Int] -> Int -> ModelParams -> Float =
@@ -1428,7 +1332,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                then
                  x144.embeddedQMatrix
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 112:52-112:79>:\nField \'embeddedQMatrix\' not found\n[0m  let baseRate = mtxGet(fromState + 1, toState + 1, [31mmodelParams.embeddedQMatrix[0m[0m.mat);\n"
                  in
@@ -1438,7 +1342,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
              then
                x143.mat
              else
-               let #var"2" =
+               let #var"1" =
                  print
                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 112:52-112:83>:\nField \'mat\' not found\n[0m  let baseRate = mtxGet(fromState + 1, toState + 1, [31mmodelParams.embeddedQMatrix.mat[0m[0m);\n"
                in
@@ -1446,7 +1350,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
         in
         match eqi fromState5 0 with true
         then
-          let currentHosts = whichTrue (sapply repertoire1 anon25) in
+          let currentHosts = whichTrue (sapply repertoire1 anon21) in
           let dist =
             mtxMean
               (mtxRowCols
@@ -1455,7 +1359,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                   then
                     x139.hostMetric
                   else
-                    let #var"2" =
+                    let #var"1" =
                       print
                         "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 118:6-118:28>:\nField \'hostMetric\' not found\n[0m      [31mmodelParams.hostMetric[0m[0m, hostIndex, currentHosts\n"
                     in
@@ -1473,7 +1377,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                    then
                      x137.meanDist
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 122:14-122:34>:\nField \'meanDist\' not found\n[0m      (dist / [31mmodelParams.meanDist[0m[0m)^(-modelParams.beta)\n"
                      in
@@ -1484,13 +1388,13 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                    then
                      x138.beta
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 122:38-122:54>:\nField \'beta\' not found\n[0m      (dist / modelParams.meanDist)^(-[31mmodelParams.beta[0m[0m)\n"
                      in
                      exit 1)))
         else
-          let currentHosts1 = whichTrue (sapply repertoire1 anon26) in
+          let currentHosts1 = whichTrue (sapply repertoire1 anon22) in
           let dist1 =
             mtxMean
               (mtxRowCols
@@ -1499,7 +1403,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                   then
                     x142.hostMetric
                   else
-                    let #var"2" =
+                    let #var"1" =
                       print
                         "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 127:6-127:28>:\nField \'hostMetric\' not found\n[0m      [31mmodelParams.hostMetric[0m[0m, hostIndex, currentHosts\n"
                     in
@@ -1517,7 +1421,7 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                    then
                      x140.meanDist
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 131:14-131:34>:\nField \'meanDist\' not found\n[0m      (dist / [31mmodelParams.meanDist[0m[0m)^(-modelParams.beta)\n"
                      in
@@ -1528,28 +1432,28 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                    then
                      x141.beta
                    else
-                     let #var"2" =
+                     let #var"1" =
                        print
                          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 131:38-131:54>:\nField \'beta\' not found\n[0m      (dist / modelParams.meanDist)^(-[31mmodelParams.beta[0m[0m)\n"
                      in
                      exit 1)))
 in
-let anon27: [Int] -> ModelParams -> Float -> Int -> Float =
+let anon23: [Int] -> ModelParams -> Float -> Int -> Float =
   lam currRep7.
     lam modelParams11.
       lam acc7: Float.
-        lam i8: Int.
+        lam i7: Int.
           let x136: Float =
-            let fromState4 = get currRep7 (subi i8 1) in
+            let fromState4 = get currRep7 (subi i7 1) in
             match eqi fromState4 2 with true
             then
               acc7
             else
-              addf acc7 (getGainRate currRep7 i8 modelParams11)
+              addf acc7 (getGainRate currRep7 i7 modelParams11)
           in
           x136
 in
-let anon28: Int -> Int -> Int = lam start11.
+let anon24: Int -> Int -> Int = lam start11.
     lam idx5.
       addi idx5 start11
 in
@@ -1580,7 +1484,7 @@ let getLossRate: [Int] -> Int -> ModelParams -> Float =
                  then
                    x135.embeddedQMatrix
                  else
-                   let #var"2" =
+                   let #var"1" =
                      print
                        "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 100:54-100:81>:\nField \'embeddedQMatrix\' not found\n[0m    let baseRate = mtxGet(fromState + 1, toState + 1, [31mmodelParams.embeddedQMatrix[0m[0m.mat);\n"
                    in
@@ -1590,7 +1494,7 @@ let getLossRate: [Int] -> Int -> ModelParams -> Float =
                then
                  x134.mat
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 100:54-100:85>:\nField \'mat\' not found\n[0m    let baseRate = mtxGet(fromState + 1, toState + 1, [31mmodelParams.embeddedQMatrix.mat[0m[0m);\n"
                  in
@@ -1598,22 +1502,22 @@ let getLossRate: [Int] -> Int -> ModelParams -> Float =
           in
           baseRate
 in
-let anon29: [Int] -> ModelParams -> Float -> Int -> Float =
+let anon25: [Int] -> ModelParams -> Float -> Int -> Float =
   lam currRep6.
     lam modelParams9.
       lam acc6: Float.
-        lam i7: Int.
+        lam i6: Int.
           let x133: Float =
-            let fromState2 = get currRep6 (subi i7 1) in
+            let fromState2 = get currRep6 (subi i6 1) in
             match eqi fromState2 0 with true
             then
               acc6
             else
-              addf acc6 (getLossRate currRep6 i7 modelParams9)
+              addf acc6 (getLossRate currRep6 i6 modelParams9)
           in
           x133
 in
-let anon30: Int -> Int -> Int = lam start10.
+let anon26: Int -> Int -> Int = lam start10.
     lam idx4.
       addi idx4 start10
 in
@@ -1623,19 +1527,19 @@ let getTotalRate: [Int] -> ModelParams -> Int -> Float =
       lam nhosts6: Int.
         let gainRates =
           fold
-            (anon27 currRep5 modelParams8)
+            (anon23 currRep5 modelParams8)
             0.
             (let start9 = 1 in
              let end6 = nhosts6 in
-             create1 (addi (subi end6 start9) 1) (anon28 start9))
+             create1 (addi (subi end6 start9) 1) (anon24 start9))
         in
         let lossRates =
           fold
-            (anon29 currRep5 modelParams8)
+            (anon25 currRep5 modelParams8)
             0.
             (let start8 = 1 in
              let end5 = nhosts6 in
-             create1 (addi (subi end5 start8) 1) (anon30 start8))
+             create1 (addi (subi end5 start8) 1) (anon26 start8))
         in
         addf gainRates lossRates
 in
@@ -1649,7 +1553,7 @@ let getRate: [Int] -> Event -> ModelParams -> Float =
           then
             x132.host
           else
-            let #var"2" =
+            let #var"1" =
               print
                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 83:18-83:32>:\nField \'host\' not found\n[0m  let hostIndex = [31mnextEvent.host[0m[0m;\n"
             in
@@ -1662,7 +1566,7 @@ let getRate: [Int] -> Event -> ModelParams -> Float =
              then
                x130.fromState
              else
-               let #var"2" =
+               let #var"1" =
                  print
                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 84:5-84:24>:\nField \'fromState\' not found\n[0m  if [31mnextEvent.fromState[0m[0m > nextEvent.toState {\n"
                in
@@ -1672,7 +1576,7 @@ let getRate: [Int] -> Event -> ModelParams -> Float =
              then
                x131.toState
              else
-               let #var"2" =
+               let #var"1" =
                  print
                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 84:27-84:44>:\nField \'toState\' not found\n[0m  if nextEvent.fromState > [31mnextEvent.toState[0m[0m {\n"
                in
@@ -1709,7 +1613,7 @@ recursive
                           then
                             x31.eventTime
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 27:17-27:36>:\nField \'eventTime\' not found\n[0m    let newAge = [31mnextEvent.eventTime[0m[0m;\n"
                             in
@@ -1769,23 +1673,23 @@ let scaleMove: Float -> Float -> Dist(Float) =
         (mulf x127 (exp1 (divf (negf lambda6) 2.)))
         (mulf x127 (exp1 (divf lambda6 2.)))
 in
-let anon31: Int -> Int -> Int = lam start7.
+let anon27: Int -> Int -> Int = lam start7.
     lam idx3.
       addi idx3 start7
 in
-let anon32: Int -> [Float] -> Float -> Float -> Int -> Float =
+let anon28: Int -> [Float] -> Float -> Float -> Int -> Float =
   lam x125.
     lam param5.
       lam currProb1.
         lam nextProb1.
-          lam i6: Int.
+          lam i5: Int.
             let x126: Float =
-              match eqi i6 x125 with true
+              match eqi i5 x125 with true
               then
                 nextProb1
               else
                 divf
-                  (mulf (get param5 (subi (addi i6 1) 1)) (subf 1. nextProb1))
+                  (mulf (get param5 (subi (addi i5 1) 1)) (subf 1. nextProb1))
                   (subf 1. currProb1)
             in
             x126
@@ -1803,8 +1707,8 @@ let categoricalShiftKernel: Int -> [Float] -> Float -> Float -> Dist(Int) =
               sapply
                 (let start6 = 1 in
                  let end4 = length1 param4 in
-                 create1 (addi (subi end4 start6) 1) (anon31 start6))
-                (anon32 x124 param4 currProb nextProb)
+                 create1 (addi (subi end4 start6) 1) (anon27 start6))
+                (anon28 x124 param4 currProb nextProb)
             in
             Categorical newParam
           else
@@ -1852,7 +1756,7 @@ recursive
                          then
                            x32.totalRates
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/independence-model.tppl 79:18-79:44>:\nField \'totalRates\' not found\n[0m    let outRate = [31membeddedQMatrix.totalRates[0m[0m[currState + 1];\n"
                            in
@@ -1868,7 +1772,7 @@ recursive
                       then
                         x36.toState
                       else
-                        let #var"2" =
+                        let #var"1" =
                           print
                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/independence-model.tppl 83:20-83:37>:\nField \'toState\' not found\n[0m    let nextState = [31mnextEvent.toState[0m[0m;\n"
                         in
@@ -1880,7 +1784,7 @@ recursive
                       then
                         x35.eventTime
                       else
-                        let #var"2" =
+                        let #var"1" =
                           print
                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/independence-model.tppl 84:18-84:37>:\nField \'eventTime\' not found\n[0m    let nextAge = [31mnextEvent.eventTime[0m[0m;\n"
                         in
@@ -1894,7 +1798,7 @@ recursive
                          then
                            x34.totalRates
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/independence-model.tppl 86:18-86:44>:\nField \'totalRates\' not found\n[0m    let outRate = [31membeddedQMatrix.totalRates[0m[0m[currState + 1];\n"
                            in
@@ -1909,7 +1813,7 @@ recursive
                             then
                               x33.transitionProbs
                             else
-                              let #var"2" =
+                              let #var"1" =
                                 print
                                   "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/independence-model.tppl 87:20-87:51>:\nField \'transitionProbs\' not found\n[0m    let transProb = [31membeddedQMatrix.transitionProbs[0m[0m[currState + 1][nextState + 1];\n"
                               in
@@ -1928,7 +1832,7 @@ recursive
                          eventSeq4
                          embeddedQMatrix)
 in
-let anon33: [Int] -> [Int] -> Float -> Float -> [[Event]] -> ModelParams -> Float -> Int -> Float =
+let anon29: [Int] -> [Int] -> Float -> Float -> [[Event]] -> ModelParams -> Float -> Int -> Float =
   lam fromRep2.
     lam toRep2.
       lam fromAge2.
@@ -1955,7 +1859,7 @@ let anon33: [Int] -> [Int] -> Float -> Float -> [[Event]] -> ModelParams -> Floa
                           then
                             x119.embeddedQMatrix
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/independence-model.tppl 23:8-23:35>:\nField \'embeddedQMatrix\' not found\n[0m        [31mmodelParams.embeddedQMatrix[0m\n"
                             in
@@ -1963,7 +1867,7 @@ let anon33: [Int] -> [Int] -> Float -> Float -> [[Event]] -> ModelParams -> Floa
                   in
                   x118
 in
-let anon34: Int -> Int -> Int = lam start5.
+let anon30: Int -> Int -> Int = lam start5.
     lam idx2.
       addi idx2 start5
 in
@@ -1976,21 +1880,21 @@ let independenceLikelihood: [Int] -> [Int] -> Float -> Float -> [[Event]] -> Mod
             lam modelParams5: ModelParams.
               let unconditional1 =
                 fold
-                  (anon33 fromRep1 toRep1 fromAge1 toAge1 eventSeqs1 modelParams5)
+                  (anon29 fromRep1 toRep1 fromAge1 toAge1 eventSeqs1 modelParams5)
                   0.
                   (let start4 = 1 in
                    let end3 = length1 eventSeqs1 in
-                   create1 (addi (subi end3 start4) 1) (anon34 start4))
+                   create1 (addi (subi end3 start4) 1) (anon30 start4))
               in
               unconditional1
 in
-let anon35: Float -> Float -> Float =
+let anon31: Float -> Float -> Float =
   lam acc4: Float.
     lam val: Float.
       let x117: Float = addf acc4 val in
       x117
 in
-let anon36: Matrix Float -> Int -> Int -> Float =
+let anon32: Matrix Float -> Int -> Int -> Float =
   lam kernel1.
     lam fromState: Int.
       lam toState: Int.
@@ -2009,7 +1913,7 @@ let independenceLikelihoodEndCond: [Int] -> [Int] -> Float -> Float -> [[Event]]
                 let unconditional =
                   independenceLikelihood fromRep toRep fromAge toAge eventSeqs modelParams4
                 in
-                let logTotalTransProb = fold anon35 0. (zipWith1 (anon36 kernel) fromRep toRep)
+                let logTotalTransProb = fold anon31 0. (zipWith1 (anon32 kernel) fromRep toRep)
                 in
                 let conditional = subf unconditional logTotalTransProb in
                 conditional
@@ -2022,7 +1926,7 @@ con Bridge1: {events: [Event], success: Bool} -> Bridge in
 let ifCont5 =
   lam left4.
     lam right4.
-      lam #var"7": Int.
+      lam #var"6": Int.
         match
           geqf
             (let target71 = right4 in
@@ -2030,7 +1934,7 @@ let ifCont5 =
              then
                x114.eventTime
              else
-               let #var"2" =
+               let #var"1" =
                  print
                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 247:6-247:21>:\nField \'eventTime\' not found\n[0m  if ([31mright.eventTime[0m[0m >= left.eventTime) {\n"
                in
@@ -2040,7 +1944,7 @@ let ifCont5 =
              then
                x115.eventTime
              else
-               let #var"2" =
+               let #var"1" =
                  print
                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 247:25-247:39>:\nField \'eventTime\' not found\n[0m  if (right.eventTime >= [31mleft.eventTime[0m[0m) {\n"
                in
@@ -2055,7 +1959,7 @@ in
 let ifCont6 =
   lam left3.
     lam right3.
-      lam #var"6": Int.
+      lam #var"5": Int.
         match
           isNaN1
             (let target70 = left3 in
@@ -2063,7 +1967,7 @@ let ifCont6 =
              then
                x113.eventTime
              else
-               let #var"2" =
+               let #var"1" =
                  print
                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 244:12-244:26>:\nField \'eventTime\' not found\n[0m  if (isNaN([31mleft.eventTime[0m[0m)) {\n"
                in
@@ -2075,15 +1979,15 @@ let ifCont6 =
         else
           ifCont5 left3 right3 0
 in
-let anon37: Int -> Int -> Int = lam start3.
+let anon33: Int -> Int -> Int = lam start3.
     lam idx1.
       addi idx1 start3
 in
-let anon38: [Float] -> Int -> Dist(Int) = lam param2.
+let anon34: [Float] -> Int -> Dist(Int) = lam param2.
     lam x112.
       categoricalMove x112 param2
 in
-let anon39: Matrix Float -> Int -> Int -> Int =
+let anon35: Matrix Float -> Int -> Int -> Int =
   lam msg1.
     lam nodeLabel6.
       lam h1: Int.
@@ -2102,8 +2006,8 @@ let suggestNodeRep: Matrix Float -> Int -> Int -> [Int] =
         sapply
           (let start2 = 1 in
            let end2 = nHosts4 in
-           create1 (addi (subi end2 start2) 1) (anon37 start2))
-          (anon39 msg nodeLabel5)
+           create1 (addi (subi end2 start2) 1) (anon33 start2))
+          (anon35 msg nodeLabel5)
 in
 let compAge: Event -> Event -> Int =
   lam left2: Event.
@@ -2115,7 +2019,7 @@ let compAge: Event -> Event -> Int =
            then
              x109.eventTime
            else
-             let #var"2" =
+             let #var"1" =
                print
                  "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 241:12-241:27>:\nField \'eventTime\' not found\n[0m  if (isNaN([31mright.eventTime[0m[0m)) {\n"
              in
@@ -2127,7 +2031,7 @@ let compAge: Event -> Event -> Int =
       else
         ifCont6 left2 right2 0
 in
-let anon40: Int -> Int -> Int = lam start1.
+let anon36: Int -> Int -> Int = lam start1.
     lam idx.
       addi idx start1
 in
@@ -2152,7 +2056,7 @@ recursive
                          then
                            x40.transitionProbs
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 323:16-323:47>:\nField \'transitionProbs\' not found\n[0m    let param = [31membeddedQMatrix.transitionProbs[0m[0m[currentState + 1];\n"
                            in
@@ -2169,7 +2073,7 @@ recursive
                          then
                            x39.totalRates
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 327:20-327:46>:\nField \'totalRates\' not found\n[0m    let totalRate = [31membeddedQMatrix.totalRates[0m[0m[nextState + 1];\n"
                            in
@@ -2200,7 +2104,7 @@ recursive
                           then
                             x37.success
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 345:18-345:39>:\nField \'success\' not found\n[0m      , success = [31mrestOfHistory.success[0m\n"
                             in
@@ -2217,7 +2121,7 @@ recursive
                              then
                                x38.events
                              else
-                               let #var"2" =
+                               let #var"1" =
                                  print
                                    "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 343:10-343:30>:\nField \'events\' not found\n[0m          [31mrestOfHistory.events[0m\n"
                                in
@@ -2238,7 +2142,7 @@ let sampleHostHistory: Int -> Int -> Float -> Float -> Int -> Int -> EmbeddedMar
                      then
                        x108.totalRates
                      else
-                       let #var"2" =
+                       let #var"1" =
                          print
                            "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 292:18-292:44>:\nField \'totalRates\' not found\n[0m  let totalRate = [31membeddedQMatrix.totalRates[0m[0m[startState + 1];\n"
                        in
@@ -2274,7 +2178,7 @@ let sampleHostHistory: Int -> Int -> Float -> Float -> Int -> Int -> EmbeddedMar
                                  then
                                    x107.success
                                  else
-                                   let #var"2" =
+                                   let #var"1" =
                                      print
                                        "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 304:19-304:33>:\nField \'success\' not found\n[0m  weight bool2real([31mbridge.success[0m[0m) + Real(host) * 0. + Real(nodeLabel) * 0.;\n"
                                    in
@@ -2287,13 +2191,13 @@ let sampleHostHistory: Int -> Int -> Float -> Float -> Int -> Int -> EmbeddedMar
                 then
                   x106.events
                 else
-                  let #var"2" =
+                  let #var"1" =
                     print
                       "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 305:9-305:22>:\nField \'events\' not found\n[0m  return [31mbridge.events[0m[0m;\n"
                   in
                   exit 1
 in
-let anon41: [Int] -> [Int] -> Float -> Float -> Int -> EmbeddedMarkovChainMatrix -> Int -> [Event] =
+let anon37: [Int] -> [Int] -> Float -> Float -> Int -> EmbeddedMarkovChainMatrix -> Int -> [Event] =
   lam startRep2.
     lam finalRep3.
       lam startAge2.
@@ -2324,8 +2228,8 @@ let sampleUnorderedBranch: [Int] -> [Int] -> Float -> Float -> Int -> Int -> Emb
                 sapply
                   (let start = 1 in
                    let end1 = nHosts3 in
-                   create1 (addi (subi end1 start) 1) (anon40 start))
-                  (anon41
+                   create1 (addi (subi end1 start) 1) (anon36 start))
+                  (anon37
                      startRep1
                      finalRep2
                      startAge1
@@ -2355,7 +2259,7 @@ let sampleBranch: [Int] -> [Int] -> Float -> Float -> Int -> Int -> ModelParams 
                        then
                          x104.embeddedQMatrix
                        else
-                         let #var"2" =
+                         let #var"1" =
                            print
                              "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 201:4-201:31>:\nField \'embeddedQMatrix\' not found\n[0m    [31mmodelParams.embeddedQMatrix[0m\n"
                          in
@@ -2427,7 +2331,7 @@ recursive
                       then
                         x54.interactions
                       else
-                        let #var"2" =
+                        let #var"1" =
                           print
                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 115:14-115:31>:\nField \'interactions\' not found\n[0m    let rep = [31mtree.interactions[0m[0m;\n"
                         in
@@ -2446,7 +2350,7 @@ recursive
                          then
                            x51.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 121:6-121:14>:\nField \'age\' not found\n[0m      [31mtree.age[0m[0m,\n"
                            in
@@ -2460,7 +2364,7 @@ recursive
                          then
                            x53.label
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 123:6-123:16>:\nField \'label\' not found\n[0m      [31mtree.label[0m[0m,\n"
                            in
@@ -2477,7 +2381,7 @@ recursive
                                then
                                  x46.logModelDensity
                                else
-                                 let #var"2" =
+                                 let #var"1" =
                                    print
                                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 129:15-129:43>:\nField \'logModelDensity\' not found\n[0m    logWeight ([31mbranchSample.logModelDensity[0m[0m - branchSample.logSamplingDensity) * exp(Real(tree.label) * 0.);\n"
                                  in
@@ -2487,7 +2391,7 @@ recursive
                                then
                                  x47.logSamplingDensity
                                else
-                                 let #var"2" =
+                                 let #var"1" =
                                    print
                                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 129:46-129:77>:\nField \'logSamplingDensity\' not found\n[0m    logWeight (branchSample.logModelDensity - [31mbranchSample.logSamplingDensity[0m[0m) * exp(Real(tree.label) * 0.);\n"
                                  in
@@ -2503,7 +2407,7 @@ recursive
                                      then
                                        x49.label
                                      else
-                                       let #var"2" =
+                                       let #var"1" =
                                          print
                                            "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 129:90-129:100>:\nField \'label\' not found\n[0m    logWeight (branchSample.logModelDensity - branchSample.logSamplingDensity) * exp(Real([31mtree.label[0m[0m) * 0.);\n"
                                        in
@@ -2520,7 +2424,7 @@ recursive
                           then
                             x42.age
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 132:12-132:20>:\nField \'age\' not found\n[0m      age = [31mtree.age[0m[0m,\n"
                             in
@@ -2534,7 +2438,7 @@ recursive
                           then
                             x44.label
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 133:14-133:24>:\nField \'label\' not found\n[0m      label = [31mtree.label[0m[0m,\n"
                             in
@@ -2546,7 +2450,7 @@ recursive
                           then
                             x45.history
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 135:16-135:36>:\nField \'history\' not found\n[0m      history = [31mbranchSample.history[0m\n"
                             in
@@ -2562,7 +2466,7 @@ recursive
                          then
                            x83.outMsg
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 138:34-138:45>:\nField \'outMsg\' not found\n[0m    let samplingProb = mtxElemMul([31mtree.outMsg[0m[0m, preorderMsg);\n"
                            in
@@ -2581,7 +2485,7 @@ recursive
                          then
                            x81.label
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 139:51-139:61>:\nField \'label\' not found\n[0m    let rep = suggestNodeRep(samplingProb, nHosts, [31mtree.label[0m[0m);\n"
                            in
@@ -2602,7 +2506,7 @@ recursive
                                      then
                                        x79.label
                                      else
-                                       let #var"2" =
+                                       let #var"1" =
                                          print
                                            "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 141:43-141:53>:\nField \'label\' not found\n[0m    weight bool2real(any(is2, rep)) + Real([31mtree.label[0m[0m) * 0.;\n"
                                        in
@@ -2624,7 +2528,7 @@ recursive
                          then
                            x75.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 149:6-149:14>:\nField \'age\' not found\n[0m      [31mtree.age[0m[0m,\n"
                            in
@@ -2638,7 +2542,7 @@ recursive
                          then
                            x77.label
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 151:6-151:16>:\nField \'label\' not found\n[0m      [31mtree.label[0m[0m,\n"
                            in
@@ -2655,7 +2559,7 @@ recursive
                                then
                                  x70.logModelDensity
                                else
-                                 let #var"2" =
+                                 let #var"1" =
                                    print
                                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 157:14-157:42>:\nField \'logModelDensity\' not found\n[0m    logWeight [31mbranchSample.logModelDensity[0m[0m - branchSample.logSamplingDensity - nodeLogSamplingDensity * exp(Real(tree.label) * 0.);\n"
                                  in
@@ -2665,7 +2569,7 @@ recursive
                                then
                                  x71.logSamplingDensity
                                else
-                                 let #var"2" =
+                                 let #var"1" =
                                    print
                                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 157:45-157:76>:\nField \'logSamplingDensity\' not found\n[0m    logWeight branchSample.logModelDensity - [31mbranchSample.logSamplingDensity[0m[0m - nodeLogSamplingDensity * exp(Real(tree.label) * 0.);\n"
                                  in
@@ -2683,7 +2587,7 @@ recursive
                                         then
                                           x73.label
                                         else
-                                          let #var"2" =
+                                          let #var"1" =
                                             print
                                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 157:113-157:123>:\nField \'label\' not found\n[0m    logWeight branchSample.logModelDensity - branchSample.logSamplingDensity - nodeLogSamplingDensity * exp(Real([31mtree.label[0m[0m) * 0.);\n"
                                           in
@@ -2700,7 +2604,7 @@ recursive
                          then
                            x69.leftKernel
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 161:33-161:48>:\nField \'leftKernel\' not found\n[0m    let leftMsg = mtxMul(newMsg, [31mtree.leftKernel[0m[0m);\n"
                            in
@@ -2714,7 +2618,7 @@ recursive
                          then
                            x68.rightKernel
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 162:34-162:50>:\nField \'rightKernel\' not found\n[0m    let rightMsg = mtxMul(newMsg, [31mtree.rightKernel[0m[0m);\n"
                            in
@@ -2727,7 +2631,7 @@ recursive
                          then
                            x64.left
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 166:6-166:15>:\nField \'left\' not found\n[0m      [31mtree.left[0m[0m, nHosts, leftMsg, rep, tree.age, modelParams, tree.leftKernel\n"
                            in
@@ -2743,7 +2647,7 @@ recursive
                          then
                            x66.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 166:39-166:47>:\nField \'age\' not found\n[0m      tree.left, nHosts, leftMsg, rep, [31mtree.age[0m[0m, modelParams, tree.leftKernel\n"
                            in
@@ -2754,7 +2658,7 @@ recursive
                          then
                            x67.leftKernel
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 166:62-166:77>:\nField \'leftKernel\' not found\n[0m      tree.left, nHosts, leftMsg, rep, tree.age, modelParams, [31mtree.leftKernel[0m\n"
                            in
@@ -2767,7 +2671,7 @@ recursive
                          then
                            x60.right
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 169:6-169:16>:\nField \'right\' not found\n[0m      [31mtree.right[0m[0m, nHosts, rightMsg, rep, tree.age, modelParams, tree.rightKernel\n"
                            in
@@ -2783,7 +2687,7 @@ recursive
                          then
                            x62.age
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 169:41-169:49>:\nField \'age\' not found\n[0m      tree.right, nHosts, rightMsg, rep, [31mtree.age[0m[0m, modelParams, tree.rightKernel\n"
                            in
@@ -2794,7 +2698,7 @@ recursive
                          then
                            x63.rightKernel
                          else
-                           let #var"2" =
+                           let #var"1" =
                              print
                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 169:64-169:80>:\nField \'rightKernel\' not found\n[0m      tree.right, nHosts, rightMsg, rep, tree.age, modelParams, [31mtree.rightKernel[0m\n"
                            in
@@ -2810,7 +2714,7 @@ recursive
                           then
                             x56.age
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 173:12-173:20>:\nField \'age\' not found\n[0m      age = [31mtree.age[0m[0m,\n"
                             in
@@ -2826,7 +2730,7 @@ recursive
                           then
                             x58.label
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 174:14-174:24>:\nField \'label\' not found\n[0m      label = [31mtree.label[0m[0m,\n"
                             in
@@ -2838,18 +2742,18 @@ recursive
                           then
                             x59.history
                           else
-                            let #var"2" =
+                            let #var"1" =
                               print
                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 176:16-176:36>:\nField \'history\' not found\n[0m      history = [31mbranchSample.history[0m[0m,\n"
                             in
                             exit 1 }
 in
-let anon42: [Float] -> Dist([Float]) = lam lambda1.
+let anon38: [Float] -> Dist([Float]) = lam lambda1.
     rbLambdaMove lambda1
 in
-let anon43: Float -> Dist(Float) = lam mu1.
+let anon39: Float -> Dist(Float) = lam mu1.
     rbMuMove mu1 in
-let anon44: Float -> Dist(Float) = lam beta1.
+let anon40: Float -> Dist(Float) = lam beta1.
     rbBetaMove beta1
 in
 let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnType =
@@ -2894,7 +2798,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x103.outMsg
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 39:36-39:56>:\nField \'outMsg\' not found\n[0m  let rootSamplingProb = mtxElemMul([31mpostorderTree.outMsg[0m[0m, rootPrior);\n"
                  in
@@ -2913,7 +2817,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x101.label
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 40:57-40:76>:\nField \'label\' not found\n[0m  let rootRep = suggestNodeRep(rootSamplingProb, nHosts, [31mpostorderTree.label[0m[0m);\n"
                  in
@@ -2934,7 +2838,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                            then
                              x99.label
                            else
-                             let #var"2" =
+                             let #var"1" =
                                print
                                  "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 42:45-42:64>:\nField \'label\' not found\n[0m  weight bool2real(any(is2, rootRep)) + Real([31mpostorderTree.label[0m[0m) * 0.;\n"
                              in
@@ -2964,7 +2868,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                            then
                              x97.label
                            else
-                             let #var"2" =
+                             let #var"1" =
                                print
                                  "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 49:70-49:89>:\nField \'label\' not found\n[0m  logWeight (rootLogModelDensity - rootLogSamplingDensity) * exp(Real([31mpostorderTree.label[0m[0m) * 0.);\n"
                              in
@@ -2981,7 +2885,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x95.leftKernel
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 53:31-53:55>:\nField \'leftKernel\' not found\n[0m  let leftMsg = mtxMul(newMsg, [31mpostorderTree.leftKernel[0m[0m);\n"
                  in
@@ -2995,7 +2899,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x94.rightKernel
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 54:32-54:57>:\nField \'rightKernel\' not found\n[0m  let rightMsg = mtxMul(newMsg, [31mpostorderTree.rightKernel[0m[0m);\n"
                  in
@@ -3019,7 +2923,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
             then
               x93.age
             else
-              let #var"2" =
+              let #var"1" =
                 print
                   "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 65:16-65:33>:\nField \'age\' not found\n[0m  let rootAge = [31mpostorderTree.age[0m[0m;\n"
               in
@@ -3032,7 +2936,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x90.left
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 67:4-67:22>:\nField \'left\' not found\n[0m    [31mpostorderTree.left[0m[0m, nHosts, leftMsg, rootRep, rootAge, modelParams, postorderTree.leftKernel\n"
                  in
@@ -3047,7 +2951,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x91.leftKernel
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 67:72-67:96>:\nField \'leftKernel\' not found\n[0m    postorderTree.left, nHosts, leftMsg, rootRep, rootAge, modelParams, [31mpostorderTree.leftKernel[0m\n"
                  in
@@ -3060,7 +2964,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x88.right
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 71:4-71:23>:\nField \'right\' not found\n[0m    [31mpostorderTree.right[0m[0m, nHosts, rightMsg, rootRep, rootAge, modelParams, postorderTree.rightKernel\n"
                  in
@@ -3075,7 +2979,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                then
                  x89.rightKernel
                else
-                 let #var"2" =
+                 let #var"1" =
                    print
                      "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 71:74-71:99>:\nField \'rightKernel\' not found\n[0m    postorderTree.right, nHosts, rightMsg, rootRep, rootAge, modelParams, [31mpostorderTree.rightKernel[0m\n"
                  in
@@ -3092,7 +2996,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                   then
                     x85.age
                   else
-                    let #var"2" =
+                    let #var"1" =
                       print
                         "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 76:10-76:26>:\nField \'age\' not found\n[0m    age = [31msymbiontTree.age[0m[0m, label = symbiontTree.label,\n"
                     in
@@ -3108,7 +3012,7 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
                   then
                     x87.label
                   else
-                    let #var"2" =
+                    let #var"1" =
                       print
                         "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 76:36-76:54>:\nField \'label\' not found\n[0m    age = symbiontTree.age, label = [31msymbiontTree.label[0m[0m,\n"
                     in
@@ -3119,31 +3023,13 @@ let hostRepertoireModel: TreeLabeled -> [[Int]] -> [[Float]] -> Float -> ReturnT
           ReturnType1
             { lambda = lambda, mu = mu, beta = beta, tree = historyTree }
 in
-let anon45: {dMean: Float, interactions: [[Int]], symbiontTree: TreeLabeled, hostDistances: [[Float]]} -> () -> ReturnType =
+let anon41: {dMean: Float, interactions: [[Int]], symbiontTree: TreeLabeled, hostDistances: [[Float]]} -> () -> ReturnType =
   lam input1.
-    lam #var"5".
+    lam #var"4".
       hostRepertoireModel
         input1.symbiontTree
         input1.interactions
         input1.hostDistances
         input1.dMean
 in
-let input =
-  { symbiontTree = Node
-    { age = 1.0
-    , label = 3
-    , left = Leaf
-        { label = 1
-        , age = 0.0
-        }
-    , right = Leaf
-        { label = 2
-        , age = 0.0
-        }
-    }
-  , interactions = [[2, 1], [1, 2]]
-  , hostDistances = [[0., 1.], [1., 0.]]
-  , dMean = 1.
-  } in
-let tmp = anon45 input {} in
-dprint tmp
+anon41 input {}

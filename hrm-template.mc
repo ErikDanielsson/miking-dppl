@@ -2,6 +2,7 @@ include "coreppl::coreppl-to-mexpr/pval-graph/host-rep-mcmc.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-mut.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-debug.mc"
 include "ext/mat-ext.mc"
+include "ext/file-ext.mc"
 include "common.mc"
 include "json.mc"
 
@@ -71,23 +72,53 @@ let hist2string : all a. (a -> String) -> [(a, Float)] -> String
   = lam toStr. lam l.
     strJoin "\n" (map (lam pair. join [toStr pair.0, "\t", float2string pair.1, "\t", progressBarNoPad 100 pair.1]) l)
 
+let sampleToJson = lam sample.
+  JsonObject (mapFromSeq cmpString
+    (concat
+    [ ("mu", JsonFloat sample.mu)
+    , ("beta", JsonFloat sample.beta)
+    , ("lambda", JsonArray (map (lam f. JsonFloat f) sample.lambda))
+    ] (map
+      (lam kv.
+        match kv with (k, rep) in
+        (int2string k, JsonArray (map (lam h. JsonInt h) rep))
+      )
+      (mapToSeq sample.reps)
+    )
+    )
+  )
+let samplesToJson = lam samples.
+  JsonArray (map sampleToJson samples)
+
 mexpr
+
+
+
 
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 40 in
+let iterations = 4000 in
 -- let toString = lam. "()" in
-let mkHisto2 = histogram (lam. lam. 0) in
-let toString2 = int2string in
+let mkHisto2 = histogram (seqCmp subi) in
+let toString2 = lam s. join ["[", strJoin ", " (map int2string s), "]"] in
 let toString = interval2string in
 let mkHisto = bucket 10 0.0 1. in
 let summarizePVal = lam label. lam pair.
   match pair with (time, res) in
   printLn (join [float2string time, "ms (", label, ")"]);
-  printLn (join ["Acceptance ratio: ", float2string res.acceptanceRatio]);
+  -- printLn (join ["Acceptance ratio: ", res.acceptanceRatio]);
   -- printLn (join (map (lam x. join [float2string x, "\t"]) res.samples));
-  if showHistogram then
+
+  let showAccept = lam acceptM. 
+    let ratio = lam a. lam n. divf (int2float a) (int2float n) in
+    strJoin "\n"
+      (map (lam t. match t with (m, (a, n)) in join [m, ": ", float2stringFixed (ratio a n) 10, " : ", int2string a, "/", int2string n])
+      (mapToSeq acceptM))
+  in
+  printLn "Acceptance ratios";
+  printLn (showAccept res.acceptanceRatio);
+  (if showHistogram then
     -- (map (lam s. printLn (join
     --   [ "mu:", float2string s.mu
     --   , ", beta: ", float2string s.beta
@@ -106,14 +137,21 @@ let summarizePVal = lam label. lam pair.
       printLn (join ["------ Lambda ", int2string i, " ------"]);
       printLn (hist2string toString (mkHisto lamiSamples))
     ) [0, 1, 2, 3];
-    let rootRepSamples = map (lam s. s.rootRep) res.samples in
-    map (lam i. 
-      let rriSamples = map (lam s. get s i) rootRepSamples in
-      printLn (join ["------ Rootrep ", int2string i, " ------"]);
-      printLn (hist2string toString2 (mkHisto2 rriSamples))
-    ) [0, 1];
+    -- let rootRepSamples = map (lam s. s.rootRep) res.samples in
+    let reps = mapEmpty subi in
+    let reps = foldl (lam m. lam inner. foldl (lam im. lam kv. match kv with (k, v) in mapInsertOrAppend k v im) m (mapToSeq inner.reps)) reps res.samples in
+    mapMapWithKey (lam k. lam v.
+      printLn (join ["------ Node repertoire ", int2string k, " ----------"]);
+      printLn (hist2string toString2 (mkHisto2 v))
+    ) reps;
     ()
-  else () in
+  else ());
+  match fileWriteOpen "hrm-samples.json" with Some wc in
+  let jStr = json2string (samplesToJson res.samples) in
+  fileWriteString wc jStr;
+  fileWriteFlush wc;
+  fileWriteClose wc
+ in
 let run =
   setSeed 1234;
   use ComposedVisi in
@@ -130,7 +168,7 @@ let run =
   -- printLn (join [int2string (length st.here), ", ", int2string (length st.below)]);
   -- printLn (join ["Took ", float2string time, "ms to find good instance."]);
   lam.
-    let r = mcmc (lam x. if eqi (modi x 100) 0 then hrmPrintState else (lam. lam. ())) (mkMCMCConfig iterations globalProb) instance in
+    let r = mcmc (lam x. if eqi (modi x 1000) 0 then printLn (join ["Iteration", int2string x]); hrmPrintState else (lam. lam. ())) (mkMCMCConfig iterations globalProb) instance in
     printLn "---- Finalize step JSON ----";
     hrmPrintState true instance; 
     printLn "----------------------------";
