@@ -65,8 +65,9 @@ with open("hrm-samples.json") as fh:
                 hashable_v = [tuple(item) for item in v]
             else:
                 hashable_v = v
+            d = len(hashable_v[0])
             uniq = set(hashable_v)
-            print(f"{k}: {len(uniq)}")
+            print(f"{k}: {len(uniq)} (/{3**d - 2**d})")
             print(uniq)
 
     plt.show()

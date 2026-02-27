@@ -131,7 +131,6 @@ lang MutPVal = PValInterface
     --   ]
     --   );
     if pred acceptProb then
-      -- printLn "ACCEPTING!!!";
       ( true
       , PVI
         { st = x.st
@@ -553,7 +552,6 @@ lang MutPVal = PValInterface
         modref st.temporaryWeight (addf (deref st.temporaryWeight) newTemp) in
       if eqi st.id (deref changeId) then
         -- Draw a new sample, i.e., value changes
-
         drawNew (deref drift) st
       else if eqi st.id (deref dist.changeId) then
         -- Reuse current sample, i.e., value doesn't change

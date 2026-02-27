@@ -1,180 +1,301 @@
---- build/transformed-model.mc	2026-02-22 17:36:06.633864588 +0100
-+++ after-debug-hrm.mc	2026-02-21 17:42:42.812000176 +0100
-@@ -426,8 +426,8 @@
+--- build/transformed-model.mc	2026-02-26 15:19:17.411815631 +0100
++++ simple-input-HRM.mc	2026-02-26 19:39:40.762471053 +0100
+@@ -1,3 +1,23 @@
++  type TreeLabeled p18 p19 p20 in
++  con Leaf: all p21. all p22. all p23. p21 -> TreeLabeled p21 p22 p23
++  in
++  con Node: all p24. all p25. all p26. {age: p25, left: TreeLabeled p24 p25 p26, label: p26, right: TreeLabeled p24 p25 p26} -> TreeLabeled p24 p25 p26
++  in
++let input1 =
++  { interactions = [ [ 2, 1 ],
++        [ 1, 2 ] ],
++    symbiontTree =
++      Node
++        { age = 1.,
++          label = 3,
++          left = Leaf
++              { age = 0., label = 1 },
++          right = Leaf
++              { age = 0., label = 2 } },
++    hostDistances = [ [ 0., 1. ],
++        [ 1., 0. ] ] }
++in
++
+ lam st.
+   type Option p p1 in
+   con Some: all p2. all p3. p2 -> Option p2 p3 in
+@@ -13,11 +33,7 @@
+   con DimensionMismatch: all p14. all p15. p14 -> MatError p14 p15
+   in
+   con NotSquare: all p16. all p17. p17 -> MatError p16 p17 in
+-  type TreeLabeled p18 p19 p20 in
+-  con Leaf: all p21. all p22. all p23. p21 -> TreeLabeled p21 p22 p23
+-  in
+-  con Node: all p24. all p25. all p26. {age: p25, left: TreeLabeled p24 p25 p26, label: p26, right: TreeLabeled p24 p25 p26} -> TreeLabeled p24 p25 p26
+-  in
++
+   type MsgTree p27 p28 p29 p30 p31 p32 p33 p34 in
+   con MsgLeaf: all p35. all p36. all p37. all p38. all p39. all p40. all p41. all p42. p35 -> MsgTree p35 p36 p37 p38 p39 p40 p41 p42
+   in
+@@ -497,7 +513,7 @@
+             (st921, x1474)
+           in
+           match
+-            p_subApply st921 simpleStoreSubmodel (simpleInit {}) x1470 x1474
++            p_subApply st921 hrmStoreSubmodel (hrmInit {}) x1470 x1474
+           with
+             (st922, x1475)
+           in
+@@ -700,8 +716,8 @@
                  match
                    p_bind
-                     st7
+                     st9
 -                    simpleStoreSubmodel
 -                    (simpleInit {})
 +                    hrmStoreSubmodel
 +                    (hrmInit {})
-                     (lam st8.
-                        lam x8.
-                          match x8 with true
-@@ -937,8 +937,8 @@
+                     (lam st10.
+                        lam x10.
+                          match x10 with true
+@@ -1170,8 +1186,8 @@
              match
                p_bind
-                 st817
+                 st851
 -                simpleStoreSubmodel
 -                (simpleInit {})
 +                hrmStoreSubmodel
 +                (hrmInit {})
-                 (lam st818.
-                    lam x1271.
+                 (lam st852.
+                    lam x1318.
                       match
-@@ -996,8 +996,8 @@
+@@ -1229,8 +1245,8 @@
              match
                p_bind
-                 st807
+                 st841
 -                simpleStoreSubmodel
 -                (simpleInit {})
 +                hrmStoreSubmodel
 +                (hrmInit {})
-                 (lam st808.
-                    lam x1262.
+                 (lam st842.
+                    lam x1306.
                       match
-@@ -1254,7 +1254,7 @@
-             (st789, x1236)
-           in
-           match
--            p_subApply st789 simpleStoreSubmodel (simpleInit {}) x1234 x1236
-+            p_subApply st789 hrmStoreSubmodel (hrmInit {}) x1234 x1236
-           with
-             (st790, x1237)
-           in
-@@ -1334,8 +1334,8 @@
-           match
-             p_bind
-               st771
+@@ -1530,7 +1546,7 @@
+                 (st811, x1264)
+               in
+               match
+-                p_subApply st811 simpleStoreSubmodel (simpleInit {}) x1262 x1264
++                p_subApply st811 hrmStoreSubmodel (hrmInit {}) x1262 x1264
+               with
+                 (st812, x1265)
+               in
+@@ -1567,8 +1583,8 @@
+               match
+                 p_bind
+                   st817
+-                  simpleStoreSubmodel
+-                  (simpleInit {})
++                  hrmStoreSubmodel
++                  (hrmInit {})
+                   (lam st818.
+                      lam x1273.
+                        match
+@@ -1638,8 +1654,8 @@
+             in
+             p_subMap
+               st795
 -              simpleStoreSubmodel
 -              (simpleInit {})
 +              hrmStoreSubmodel
 +              (hrmInit {})
-               (lam st772.
-                  lam x1205.
+               (lam x1228.
+                  lam st796.
+                    match geqi 0 x1228 with true
+@@ -1741,8 +1757,8 @@
+         match
+           p_subMap
+             st785
+-            simpleStoreSubmodel
+-            (simpleInit {})
++            hrmStoreSubmodel
++            (hrmInit {})
+             (lam x1221.
+                lam st786.
+                  match geqi 0 x1221 with true
+@@ -1767,8 +1783,8 @@
+         match
+           p_subMap
+             st790
+-            simpleStoreSubmodel
+-            (simpleInit {})
++            hrmStoreSubmodel
++            (hrmInit {})
+             (lam x1224.
+                lam st791.
+                  match geqi 0 x1224 with true
+@@ -1852,8 +1868,8 @@
+           match
+             p_bind
+               st769
+-              simpleStoreSubmodel
+-              (simpleInit {})
++              hrmStoreSubmodel
++              (hrmInit {})
+               (lam st770.
+                  lam x1194.
                     match
-@@ -1468,8 +1468,8 @@
+@@ -1979,8 +1995,8 @@
          match
            p_bind
-             st758
+             st755
 -            simpleStoreSubmodel
 -            (simpleInit {})
 +            hrmStoreSubmodel
 +            (hrmInit {})
-             (lam st759.
-                lam x1179.
-                  match lti 0 x1179 with true
-@@ -1540,8 +1540,8 @@
-           in
-           p_bind
-             st23
--            simpleStoreSubmodel
--            (simpleInit {})
-+            hrmStoreSubmodel
-+            (hrmInit {})
-             (lam st24.
-                lam x31.
-                  match x31 with true
-@@ -2306,8 +2306,8 @@
+             (lam st756.
+                lam x1171.
+                  match lti 0 x1171 with true
+@@ -2220,6 +2236,19 @@
+                          1
+                          nhosts1)
+                   in
++                  let ll = (match tree1 with Leaf carried4
++                          then
++                            carried4.label
++                          else match tree1 with Node carried5
++                          then
++                            carried5.label
++                          else
++                            let #var"22" =
++                              print
++                                "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/belief-propagation.tppl 10:32-10:42>:\nField \'label\' not found\n[0m    let leafInts = interactions[[31mtree.label[0m[0m];\n"
++                            in
++                            exit 1) in
++
+                   let leafInts =
+                     get
+                       interactions1
+@@ -2238,6 +2267,8 @@
+                             exit 1)
+                          1)
+                   in
++                  let __outMsg = mtxCreate nhosts1 3 (observationMessage leafInts 1 nhosts1) in
++                  let st36 = p_export st36 (hrmStoreNodeMsg ll) (p_pure __outMsg) in
+                   (st36, MsgLeaf
+                     { age = 0.,
+                       label =
+@@ -2362,6 +2393,12 @@
+                 in
+                 match mtxTrans st42 leftKernel with (st43, x43)
+                 in
++                -- Save the transition kernels
++                let getLabel = lam n. match n with MsgLeaf l then l.label else match n with MsgNode n in n.label in
++                let leftLabel = getLabel left in
++                let rightLabel = getLabel right in
++                let st43 = p_export st43 (hrmStoreTransKernel rightLabel) rightKernel in 
++                let st43 = p_export st43 (hrmStoreTransKernel leftLabel) leftKernel in 
+                 match
+                   mtxMul
+                     st43
+@@ -2533,8 +2570,8 @@
                    match
                      p_bind
-                       st45
+                       st50
 -                      simpleStoreSubmodel
 -                      (simpleInit {})
 +                      hrmStoreSubmodel
 +                      (hrmInit {})
-                       (lam st46.
-                          lam x53.
+                       (lam st51.
+                          lam x50.
                             match
-@@ -2368,8 +2368,8 @@
+@@ -2595,8 +2632,8 @@
                match
                  p_bind
-                   st707
+                   st737
 -                  simpleStoreSubmodel
 -                  (simpleInit {})
 +                  hrmStoreSubmodel
 +                  (hrmInit {})
-                   (lam st708.
-                      lam x1111.
+                   (lam st738.
+                      lam x1144.
                         match
-@@ -2411,8 +2411,8 @@
+@@ -2658,8 +2695,8 @@
                match
                  p_bind
-                   st49
+                   st54
 -                  simpleStoreSubmodel
 -                  (simpleInit {})
 +                  hrmStoreSubmodel
 +                  (hrmInit {})
-                   (lam st50.
-                      lam x57.
-                        match eqi x57 2 with true
-@@ -2516,8 +2516,8 @@
+                   (lam st55.
+                      lam x55.
+                        match eqi x55 2 with true
+@@ -2995,8 +3032,8 @@
                        in
                        p_bind
-                         st55
+                         st58
 -                        simpleStoreSubmodel
 -                        (simpleInit {})
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
-                         (lam st56.
-                            lam x66.
+                         (lam st59.
+                            lam x61.
                               match
-@@ -2539,8 +2539,8 @@
+@@ -3018,8 +3055,8 @@
                                 in
                                 p_bind
-                                  st57
+                                  st60
 -                                 simpleStoreSubmodel
 -                                 (simpleInit {})
 +                                 hrmStoreSubmodel
 +                                 (hrmInit {})
-                                  (lam st58.
-                                     lam x68.
-                                       match eqi x68 1 with true
-@@ -2561,8 +2561,8 @@
+                                  (lam st61.
+                                     lam x63.
+                                       match eqi x63 1 with true
+@@ -3040,8 +3077,8 @@
                  lam nhosts3.
                    p_bind
-                     st59
+                     st62
 -                    simpleStoreSubmodel
 -                    (simpleInit {})
 +                    hrmStoreSubmodel
 +                    (hrmInit {})
-                     (lam st60.
-                        lam x70.
-                          match gti eventIndex11 x70 with true
-@@ -2579,8 +2579,8 @@
+                     (lam st63.
+                        lam x65.
+                          match gti eventIndex11 x65 with true
+@@ -3058,8 +3095,8 @@
                           in
                           p_bind
-                            st61
+                            st64
 -                           simpleStoreSubmodel
 -                           (simpleInit {})
 +                           hrmStoreSubmodel
 +                           (hrmInit {})
-                            (lam st62.
-                               lam x73.
+                            (lam st65.
+                               lam x68.
                                  match
-@@ -2602,8 +2602,8 @@
+@@ -3081,8 +3118,8 @@
                                    in
                                    p_bind
-                                     st63
+                                     st66
 -                                    simpleStoreSubmodel
 -                                    (simpleInit {})
 +                                    hrmStoreSubmodel
 +                                    (hrmInit {})
-                                     (lam st64.
-                                        lam x75.
-                                          match eqi x75 1 with true
-@@ -2947,8 +2947,8 @@
+                                     (lam st67.
+                                        lam x70.
+                                          match eqi x70 1 with true
+@@ -3406,8 +3443,8 @@
              in
              p_bind
-               st676
+               st674
 -              simpleStoreSubmodel
 -              (simpleInit {})
 +              hrmStoreSubmodel
 +              (hrmInit {})
-               (lam st677.
-                  lam x1060.
-                    match eqi x1060 0 with true
-@@ -3175,8 +3175,8 @@
+               (lam st675.
+                  lam x1049.
+                    match eqi x1049 0 with true
+@@ -3596,8 +3633,8 @@
              in
              p_bind
                st655
@@ -183,97 +304,112 @@
 +              hrmStoreSubmodel
 +              (hrmInit {})
                (lam st656.
-                  lam x1029.
-                    match eqi x1029 0 with true
-@@ -3387,8 +3387,8 @@
+                  lam x1024.
+                    match eqi x1024 0 with true
+@@ -3614,8 +3651,16 @@
+                      in
+                      match sapply st657 repertoire12 with (st658, x1028)
+                      in
++                     let pf = lam s. printLn (join ["Repertoire [", strJoin ", " (map int2string s), "]"]) in
++                     let makeDirtyArray = lam st. lam arr.
++                       p_traverseSeq st (lam st. lam a. (st, a)) arr 
++                     in
++                     match makeDirtyArray st657 repertoire12 with(st657, tmp) in
++                     match p_map st657 pf tmp with (st657, _) in
+                      match whichTrue1 st658 x1028 with (st659, x1029)
+                      in
++                     let pf = lam s. printLn (join ["Which true [", strJoin ", " (map int2string s), "]"]) in
++                     match p_map st658 pf x1029 with (st658, _) in
+                      match
+                        mtxRowCols2
+                          st659
+@@ -3635,6 +3680,8 @@
+                      in
+                      match mtxMean1 st660 x1030 with (st661, x1031)
+                      in
++                     let pf = lam s. printLn (join ["Normalized distance ", float2string s]) in
++                     match p_map st661 pf x1031 with (st661, _) in
+                      match
+                        p_map
+                          st661
+@@ -3770,8 +3817,8 @@
              in
              p_bind
-               st629
+               st631
 -              simpleStoreSubmodel
 -              (simpleInit {})
 +              hrmStoreSubmodel
 +              (hrmInit {})
-               (lam st630.
-                  lam x989.
-                    match eqi x989 0 with true
-@@ -3611,8 +3611,8 @@
-               match
-                 p_bind
-                   st73
--                  simpleStoreSubmodel
--                  (simpleInit {})
-+                  hrmStoreSubmodel
-+                  (hrmInit {})
-                   (lam st74.
-                      lam x91.
-                        match eqi x91 2 with true
-@@ -3710,8 +3710,8 @@
+               (lam st632.
+                  lam x988.
+                    match eqi x988 0 with true
+@@ -3977,8 +4024,8 @@
              match
                p_bind
-                 st613
+                 st617
 -                simpleStoreSubmodel
 -                (simpleInit {})
 +                hrmStoreSubmodel
 +                (hrmInit {})
-                 (lam st614.
-                    lam x968.
-                      match eqi x968 2 with true
-@@ -3729,8 +3729,8 @@
+                 (lam st618.
+                    lam x972.
+                      match eqi x972 2 with true
+@@ -3996,8 +4043,8 @@
              in
              p_bind
-               st616
+               st620
 -              simpleStoreSubmodel
 -              (simpleInit {})
 +              hrmStoreSubmodel
 +              (hrmInit {})
-               (lam st617.
-                  lam x972.
-                    match x972 with true
-@@ -3809,8 +3809,8 @@
+               (lam st621.
+                  lam x976.
+                    match x976 with true
+@@ -4076,8 +4123,8 @@
              match
                p_bind
-                 st606
+                 st610
 -                simpleStoreSubmodel
 -                (simpleInit {})
 +                hrmStoreSubmodel
 +                (hrmInit {})
-                 (lam st607.
-                    lam x959.
-                      match eqi x959 2 with true
-@@ -3828,8 +3828,8 @@
+                 (lam st611.
+                    lam x963.
+                      match eqi x963 2 with true
+@@ -4095,8 +4142,8 @@
              in
              p_bind
-               st609
+               st613
 -              simpleStoreSubmodel
 -              (simpleInit {})
 +              hrmStoreSubmodel
 +              (hrmInit {})
-               (lam st610.
-                  lam x963.
-                    match x963 with true
-@@ -3897,8 +3897,8 @@
+               (lam st614.
+                  lam x967.
+                    match x967 with true
+@@ -4164,8 +4211,8 @@
              match
                p_bind
-                 st594
+                 st598
 -                simpleStoreSubmodel
 -                (simpleInit {})
 +                hrmStoreSubmodel
 +                (hrmInit {})
-                 (lam st595.
-                    lam x942.
-                      match eqi x942 2 with true
-@@ -3930,8 +3930,8 @@
+                 (lam st599.
+                    lam x946.
+                      match eqi x946 2 with true
+@@ -4197,8 +4244,8 @@
              in
              p_bind
-               st597
+               st601
 -              simpleStoreSubmodel
 -              (simpleInit {})
 +              hrmStoreSubmodel
 +              (hrmInit {})
-               (lam st598.
-                  lam x948.
-                    match x948 with true
-@@ -3994,8 +3994,8 @@
+               (lam st602.
+                  lam x953.
+                    match x953 with true
+@@ -4261,8 +4308,8 @@
                    match
                      p_bind
                        st76
@@ -282,9 +418,9 @@
 +                      hrmStoreSubmodel
 +                      (hrmInit {})
                        (lam st77.
-                          lam x96.
-                            match eqi x96 2 with true
-@@ -4036,8 +4036,8 @@
+                          lam x86.
+                            match eqi x86 2 with true
+@@ -4303,8 +4350,8 @@
                    match
                      p_bind
                        st81
@@ -293,9 +429,9 @@
 +                      hrmStoreSubmodel
 +                      (hrmInit {})
                        (lam st82.
-                          lam x104.
-                            match eqi (get x104 (subi x103 1)) 2 with true
-@@ -4101,8 +4101,8 @@
+                          lam x94.
+                            match eqi (get x94 (subi x93 1)) 2 with true
+@@ -4368,8 +4415,8 @@
                    match
                      p_bind
                        st86
@@ -304,9 +440,9 @@
 +                      hrmStoreSubmodel
 +                      (hrmInit {})
                        (lam st87.
-                          lam x112.
-                            match eqi x112 0 with true
-@@ -4143,8 +4143,8 @@
+                          lam x102.
+                            match eqi x102 0 with true
+@@ -4410,8 +4457,8 @@
                    match
                      p_bind
                        st91
@@ -315,71 +451,71 @@
 +                      hrmStoreSubmodel
 +                      (hrmInit {})
                        (lam st92.
-                          lam x120.
-                            match eqi (get x120 (subi x119 1)) 0 with true
-@@ -4208,8 +4208,8 @@
+                          lam x110.
+                            match eqi (get x110 (subi x109 1)) 0 with true
+@@ -4475,8 +4522,8 @@
                  match
                    p_bind
-                     st581
+                     st585
 -                    simpleStoreSubmodel
 -                    (simpleInit {})
 +                    hrmStoreSubmodel
 +                    (hrmInit {})
-                     (lam st582.
-                        lam x920.
-                          match eqi x920 2 with true
-@@ -4253,8 +4253,8 @@
+                     (lam st586.
+                        lam x924.
+                          match eqi x924 2 with true
+@@ -4520,8 +4567,8 @@
                  match
                    p_bind
-                     st586
+                     st590
 -                    simpleStoreSubmodel
 -                    (simpleInit {})
 +                    hrmStoreSubmodel
 +                    (hrmInit {})
-                     (lam st587.
-                        lam x930.
-                          match eqi x930 0 with true
-@@ -4295,8 +4295,8 @@
+                     (lam st591.
+                        lam x934.
+                          match eqi x934 0 with true
+@@ -4562,8 +4609,8 @@
                  match
                    p_bind
-                     st571
+                     st575
 -                    simpleStoreSubmodel
 -                    (simpleInit {})
 +                    hrmStoreSubmodel
 +                    (hrmInit {})
-                     (lam st572.
-                        lam x902.
-                          match eqi (get x902 (subi x900 1)) 2 with true
-@@ -4340,8 +4340,8 @@
+                     (lam st576.
+                        lam x906.
+                          match eqi (get x906 (subi x905 1)) 2 with true
+@@ -4607,8 +4654,8 @@
                  match
                    p_bind
-                     st576
+                     st580
 -                    simpleStoreSubmodel
 -                    (simpleInit {})
 +                    hrmStoreSubmodel
 +                    (hrmInit {})
-                     (lam st577.
-                        lam x913.
-                          match eqi (get x913 (subi x912 1)) 0 with true
-@@ -4490,7 +4490,7 @@
-                             (st105, x138)
+                     (lam st581.
+                        lam x917.
+                          match eqi (get x917 (subi x916 1)) 0 with true
+@@ -4757,7 +4804,7 @@
+                             (st105, x128)
                            in
                            match
--                            p_subApply st105 simpleStoreSubmodel (simpleInit {}) x136 x138
-+                            p_subApply st105 hrmStoreSubmodel (hrmInit {}) x136 x138
+-                            p_subApply st105 simpleStoreSubmodel (simpleInit {}) x126 x128
++                            p_subApply st105 hrmStoreSubmodel (hrmInit {}) x126 x128
                            with
-                             (st106, x139)
+                             (st106, x129)
                            in
-@@ -4682,7 +4682,7 @@
-                             (st127, x172)
+@@ -4949,7 +4996,7 @@
+                             (st127, x165)
                            in
                            match
--                            p_subApply st127 simpleStoreSubmodel (simpleInit {}) x170 x172
-+                            p_subApply st127 hrmStoreSubmodel (hrmInit {}) x170 x172
+-                            p_subApply st127 simpleStoreSubmodel (simpleInit {}) x163 x165
++                            p_subApply st127 hrmStoreSubmodel (hrmInit {}) x163 x165
                            with
-                             (st128, x173)
+                             (st128, x166)
                            in
-@@ -4766,8 +4766,8 @@
+@@ -5033,8 +5080,8 @@
                        in
                        p_bind
                          st141
@@ -388,9 +524,9 @@
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
                          (lam st142.
-                            lam x194.
-                              match gti nextIndex11 x194 with true
-@@ -5006,8 +5006,8 @@
+                            lam x187.
+                              match gti nextIndex11 x187 with true
+@@ -5273,8 +5320,8 @@
                        in
                        p_bind
                          st170
@@ -399,9 +535,9 @@
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
                          (lam st171.
-                            lam x241.
-                              match gti nextIndex12 x241 with true
-@@ -5253,8 +5253,8 @@
+                            lam x234.
+                              match gti nextIndex12 x234 with true
+@@ -5520,8 +5567,8 @@
                        in
                        p_bind
                          st202
@@ -410,9 +546,9 @@
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
                          (lam st203.
-                            lam x290.
-                              match gti nextIndex13 x290 with true
-@@ -5493,8 +5493,8 @@
+                            lam x283.
+                              match gti nextIndex13 x283 with true
+@@ -5760,8 +5807,8 @@
                        in
                        p_bind
                          st231
@@ -421,20 +557,18 @@
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
                          (lam st232.
-                            lam x348.
-                              match gti nextIndex14 x348 with true
-@@ -5766,7 +5766,9 @@
+                            lam x338.
+                              match gti nextIndex14 x338 with true
+@@ -6033,7 +6080,7 @@
              with
-               (st570, x898)
+               (st574, x903)
              in
--            p_assume st570 simpleStoreAssume x898
-+            match p_traverseSeq st570 (lam st. lam a. (st, a)) x894 with (st570, dirtySeq) in
-+            match p_map st570 (lam s. printLn (join ["Msg: ", strJoin ", " (map float2string s)])) dirtySeq with (st570, _) in
-+            p_assume "anon15 assume" st570 (hrmStoreNode nodeLabel51 x893) x898
+-            p_assume st574 simpleStoreAssume x903
++            p_assume st574 (hrmStoreNode nodeLabel51 x897) x903
    in
    recursive
-     let rec8 =
-@@ -5824,8 +5826,8 @@
+     let rec9 =
+@@ -6091,8 +6138,8 @@
                      lam embeddedQMatrix11.
                        p_bind
                          st266
@@ -443,27 +577,27 @@
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
                          (lam st267.
-                            lam x408.
+                            lam x402.
                               match
-@@ -5902,7 +5904,7 @@
+@@ -6169,7 +6216,7 @@
                                 in
-                                match p_apply st275 x420 x422 with (st276, x423)
+                                match p_apply st275 x415 x417 with (st276, x418)
                                 in
--                               match p_assume st276 simpleStoreAssume x423 with (st277, nextState11)
-+                               match p_assume "assume here" st276 (hrmStoreBranchState nodeLabel host) x423 with (st277, nextState11)
+-                               match p_assume st276 simpleStoreAssume x418 with (st277, nextState11)
++                               match p_assume st276 (hrmStoreBranchState nodeLabel host) x418 with (st277, nextState11)
                                 in
                                 match
                                   p_traverseSeq
-@@ -5949,7 +5951,7 @@
+@@ -6216,7 +6263,7 @@
                                 in
-                                match p_apply st281 x429 x431 with (st282, x432)
+                                match p_apply st281 x424 x426 with (st282, x427)
                                 in
--                               match p_assume st282 simpleStoreAssume x432 with (st283, x433)
-+                               match p_assume "assume here" st282 (hrmStoreBranchTime nodeLabel host) x432 with (st283, x433)
+-                               match p_assume st282 simpleStoreAssume x427 with (st283, x428)
++                               match p_assume st282 (hrmStoreBranchTime nodeLabel host) x427 with (st283, x428)
                                 in
                                 match
                                   p_map
-@@ -6054,8 +6056,8 @@
+@@ -6321,8 +6368,8 @@
                      lam embeddedQMatrix12.
                        p_bind
                          st291
@@ -472,96 +606,107 @@
 +                        hrmStoreSubmodel
 +                        (hrmInit {})
                          (lam st292.
-                            lam x448.
+                            lam x443.
                               match
-@@ -6135,7 +6137,7 @@
+@@ -6402,7 +6449,7 @@
                                 in
-                                match p_apply st301 x462 x464 with (st302, x465)
+                                match p_apply st301 x457 x459 with (st302, x460)
                                 in
--                               match p_assume st302 simpleStoreAssume x465 with (st303, nextState12)
-+                               match p_assume "assume here" st302 (hrmStoreBranchState nodeLabel1 host1) x465 with (st303, nextState12)
+-                               match p_assume st302 simpleStoreAssume x460 with (st303, nextState12)
++                               match p_assume st302 (hrmStoreBranchState nodeLabel1 host1) x460 with (st303, nextState12)
                                 in
                                 match
                                   p_traverseSeq
-@@ -6182,7 +6184,7 @@
+@@ -6449,7 +6496,7 @@
                                 in
-                                match p_apply st307 x471 x473 with (st308, x474)
+                                match p_apply st307 x466 x468 with (st308, x469)
                                 in
--                               match p_assume st308 simpleStoreAssume x474 with (st309, x475)
-+                               match p_assume "assume here" st308 (hrmStoreBranchTime nodeLabel1 host1) x474 with (st309, x475)
+-                               match p_assume st308 simpleStoreAssume x469 with (st309, x470)
++                               match p_assume st308 (hrmStoreBranchTime nodeLabel1 host1) x469 with (st309, x470)
                                 in
                                 match
                                   p_map
-@@ -6364,7 +6366,7 @@
+@@ -6631,7 +6678,7 @@
                      in
-                     match p_apply st557 x878 x880 with (st558, x882)
+                     match p_apply st561 x883 x885 with (st562, x886)
                      in
--                    match p_assume st558 simpleStoreAssume x882 with (st559, x883)
-+                    match p_assume "assume here" st558 (hrmStoreBranchTime nodeLabel12 x872) x882 with (st559, x883)
-                     in
-                     match
-                       p_map
-@@ -6410,7 +6412,7 @@
-                     let st564 =
-                       p_weight
-                         st563
--                        simpleStoreWeight
-+                        (hrmStoreBridgeSuppWeight nodeLabel12 x872)
-                         (lam x890.
-                            externalLog
-                              (addf
-@@ -6499,7 +6501,7 @@
-                     in
-                     match p_apply st545 x860 x862 with (st546, x863)
-                     in
--                    match p_assume st546 simpleStoreAssume x863 with (st547, x864)
-+                    match p_assume "assume here" st546 (hrmStoreBranchTime nodeLabel11 x854) x863 with (st547, x864)
+-                    match p_assume st562 simpleStoreAssume x886 with (st563, x887)
++                    match p_assume st562 (hrmStoreBranchTime nodeLabel12 x876) x886 with (st563, x887)
                      in
                      match
                        p_map
-@@ -6545,7 +6547,7 @@
-                     let st552 =
+@@ -6677,7 +6724,7 @@
+                     let st568 =
                        p_weight
-                         st551
+                         st567
 -                        simpleStoreWeight
-+                        (hrmStoreBridgeSuppWeight nodeLabel11 x854)
-                         (lam x871.
++                        (hrmStoreBridgeSuppWeight nodeLabel12 x876)
+                         (lam x895.
                             externalLog
                               (addf
-@@ -7268,8 +7270,8 @@
+@@ -6766,7 +6813,7 @@
+                     in
+                     match p_apply st549 x864 x866 with (st550, x867)
+                     in
+-                    match p_assume st550 simpleStoreAssume x867 with (st551, x868)
++                    match p_assume st550 (hrmStoreBranchTime nodeLabel11 x858) x867 with (st551, x868)
+                     in
+                     match
+                       p_map
+@@ -6812,7 +6859,7 @@
+                     let st556 =
+                       p_weight
+                         st555
+-                        simpleStoreWeight
++                        (hrmStoreBridgeSuppWeight nodeLabel11 x858)
+                         (lam x875.
+                            externalLog
+                              (addf
+@@ -7468,8 +7515,8 @@
+           in
+           p_bind
+             st360
+-            simpleStoreSubmodel
+-            (simpleInit {})
++            hrmStoreSubmodel
++            (hrmInit {})
+             (lam st361.
+                lam x572.
+                  match x572 with true
+@@ -7564,8 +7611,8 @@
                          match
                            p_bind
-                             st364
+                             st367
 -                            simpleStoreSubmodel
 -                            (simpleInit {})
 +                            hrmStoreSubmodel
 +                            (hrmInit {})
-                             (lam st365.
-                                lam x577.
+                             (lam st368.
+                                lam x575.
                                   match
-@@ -7462,8 +7464,8 @@
+@@ -7758,8 +7805,8 @@
                                       match
                                         p_bind
-                                          st382
+                                          st385
 -                                         simpleStoreSubmodel
 -                                         (simpleInit {})
 +                                         hrmStoreSubmodel
 +                                         (hrmInit {})
-                                          (lam st383.
-                                             lam x615.
-                                               match gti 1 x615 with true
-@@ -7572,7 +7574,7 @@
-                                                 (st391, x625)
+                                          (lam st386.
+                                             lam x613.
+                                               match gti 1 x613 with true
+@@ -7868,7 +7915,7 @@
+                                                 (st394, x623)
                                                in
                                                match
--                                                p_subApply st391 simpleStoreSubmodel (simpleInit {}) x623 x625
-+                                                p_subApply st391 hrmStoreSubmodel (hrmInit {}) x623 x625
+-                                                p_subApply st394 simpleStoreSubmodel (simpleInit {}) x621 x623
++                                                p_subApply st394 hrmStoreSubmodel (hrmInit {}) x621 x623
                                                with
-                                                 (st392, x626)
+                                                 (st395, x624)
                                                in
-@@ -7744,10 +7746,22 @@
+@@ -8040,10 +8087,22 @@
                          in
-                         match p_apply st409 x658 x660 with (st410, x661)
+                         match p_apply st412 x656 x658 with (st413, x659)
                          in
 +                        let nl = (match tree2 with MsgLeaf carried26
 +                                             then
@@ -570,77 +715,77 @@
 +                                             then
 +                                               carried27.label
 +                                             else
-+                                               let #var"162" =
++                                               let #var"263" =
 +                                                 print
-+                                                   "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 129:90-129:100>:\nField \'label\' not found\n[0m    logWeight (branchSample.logModelDensity - branchSample.logSamplingDensity) * exp(Real([31mtree.label[0m[0m) * 0.);\n"
++                                                   "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 127:90-127:100>:\nField \'label\' not found\n[0m    logWeight (branchSample.logModelDensity - branchSample.logSamplingDensity) * exp(Real([31mtree.label[0m[0m) * 0.);\n"
 +                                               in
 +                                               exit 1) in
-                         let st411 =
+                         let st414 =
                            p_weight
-                             st410
+                             st413
 -                            simpleStoreWeight
 +                            (hrmStoreLikrWeight nl)
-                             (/-temp-/lam x664.
-                                x664)
-                             x661
-@@ -7844,10 +7858,22 @@
+                             (/-temp-/lam x662.
+                                x662)
+                             x659
+@@ -8140,10 +8199,22 @@
                        in
-                       match bool2real st415 x665 with (st416, x666)
+                       match bool2real st418 x663 with (st419, x664)
                        in
-+                      let nl = (match tree2 with MsgLeaf carried36
-+                           then
-+                             carried36.label
-+                           else match tree2 with MsgNode carried37
-+                           then
-+                             carried37.label
-+                           else
-+                             let #var"170" =
-+                               print
-+                                 "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 139:51-139:61>:\nField \'label\' not found\n[0m    let rep = suggestNodeRep(samplingProb, nHosts, [31mtree.label[0m[0m);\n"
-+                             in
-+                             exit 1) in
-                       let st417 =
++                      let nl = (match tree2 with MsgLeaf carried52
++                                         then
++                                           carried52.label
++                                         else match tree2 with MsgNode carried53
++                                         then
++                                           carried53.label
++                                         else
++                                           let #var"293" =
++                                             print
++                                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 139:43-139:53>:\nField \'label\' not found\n[0m    weight bool2real(any(is2, rep)) + Real([31mtree.label[0m[0m) * 0.;\n"
++                                           in
++                                           exit 1) in
+                       let st420 =
                          p_weight
-                           st416
+                           st419
 -                          simpleStoreWeight
 +                          (hrmStoreNodeSuppWeight nl)
-                           (lam x772.
+                           (lam x770.
                               externalLog
                                 (addf
-@@ -7922,8 +7948,8 @@
+@@ -8218,8 +8289,8 @@
                        match
                          p_bind
-                           st422
+                           st425
 -                          simpleStoreSubmodel
 -                          (simpleInit {})
 +                          hrmStoreSubmodel
 +                          (hrmInit {})
-                           (lam st423.
-                              lam x669.
+                           (lam st426.
+                              lam x667.
                                 match
-@@ -8131,8 +8157,8 @@
+@@ -8427,8 +8498,8 @@
                                     match
                                       p_bind
-                                        st442
+                                        st445
 -                                       simpleStoreSubmodel
 -                                       (simpleInit {})
 +                                       hrmStoreSubmodel
 +                                       (hrmInit {})
-                                        (lam st443.
-                                           lam x712.
-                                             match gti 1 x712 with true
-@@ -8241,7 +8267,7 @@
-                                               (st451, x722)
+                                        (lam st446.
+                                           lam x710.
+                                             match gti 1 x710 with true
+@@ -8537,7 +8608,7 @@
+                                               (st454, x720)
                                              in
                                              match
--                                              p_subApply st451 simpleStoreSubmodel (simpleInit {}) x720 x722
-+                                              p_subApply st451 hrmStoreSubmodel (hrmInit {}) x720 x722
+-                                              p_subApply st454 simpleStoreSubmodel (simpleInit {}) x718 x720
++                                              p_subApply st454 hrmStoreSubmodel (hrmInit {}) x718 x720
                                              with
-                                               (st452, x723)
+                                               (st455, x721)
                                              in
-@@ -8432,10 +8458,22 @@
+@@ -8728,10 +8799,22 @@
                        in
-                       match p_apply st472 x759 x762 with (st473, x763)
+                       match p_apply st475 x757 x760 with (st476, x761)
                        in
 +                      let nl = (match tree2 with MsgLeaf carried40
 +                                         then
@@ -649,25 +794,36 @@
 +                                         then
 +                                           carried41.label
 +                                         else
-+                                           let #var"179" =
++                                           let #var"280" =
 +                                             print
-+                                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 157:113-157:123>:\nField \'label\' not found\n[0m    logWeight branchSample.logModelDensity - branchSample.logSamplingDensity - nodeLogSamplingDensity * exp(Real([31mtree.label[0m[0m) * 0.);\n"
++                                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 155:113-155:123>:\nField \'label\' not found\n[0m    logWeight branchSample.logModelDensity - branchSample.logSamplingDensity - nodeLogSamplingDensity * exp(Real([31mtree.label[0m[0m) * 0.);\n"
 +                                           in
 +                                           exit 1) in
-                       let st474 =
+                       let st477 =
                          p_weight
-                           st473
+                           st476
 -                          simpleStoreWeight
 +                          (hrmStoreLikrWeight nl)
-                           (/-temp-/lam x771.
-                              x771)
-                           x763
-@@ -8607,20 +8645,72 @@
-                           repertoire = rep2 })
+                           (/-temp-/lam x769.
+                              x769)
+                           x761
+@@ -8739,7 +8822,9 @@
+                       let foo2 = {} in
+                       match observationMessage1 st477 rep2 1 nHosts with (st478, x762)
+                       in
+-                      match mtxCreate1 st478 nHosts 3 x762 with (st479, newMsg)
++                      match mtxCreate1 st478 nHosts 3 x762 with (st479, newMsg) in
++                      let st479 = p_export st479 (hrmStoreNodeMsg nl) newMsg in
++                      let st479 = p_export st479 (hrmStorePreorderMsg nl) preorderMsg
+                       in
+                       match
+                         mtxMul
+@@ -8973,20 +9058,6 @@
+             in
+             ""
    in
-   let input1 =
--    { dMean = 1.,
--      interactions = [ [ 2, 1 ],
+-  let input1 =
+-    { interactions = [ [ 2, 1 ],
 -          [ 1, 2 ] ],
 -      symbiontTree =
 -        Node
@@ -680,121 +836,53 @@
 -      hostDistances = [ [ 0., 1. ],
 -          [ 1., 0. ] ] }
 -  in
-+  { symbiontTree = Node
-+    { age = 10.0
-+    , label = 9
-+    , left = Node
-+      { label = 8
-+      , age = 5.0
-+      , left = Leaf
-+        { label = 1
-+        , age = 0.0
-+        }
-+      , right = Leaf
-+        { label = 2
-+        , age = 0.0
-+        }
-+      }
-+    , right = Node
-+      { label = 7
-+      , age = 5.0
-+      , left = Leaf
-+        { label = 3
-+        , age = 0.0
-+        }
-+      , right = Node
-+        { label = 6
-+        , age = 3.0
-+        , left = Leaf
-+          { label = 4
-+          , age = 0.0
-+          }
-+        , right = Leaf
-+          { label = 5
-+          , age = 0.0
-+          }
-+        }
-+      }
-+    }
-+  , interactions =
-+      [ [0, 0, 0, 0, 2]
-+      , [0, 0, 0, 2, 1]
-+      , [2, 0, 1, 1, 1]
-+      , [0, 1, 2, 0, 0]
-+      , [0, 2, 2, 0, 0]
-+      ]
-+  , hostDistances =
-+      [ [1., 1., 1., 1., 1.]
-+      , [1., 1., 1., 1., 1.]
-+      , [1., 1., 1., 1., 1.]
-+      , [1., 1., 1., 1., 1.]
-+      , [1., 1., 1., 1., 1.]
-+      ]
-+  , dMean = 1.
-+  } in
-+  --   { dMean = 1.,
-+  --     interactions = [ [ 2, 1, 2 ],
-+  --         [ 1, 2, 1 ] ],
-+  --     symbiontTree =
-+  --       Node
-+  --         { age = 1.,
-+  --           label = 3,
-+  --           left = Leaf
-+  --               { age = 0., label = 1 },
-+  --           right = Leaf
-+  --               { age = 0., label = 2 } },
-+  --     hostDistances = [ [ 0., 1. ],
-+  --         [ 1., 0. ] ] }
-+  -- in
    match input1 with {symbiontTree = #var"X9"}
    in
    let symbiontTree = #var"X9" in
-@@ -8629,21 +8719,27 @@
-   let hostDistances = #var"X10" in
+@@ -8996,20 +9067,26 @@
    let nHosts1 = length1 hostDistances in
    match
--    p_assume
+     p_assume
 -      st simpleStoreAssume (p_pure (mkDirichlet [ 1., 1., 1., 1. ]))
-+    p_assume "assume here"
 +      st hrmStoreLambda (p_pure (mkDirichlet [ 1., 1., 1., 1. ]))
    with
-     (st482, lambda)
+     (st485, lambda)
    in
    match
--    p_assume st482 simpleStoreAssume (p_pure (mkExponential 10.))
-+    p_assume "assume here" st482 hrmStoreMu (p_pure (mkExponential 10.))
+-    p_assume st485 simpleStoreAssume (p_pure (mkExponential 10.))
++    p_assume st485 hrmStoreMu (p_pure (mkExponential 10.))
    with
-     (st483, mu)
+     (st486, mu)
    in
    match
--    p_assume st483 simpleStoreAssume (p_pure (mkExponential 1.))
-+    p_assume "assume here" st483 hrmStoreBeta (p_pure (mkExponential 1.))
+-    p_assume st486 simpleStoreAssume (p_pure (mkExponential 1.))
++    p_assume st486 hrmStoreBeta (p_pure (mkExponential 1.))
    with
-     (st484, beta)
+     (st487, beta)
    in
 +  recursive let buildTree = lam stree.
 +    match stree with Leaf { label = label, age = _ } then 
 +      HRMLeaf { label = label }
 +    else match stree with Node { label = label, age = _, left = left, right = right } in 
 +      HRMNode { label = label, left = buildTree left, right = buildTree right } in
-+  match p_export st484 (hrmStoreTree (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st484 in
++  match p_export st487 (hrmStoreTree (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st487 in
    match
      p_map
-       st484
-@@ -8819,8 +8915,8 @@
+       st487
+@@ -9185,8 +9262,8 @@
    match
      p_bind
-       st507
+       st510
 -      simpleStoreSubmodel
 -      (simpleInit {})
 +      hrmStoreSubmodel
 +      (hrmInit {})
-       (lam st508.
-          lam x811.
+       (lam st511.
+          lam x814.
             match
-@@ -8889,10 +8985,22 @@
+@@ -9255,10 +9332,22 @@
    in
-   match bool2real st514 x818 with (st515, x819)
+   match bool2real st517 x821 with (st518, x822)
    in
 +  let rl = (match postorderTree with MsgLeaf carried64
 +                     then
@@ -803,47 +891,59 @@
 +                     then
 +                       carried65.label
 +                     else
-+                       let #var"1104" =
++                       let #var"2105" =
 +                         print
-+                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 42:45-42:64>:\nField \'label\' not found\n[0m  weight bool2real(any(is2, rootRep)) + Real([31mpostorderTree.label[0m[0m) * 0.;\n"
++                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 41:45-41:64>:\nField \'label\' not found\n[0m  weight bool2real(any(is2, rootRep)) + Real([31mpostorderTree.label[0m[0m) * 0.;\n"
 +                       in
 +                       exit 1) in
-   let st516 =
+   let st519 =
      p_weight
-       st515
+       st518
 -      simpleStoreWeight
 +      (hrmStoreNodeSuppWeight rl)
-       (lam x848.
+       (lam x850.
           externalLog
             (addf
-@@ -8920,10 +9028,22 @@
+@@ -9286,10 +9375,22 @@
    with
-     (st517, x820)
+     (st520, x823)
    in
-+  let rl = (match postorderTree with MsgLeaf carried62
++  let rl = (match postorderTree with MsgLeaf carried64
 +                     then
-+                       carried62.label
-+                     else match postorderTree with MsgNode carried63
++                       carried64.label
++                     else match postorderTree with MsgNode carried65
 +                     then
-+                       carried63.label
++                       carried65.label
 +                     else
-+                       let #var"1103" =
++                       let #var"2105" =
 +                         print
-+                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 49:70-49:89>:\nField \'label\' not found\n[0m  logWeight (rootLogModelDensity - rootLogSamplingDensity) * exp(Real([31mpostorderTree.label[0m[0m) * 0.);\n"
++                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 41:45-41:64>:\nField \'label\' not found\n[0m  weight bool2real(any(is2, rootRep)) + Real([31mpostorderTree.label[0m[0m) * 0.;\n"
 +                       in
 +                       exit 1) in
-   let st518 =
+   let st521 =
      p_weight
-       st517
+       st520
 -      simpleStoreWeight
 +      (hrmStoreLikrWeight rl)
-       (lam x847.
+       (lam x849.
           mulf
             (subf
-@@ -9147,44 +9267,37 @@
-   with
-     (st538, x845)
+@@ -9318,7 +9419,9 @@
+   let foo4 = {} in
+   match observationMessage1 st521 rootRep 1 nHosts1 with (st522, x824)
    in
+-  match mtxCreate1 st522 nHosts1 3 x824 with (st523, newMsg1)
++  match mtxCreate1 st522 nHosts1 3 x824 with (st523, newMsg1) in
++  let st523 = p_export st523 (hrmStoreNodeMsg rl) newMsg1 in
++  let st523 = p_export st523 (hrmStorePreorderMsg rl) (p_pure b4) 
+   in
+   let ns = rec15 (length1 hostDistances) hostDistances hostDistances
+   in
+@@ -9502,44 +9605,37 @@
+   with
+     (st541, x848)
+   in
+-  p_export
 +  let m = mapEmpty subi in
 +  let makeDirtyArray = lam st. lam arr.
 +    p_traverseSeq st (lam st. lam a. (st, a)) arr 
@@ -856,13 +956,13 @@
 +    match extractSamples st m n.left with (st, m) in
 +    extractSamples st m n.right
 +  in
-+  match makeDirtyArray st538 rootRep with (st538, dRootRep) in
++  match makeDirtyArray st541 rootRep with (st541, dRootRep) in
 +  let m = mapInsert rl dRootRep m in
-+  match extractSamples st538 m x841 with (st538, m) in
-+  match extractSamples st538 m x843 with (st538, m) in
++  match extractSamples st541 m x844 with (st541, m) in
++  match extractSamples st541 m x846 with (st541, m) in
 +  let dirtyKeyVal = lam st. lam kv. match kv with (k, v) in p_map st (lam v. (k, v)) v in 
-+  match p_traverseSeq st538 dirtyKeyVal (mapToSeq m) with (st538, wrappedReps) in
-+  match p_map st538 (
++  match p_traverseSeq st541 dirtyKeyVal (mapToSeq m) with (st541, wrappedReps) in
++  match p_map st541 (
 +    lam mu. lam beta. lam lambda. lam reps.
 +      -- printLn (join ["Export root rep: [", int2string rootRep1, ", ", int2string rootRep2, "]"]);
 +      { mu = mu
@@ -870,12 +970,12 @@
 +      , lambda = lambda
 +      , reps = mapFromSeq subi reps 
 +      }
-+  ) mu with (st538, partres) in
-+  match p_apply st538 partres beta with (st538, partres) in
-+  match p_apply st538 partres lambda with (st538, partres) in
-+  match p_apply st538 partres wrappedReps with (st538, res) in
-   p_export
-     st538
++  ) mu with (st541, partres) in
++  match p_apply st541 partres beta with (st541, partres) in
++  match p_apply st541 partres lambda with (st541, partres) in
++  match p_apply st541 partres wrappedReps with (st541, res) in
++   p_export
+     st541
 -    simpleStoreExport
 -    (p_pure
 -       (dprint
@@ -892,9 +992,9 @@
 -                       then
 -                         carried57.age
 -                       else
--                         let #var"1100" =
+-                         let #var"2101" =
 -                           print
--                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 76:10-76:26>:\nField \'age\' not found\n[0m    age = [31msymbiontTree.age[0m[0m, label = symbiontTree.label,\n"
+-                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 74:10-74:26>:\nField \'age\' not found\n[0m    age = [31msymbiontTree.age[0m[0m, label = symbiontTree.label,\n"
 -                         in
 -                         exit 1,
 -                     label =
@@ -905,14 +1005,14 @@
 -                       then
 -                         carried59.label
 -                       else
--                         let #var"1101" =
+-                         let #var"2102" =
 -                           print
--                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 76:36-76:54>:\nField \'label\' not found\n[0m    age = symbiontTree.age, label = [31msymbiontTree.label[0m[0m,\n"
+-                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/simple-HRM.tppl 74:36-74:54>:\nField \'label\' not found\n[0m    age = symbiontTree.age, label = [31msymbiontTree.label[0m[0m,\n"
 -                         in
 -                         exit 1,
--                     left = x841,
--                     right = x843,
--                     history = x845,
+-                     left = x844,
+-                     right = x846,
+-                     history = x848,
 -                     repertoire = rootRep },
 -               lambda = lambda })))
 +    hrmStoreExport

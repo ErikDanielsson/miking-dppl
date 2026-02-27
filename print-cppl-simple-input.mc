@@ -1,4 +1,3 @@
-mexpr
 let and: Bool -> Bool -> Bool =
   lam a96: Bool.
     lam b33: Bool.
@@ -17,15 +16,15 @@ let isNaN: Float -> Bool =
       true
 in
 external externalExp : Float -> Float in
-let exp = lam x172: Float.
-    externalExp x172 in
+let exp = lam x174: Float.
+    externalExp x174 in
 external externalLog : Float -> Float in
-let log = lam x171: Float.
-    externalLog x171 in
+let log = lam x173: Float.
+    externalLog x173 in
 external externalPow : Float -> Float -> Float in
-let pow = lam x170: Float.
+let pow = lam x172: Float.
     lam y: Float.
-      externalPow x170 y
+      externalPow x172 y
 in
 recursive
   let rec: all a. all a1. (a -> a1) -> [a] -> [a1] =
@@ -149,19 +148,19 @@ let g: all c11. all b31. all a92. (a92 -> b31 -> c11 -> a92) -> (a92, [b31]) -> 
   lam f28.
     lam acc19: (a92, [b31]).
       lam x212.
-        match acc19 with (acc20, [ x169 ] ++ xs1)
+        match acc19 with (acc20, [ x171 ] ++ xs1)
         then
-          (f28 acc20 x169 x212, xs1)
+          (f28 acc20 x171 x212, xs1)
         else
           error "foldl2: Cannot happen!"
 in
 let g1: all c10. all b30. all a91. (a91 -> b30 -> c10 -> a91) -> (a91, [c10]) -> b30 -> (a91, [c10]) =
   lam f27.
     lam acc17: (a91, [c10]).
-      lam x168.
+      lam x170.
         match acc17 with (acc18, [ x211 ] ++ xs2)
         then
-          (f27 acc18 x168 x211, xs2)
+          (f27 acc18 x170 x211, xs2)
         else
           error "foldl2: Cannot happen!"
 in
@@ -200,9 +199,9 @@ in
 let anon2: all c8. all b27. all a88. (a88 -> b27 -> c8) -> [c8] -> a88 -> b27 -> [c8] =
   lam f25.
     lam acc13.
-      lam x167.
+      lam x169.
         lam x210.
-          snoc acc13 (f25 x167 x210)
+          snoc acc13 (f25 x169 x210)
 in
 let zipWith: all a87. all b26. all c7. (a87 -> b26 -> c7) -> [a87] -> [b26] -> [c7] = lam f24: a87 -> b26 -> c7.
     foldl2 (anon2 f24) ""
@@ -248,8 +247,8 @@ in
 let anon3: all a84. (a84 -> a84 -> Int) -> a84 -> a84 -> Bool =
   lam cmp4.
     lam h4.
-      lam x166.
-        lti (cmp4 x166 h4) 0
+      lam x168.
+        lti (cmp4 x168 h4) 0
 in
 recursive
   let quickSort: all a22. (a22 -> a22 -> Int) -> [a22] -> [a22] =
@@ -369,8 +368,6 @@ let matErrorToString: MatError -> [Char] =
 in
 type Mat a33 =
   {m: Int, n: Int, arr: ExtArr a33} in
-type Matrix #var"X" =
-  Mat #var"X" in
 let matMakeUninit: all a71. ExtArrKind a71 -> Int -> Int -> Mat a71 =
   lam kind: ExtArrKind a71.
     lam m4: Int.
@@ -483,8 +480,8 @@ in
 let anon4: MatError -> Mat Float = lam err2.
     error (matErrorToString err2)
 in
-let anon5: Mat Float -> Mat Float = lam x165.
-    x165 in
+let anon5: Mat Float -> Mat Float = lam x167.
+    x167 in
 let matElemMulExn: Mat Float -> Mat Float -> Mat Float =
   lam a55: Mat Float.
     lam b16: Mat Float.
@@ -537,8 +534,8 @@ in
 let anon6: MatError -> Mat Float = lam err1.
     error (matErrorToString err1)
 in
-let anon7: Mat Float -> Mat Float = lam x164.
-    x164 in
+let anon7: Mat Float -> Mat Float = lam x166.
+    x166 in
 let matMulExn: Mat Float -> Mat Float -> Mat Float =
   lam a52: Mat Float.
     lam b13: Mat Float.
@@ -560,8 +557,8 @@ in
 let anon8: MatError -> Mat Float = lam err.
     error (matErrorToString err)
 in
-let anon9: Mat Float -> Mat Float = lam x163.
-    x163 in
+let anon9: Mat Float -> Mat Float = lam x165.
+    x165 in
 let matExpExn: Mat Float -> Mat Float =
   lam a50: Mat Float.
     eitherEither anon8 anon9 (matExp a50)
@@ -600,7 +597,7 @@ let anon10: (Float -> Float) -> Mat Float -> Mat Float -> Int -> () =
         lam i18.
           extArrSetExn mtx25.arr i18 (f21 (extArrGetExn mtx12.arr i18))
 in
-let matMap: all x162. (Float -> Float) -> Mat Float -> Mat Float =
+let matMap: all x164. (Float -> Float) -> Mat Float -> Mat Float =
   lam f20: Float -> Float.
     lam mtx11: Mat Float.
       let mtx24 = matCopy mtx11 in
@@ -677,20 +674,22 @@ let matRowCols =
         let #var"10" = iteri1 (anon15 matrix r3 new) cols2 in
         new
 in
+type Matrix #var"X" =
+  Mat #var"X" in
 let x1: all #var"B10". all #var"A10". (#var"A10" -> #var"B10" -> #var"A10") -> #var"A10" -> #var"B10" -> #var"A10" =
   lam f18.
     lam a48.
       lam b12: #var"B10".
-        let x161: #var"A10" = f18 a48 b12 in
-        x161
+        let x163: #var"A10" = f18 a48 b12 in
+        x163
 in
 let x2: all #var"B9". all #var"A9". (#var"A9" -> Int -> #var"B9" -> #var"A9") -> #var"A9" -> Int -> #var"B9" -> #var"A9" =
   lam f17.
     lam a47.
       lam idx9.
         lam b10: #var"B9".
-          let x160: #var"A9" = f17 a47 (addi idx9 1) b10 in
-          x160
+          let x162: #var"A9" = f17 a47 (addi idx9 1) b10 in
+          x162
 in
 let x3: all #var"B8". all #var"A8". (#var"A8" -> Int -> #var"B8" -> #var"A8") -> #var"A8" -> Int -> #var"B8" -> #var"A8" =
   lam f16.
@@ -702,25 +701,25 @@ let x4: all #var"C2". all #var"B7". all #var"A7". (#var"A7" -> #var"B7" -> #var"
   lam f15.
     lam a45.
       lam b9: #var"B7".
-        let x159: #var"C2" = f15 a45 b9 in
-        x159
+        let x161: #var"C2" = f15 a45 b9 in
+        x161
 in
 let x5: all #var"X11". (#var"X11" -> #var"X11" -> Int) -> #var"X11" -> #var"X11" -> Int =
   lam cmp3.
     lam a44.
       lam b8: #var"X11".
-        let x158: Int = cmp3 a44 b8 in
-        x158
+        let x160: Int = cmp3 a44 b8 in
+        x160
 in
 let ifCont = lam acc11.
     lam #var"9": Int.
       acc11 in
 let ifCont1 = lam #var"8": Int.
     0. in
-let exp1: Float -> Float = lam x157: Float.
-    mathExp x157 in
-let log1: Float -> Float = lam x156: Float.
-    mathLog x156 in
+let exp1: Float -> Float = lam x159: Float.
+    mathExp x159 in
+let log1: Float -> Float = lam x158: Float.
+    mathLog x158 in
 let cons1: all #var"X10". #var"X10" -> [#var"X10"] -> [#var"X10"] =
   lam e2: #var"X10".
     lam s10: [#var"X10"].
@@ -781,8 +780,8 @@ in
 let anon19: Float -> Float -> Float =
   lam a39: Float.
     lam b6: Float.
-      let x155: Float = addf a39 b6 in
-      x155
+      let x157: Float = addf a39 b6 in
+      x157
 in
 let seqSumReal: [Float] -> Float = lam s8: [Float].
     fold anon19 0. s8
@@ -805,14 +804,14 @@ let anon21: [Int] -> Int -> Bool -> [Int] =
   lam acc10: [Int].
     lam idx7: Int.
       lam elem: Bool.
-        let x154: [Int] =
+        let x156: [Int] =
           match elem with true
           then
             seqSnoc acc10 idx7
           else
             ifCont acc10 0
         in
-        x154
+        x156
 in
 let whichTrue: [Bool] -> [Int] = lam s7: [Bool].
     foldi anon21 "" s7
@@ -870,8 +869,8 @@ in
 let mathIsNaN = isNaN in
 let delta =
   lam k1.
-    lam x153.
-      match eqi k1 x153 with true
+    lam x155.
+      match eqi k1 x155 with true
       then
         1.
       else
@@ -925,14 +924,14 @@ in
 let anon22: Float -> Float -> Float =
   lam meanDist2.
     lam e1: Float.
-      let x152: Float = divf e1 meanDist2 in
-      x152
+      let x154: Float = divf e1 meanDist2 in
+      x154
 in
 let anon23: Float -> [Float] -> [Float] =
   lam meanDist1.
     lam s6: [Float].
-      let x151: [Float] = sapply s6 (anon22 meanDist1) in
-      x151
+      let x153: [Float] = sapply s6 (anon22 meanDist1) in
+      x153
 in
 let normalizeHostMetric: [[Float]] -> [[Float]] =
   lam hostMetric: [[Float]].
@@ -1250,18 +1249,18 @@ recursive
               ifCont2 tree1 qMatrix1 interactions1 nhosts1 0
 in
 let categoricalLogPdf: Int -> [Float] -> Float =
-  lam x150: Int.
+  lam x152: Int.
     lam params: [Float].
       match
-        match geqi x150 0 with true
+        match geqi x152 0 with true
         then
-          lti x150 (length1 params)
+          lti x152 (length1 params)
         else
           false
       with
         true
       then
-        log1 (get params (subi (addi x150 1) 1))
+        log1 (get params (subi (addi x152 1) 1))
       else
         log1 0.
 in
@@ -1277,26 +1276,26 @@ let mtx3ToSeq: Matrix Float -> Int -> [Float] =
         divf p3 s5 ]
 in
 let anon24: [Int] -> Matrix Float -> Float -> Int -> Float =
-  lam x148.
+  lam x150.
     lam samplingProb2.
       lam acc9: Float.
         lam i11: Int.
-          let x149: Float =
+          let x151: Float =
             let param6 = mtx3ToSeq samplingProb2 i11 in
-            addf acc9 (categoricalLogPdf (get x148 (subi i11 1)) param6)
+            addf acc9 (categoricalLogPdf (get x150 (subi i11 1)) param6)
           in
-          x149
+          x151
 in
 let anon25: Int -> Int -> Int = lam start13.
     lam idx6.
       addi idx6 start13
 in
 let getRepertoireSamplingDensity: [Int] -> Matrix Float -> Int -> Float =
-  lam x147: [Int].
+  lam x149: [Int].
     lam samplingProb1: Matrix Float.
       lam nhosts8: Int.
         fold
-          (anon24 x147 samplingProb1)
+          (anon24 x149 samplingProb1)
           0.
           (let start12 = 1 in
            let end7 = nhosts8 in
@@ -1305,14 +1304,14 @@ in
 let anon26: Int -> Int -> Int =
   lam acc8: Int.
     lam h3: Int.
-      let x146: Int =
+      let x148: Int =
         match eqi h3 2 with true
         then
           addi acc8 1
         else
           acc8
       in
-      x146
+      x148
 in
 let count2s: [Int] -> Int = lam repertoire2: [Int].
     fold anon26 0 repertoire2
@@ -1322,10 +1321,10 @@ let updateRepertoire: [Int] -> Event -> Int -> [Int] =
     lam event3: Event.
       lam nhosts7: Int.
         let hostIndex4 =
-          let target84 = event3 in
-          match target84 with Event1 x145
+          let target86 = event3 in
+          match target86 with Event1 x147
           then
-            x145.host
+            x147.host
           else
             let #var"2" =
               print
@@ -1335,10 +1334,10 @@ let updateRepertoire: [Int] -> Event -> Int -> [Int] =
         in
         paste0
           [ slice currRep8 1 hostIndex4,
-            [ let target83 = event3 in
-              match target83 with Event1 x144
+            [ let target85 = event3 in
+              match target85 with Event1 x146
               then
-                x144.toState
+                x146.toState
               else
                 let #var"2" =
                   print
@@ -1404,18 +1403,18 @@ recursive
 in
 let anon27: Int -> Bool =
   lam i10: Int.
-    let x143: Bool =
+    let x145: Bool =
       match eqi i10 2 with true
       then
         true
       else
         eqi i10 1
     in
-    x143
+    x145
 in
 let anon28: Int -> Bool = lam i9: Int.
-    let x142: Bool = eqi i9 2 in
-    x142
+    let x144: Bool = eqi i9 2 in
+    x144
 in
 let getGainRate: [Int] -> Int -> ModelParams -> Float =
   lam repertoire1: [Int].
@@ -1427,11 +1426,11 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
           mtxGet
             (addi fromState5 1)
             (addi toState3 1)
-            (let target81 =
-               let target82 = modelParams12 in
-               match target82 with ModelParams1 x141
+            (let target83 =
+               let target84 = modelParams12 in
+               match target84 with ModelParams1 x143
                then
-                 x141.embeddedQMatrix
+                 x143.embeddedQMatrix
                else
                  let #var"2" =
                    print
@@ -1439,9 +1438,9 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                  in
                  exit 1
              in
-             match target81 with EmbeddedMarkovChainMatrix1 x140
+             match target83 with EmbeddedMarkovChainMatrix1 x142
              then
-               x140.mat
+               x142.mat
              else
                let #var"2" =
                  print
@@ -1455,10 +1454,10 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
           let dist =
             mtxMean
               (mtxRowCols
-                 (let target79 = modelParams12 in
-                  match target79 with ModelParams1 x138
+                 (let target80 = modelParams12 in
+                  match target80 with ModelParams1 x139
                   then
-                    x138.hostMetric
+                    x139.hostMetric
                   else
                     let #var"2" =
                       print
@@ -1468,16 +1467,30 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                  hostIndex3
                  currentHosts)
           in
-          baseRate1
+          mulf
+            baseRate1
+            (pow
+               dist
+               (negf
+                  (let target79 = modelParams12 in
+                   match target79 with ModelParams1 x138
+                   then
+                     x138.beta
+                   else
+                     let #var"2" =
+                       print
+                         "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 123:30-123:46>:\nField \'beta\' not found\n[0m    return baseRate * (dist^(-[31mmodelParams.beta[0m[0m));\n"
+                     in
+                     exit 1)))
         else
           let currentHosts1 = whichTrue (sapply repertoire1 anon28) in
           let dist1 =
             mtxMean
               (mtxRowCols
-                 (let target80 = modelParams12 in
-                  match target80 with ModelParams1 x139
+                 (let target82 = modelParams12 in
+                  match target82 with ModelParams1 x141
                   then
-                    x139.hostMetric
+                    x141.hostMetric
                   else
                     let #var"2" =
                       print
@@ -1487,7 +1500,21 @@ let getGainRate: [Int] -> Int -> ModelParams -> Float =
                  hostIndex3
                  currentHosts1)
           in
-          baseRate1
+          mulf
+            baseRate1
+            (pow
+               dist1
+               (negf
+                  (let target81 = modelParams12 in
+                   match target81 with ModelParams1 x140
+                   then
+                     x140.beta
+                   else
+                     let #var"2" =
+                       print
+                         "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/host-rep-lib/full-model.tppl 132:30-132:46>:\nField \'beta\' not found\n[0m    return baseRate * (dist^(-[31mmodelParams.beta[0m[0m));\n"
+                     in
+                     exit 1)))
 in
 let anon29: [Int] -> ModelParams -> Float -> Int -> Float =
   lam currRep7.
@@ -3081,21 +3108,4 @@ let anon47: {interactions: [[Int]], symbiontTree: TreeLabeled, hostDistances: [[
       hostRepertoireModel
         input1.symbiontTree input1.interactions input1.hostDistances
 in
-let input =
-  { symbiontTree = Node
-    { age = 1.0
-    , label = 3
-    , left = Leaf
-        { label = 1
-        , age = 0.0
-        }
-    , right = Leaf
-        { label = 2
-        , age = 0.0
-        }
-    }
-  , interactions = [[2, 1], [1, 2]]
-  , hostDistances = [[0., 1.], [1., 0.]]
-  } in
-let tmp = anon47 input {} in
-dprint tmp
+anon47 input {}

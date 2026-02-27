@@ -13,7 +13,6 @@ let input =
     }
   , interactions = [[2, 1], [1, 2]]
   , hostDistances = [[0., 1.], [1., 0.]]
-  , dMean = 1.
   } in
 let tmp = anonPLACEHOLDER input {} in
 dprint tmp
