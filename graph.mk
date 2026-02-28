@@ -1,0 +1,23 @@
+%.test.mc : %.mc
+	graph-scripts/patch-printed-mc.sh $< $$(dirname $<)/input.mc $@
+
+# Run the transformation
+%.transformed.mc : %.test.mc
+	# We have to copy the file to test.mc to be 
+	# compatible with the transformation binary
+	cp $< test.mc
+	graph-scripts/transform.fish $@
+
+# Use the simple interface for testing
+%.full-simple.mc : %.transformed.mc
+	sed -e "/{{HERE}}/{r $<" -e "d}" \
+	test-template.mc > $@
+
+# Use the HRM interface for inference
+%.full-HRM.mc : %.transformed.mc
+	graph-scripts/rename-stores.sh $< /tmp/renamed.mc
+	sed -e "/{{HERE}}/{r /tmp/renamed.mc" -e "d}" \
+	hrm-template.mc > $@
+
+%.out : %.mc
+	mi compile $< --output $@

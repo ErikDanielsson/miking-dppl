@@ -476,7 +476,7 @@ lang MutPVal = PValInterface
       } in
     PVS st
 
-  sem p_assume name st store = | PVal dist ->
+  sem p_assume st store = | PVal dist ->
     match st with PVS st in
     let value = ref (sample (deref dist.value)) in
     let changeId = ref st.initId in
