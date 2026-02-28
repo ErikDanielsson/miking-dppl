@@ -3,18 +3,70 @@
   in
   con Node: all p24. all p25. all p26. {age: p25, left: TreeLabeled p24 p25 p26, label: p26, right: TreeLabeled p24 p25 p26} -> TreeLabeled p24 p25 p26
   in
-let input1 =
-  { symbiontTree =
-      Node
-        { age = 1.,
-          label = 3,
-          left = Leaf
-              { age = 0., label = 1 },
-          right = Leaf
-              { age = 0., label = 2 } }
-    , interactions =
-      [ [2, 1, 2, 1, 2]
-      , [1, 2, 1, 2, 1]
+-- let input1 =
+--   { symbiontTree =
+--       Node
+--         { age = 1.,
+--           label = 3,
+--           left = Leaf
+--               { age = 0., label = 1 },
+--           right = Leaf
+--               { age = 0., label = 2 } }
+--     , interactions =
+--       [ [2, 1, 2, 1, 2]
+--       , [1, 2, 1, 2, 1]
+--       ]
+--   , hostDistances =
+--       [ [0., 1., 1., 1., 1.]
+--       , [1., 0., 1., 1., 1.]
+--       , [1., 1., 0., 1., 1.]
+--       , [1., 1., 1., 0., 1.]
+--       , [1., 1., 1., 1., 0.]
+--       ]
+--   }
+-- in
+let input1 = { symbiontTree = Node
+    { age = 6.839526974
+    , label = 9
+    , left = Leaf
+      { label = 1
+      , age = 0.0
+      }
+    , right = Node
+      { label = 8
+      , age = 4.842443202
+      , left = Leaf
+        { label = 2
+        , age = 0.0
+        }
+      , right = Node
+        { label = 7
+        , age = 3.501720109
+        , left = Leaf
+          { label = 3
+          , age = 0.0
+          }
+        , right = Node
+          { label = 6
+          , age = 3.127609164
+          , left = Leaf
+            { label = 4
+            , age = 0.0
+            }
+          , right = Leaf
+            { label = 5
+            , age = 0.0
+            }
+          }
+        }
+      }
+    }
+  , interactions =
+      [ [2, 2, 0, 0, 0]
+      , [2, 2, 0, 0, 0]
+      , [0, 1, 2, 0, 0]
+      , [0, 0, 2, 1, 2]
+      , [0, 0, 2, 2, 1]
       ]
   , hostDistances =
       [ [0., 1., 1., 1., 1.]
@@ -23,8 +75,8 @@ let input1 =
       , [1., 1., 1., 0., 1.]
       , [1., 1., 1., 1., 0.]
       ]
-  }
-in
+} in
+
 
 lam st.
   type Option p p1 in
