@@ -98,7 +98,7 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 4000 in
+let iterations = 4000000 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (seqCmp subi) in
 let toString2 = lam s. join ["[", strJoin ", " (map int2string s), "]"] in
@@ -118,7 +118,7 @@ let summarizePVal = lam label. lam pair.
   in
   printLn "Acceptance ratios";
   printLn (showAccept res.acceptanceRatio);
-  (if showHistogram then
+  if showHistogram then
     -- (map (lam s. printLn (join
     --   [ "mu:", float2string s.mu
     --   , ", beta: ", float2string s.beta
@@ -145,13 +145,17 @@ let summarizePVal = lam label. lam pair.
       printLn (hist2string toString2 (mkHisto2 v))
     ) reps;
     ()
-  else ());
-  match fileWriteOpen "hrm-samples.json" with Some wc in
-  let jStr = json2string (samplesToJson res.samples) in
-  fileWriteString wc jStr;
-  fileWriteFlush wc;
-  fileWriteClose wc
+  else ()
+
  in
+let sampleWriter = lam wc. lam i. lam s.
+  let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
+  fileWriteString wc jStr;
+  fileWriteFlush wc
+in
+
+
+
 let run =
   setSeed 1234;
   use ComposedVisi in
@@ -166,9 +170,17 @@ let run =
   -- printJsonLn (hrmStateToDebugJson instance (getSt instance));
   -- match getSt instance with HRMState st in
   -- printLn (join [int2string (length st.here), ", ", int2string (length st.below)]);
+  let printer = lam x.
+    if eqi (modi x 1000) 0 then
+      printLn (join ["Iteration", int2string x]); hrmPrintState
+    else
+      lam. lam. ()
+  in
   -- printLn (join ["Took ", float2string time, "ms to find good instance."]);
   lam.
-    let r = mcmc (lam x. if eqi (modi x 1000) 0 then printLn (join ["Iteration", int2string x]); hrmPrintState else (lam. lam. ())) (mkMCMCConfig iterations globalProb) instance in
+    match fileWriteOpen "hrm-samples.json" with Some wc in
+    let r = mcmc printer (mkMCMCConfig (sampleWriter wc) iterations globalProb) instance in
+    fileWriteClose wc;
     printLn "---- Finalize step JSON ----";
     hrmPrintState true instance; 
     printLn "----------------------------";

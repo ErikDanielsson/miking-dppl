@@ -20,7 +20,7 @@ lang MutPVal = PValInterface
 
   syn PValState st = | PVS {initId : IterationID, updates : [PState -> ()], initWeight : Float, st : st}
   syn PWeightRef = | PWeightRef {read : () -> Float, check : () -> Bool} -- NOTE(ed, 2026-01-26): We probably don't want to be able to read the weight, this is only for debug purposes
-  syn PAssumeRef a = | PAssumeRef {drift : Ref (Dist a -> a -> Dist a), changeId : Ref IterationID, read : () -> a}
+  syn PAssumeRef a = | PAssumeRef {drift : Ref (Option (a -> Dist a)), changeId : Ref IterationID, read : () -> a}
   syn PExportRef a = | PExportRef {read : () -> a}
   syn PSubmodelRef st = | PSubmodelRef {readSt : () -> st}
 
@@ -91,10 +91,7 @@ lang MutPVal = PValInterface
     }
 
   sem intermediateStep = | PVIPart x ->
-    -- printLn "Starting intermediate step";
-    -- printLn (join ["Reset length ", int2string (length x.reset)]);
-    let s = (if x.dirty then
-      -- printLn "Dirty intermediate step";
+    if x.dirty then
       let st =
         { id = x.id
         , permanentWeight = ref 0.0
@@ -106,17 +103,12 @@ lang MutPVal = PValInterface
       { x with dirty = false
       , id = addi st.id 1
       , permanentWeight = deref st.permanentWeight
-      , temporaryWeight =
-        -- printLn (join ["New temp", float2string x.temporaryWeight, " old temp ", float2string (deref st.temporaryWeight)]);
-        addf x.temporaryWeight (deref st.temporaryWeight)
+      , temporaryWeight = addf x.temporaryWeight (deref st.temporaryWeight)
       -- NOTE(vipa, 2026-01-26): The order is important, we want the
       -- oldest reset to run last
       , reset = concat (deref st.reset) x.reset
       }
-    else PVIPart x) in
-    match s with PVIPart y in
-    -- print (join ["Post reset length ", int2string (length y.reset), " "]);
-    s
+    else PVIPart x
 
   sem finalizeStep pred = | pvi ->
     match intermediateStep pvi with PVIPart x in
@@ -154,9 +146,6 @@ lang MutPVal = PValInterface
     match aref with PAssumeRef x in
     modref x.drift driftf;
     modref x.changeId p.id;
-    -- printLn "ResampleAssume";
-    -- dprint x.changeId;
-    -- dprint x;
     PVIPart {p with dirty = true}
 
   sem readPreviousWeight wref = | _ ->
@@ -210,12 +199,7 @@ lang MutPVal = PValInterface
     let value = ref (f (deref a.value)) in
     let changeId = ref st.initId in
     let update = lam st.
-      -- f (deref a.value);
       if eqi st.id (deref a.changeId) then
-        -- printLn "Redrawing map";
-        -- dprint a;
-        -- dprint st.id;
-        -- printLn "";
         let prevValue = deref value in
         modref value (f (deref a.value));
         modref st.reset (snoc (deref st.reset) (lam. modref value prevValue));
@@ -230,10 +214,6 @@ lang MutPVal = PValInterface
     let changeId = ref st.initId in
     let update = lam st.
       if or (eqi st.id (deref f.changeId)) (eqi st.id (deref a.changeId)) then
-        -- printLn "Redrawing apply";
-        -- dprint a;
-        -- dprint st.id;
-        -- printLn "";
         let prevValue = deref value in
         modref value ((deref f.value) (deref a.value));
         modref st.reset (snoc (deref st.reset) (lam. modref value prevValue));
@@ -474,21 +454,11 @@ lang MutPVal = PValInterface
     match st with PVS st in
     let w = f (deref a.value) in
     let initWeight = addf st.initWeight w in
-    -- printLn (join
-    --   [ "This weight: ", float2string w
-    --   , " initweight:" , float2string initWeight
-    --   , " st.initWeight: ", float2string st.initWeight
-    --   , " st.initId: ", int2string st.initId
-    --   ]
-    -- );
     let w = ref w in
     let update = lam st.
-      -- printLn (join ["a.changeID: ", int2string (deref a.changeId), ", st.changeID:", int2string st.id]);
-      -- dprint a.value;
       if eqi st.id (deref a.changeId) then
         let prevWeight = deref w in
         let newWeight = f (deref a.value) in
-        -- printLn (join ["PrevWeight: ", float2string prevWeight, " NewWeight: ", float2string newWeight]);
         modref st.permanentWeight (addf (deref st.permanentWeight) newWeight);
         modref w newWeight;
         modref st.reset (snoc (deref st.reset) (lam. modref w prevWeight))
@@ -514,9 +484,6 @@ lang MutPVal = PValInterface
     let drift = ref (None ()) in
     let update = lam st.
       let drawNew = lam drift. lam st.
-        -- printLn "-- Drawing new --";
-        -- print "Distribution: ";
-        -- dprint dist.value;
 
         let prevValue = deref value in
         let prevWeight = deref w in
@@ -561,11 +528,7 @@ lang MutPVal = PValInterface
         modref w newWeight;
         modref st.reset (snoc (deref st.reset) (lam. modref w prevWeight));
         modref st.temporaryWeight (addf (deref st.temporaryWeight) (subf newWeight prevWeight))
-      else ());
-      let prevOldDist = deref oldDist in
-      modref st.reset (snoc (deref st.reset) (lam. modref oldDist prevOldDist));
-      modref oldDist (deref dist.value)
-    in
+      else () in
     let st =
       { st = store st.st (PAssumeRef {drift = drift, changeId = changeId, read = lam. deref value})
       , updates = snoc st.updates update
