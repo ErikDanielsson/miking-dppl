@@ -12,5 +12,6 @@ out
 out.mc
 out.cu
 a.out
+*.out
 tool
 .envrc

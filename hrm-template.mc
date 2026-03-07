@@ -98,7 +98,8 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 4000000 in
+let iterations = 400000 in
+let samplingPeriod = 1000 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (seqCmp subi) in
 let toString2 = lam s. join ["[", strJoin ", " (map int2string s), "]"] in
@@ -149,9 +150,11 @@ let summarizePVal = lam label. lam pair.
 
  in
 let sampleWriter = lam wc. lam i. lam s.
-  let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
-  fileWriteString wc jStr;
-  fileWriteFlush wc
+  if eqi (modi i samplingPeriod) 0 then
+    let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
+    fileWriteString wc jStr;
+    fileWriteFlush wc
+  else ()
 in
 
 
