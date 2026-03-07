@@ -2582,7 +2582,7 @@ lam st.
                    with
                      true
                    then
-                     log11 st755 (get param6 (subi x1164 1))
+                     log11 st755 (get param6 (subi (addi x1164 1) 1))
                    else
                      (st755, p_pure (log1 0.)))
               x1163

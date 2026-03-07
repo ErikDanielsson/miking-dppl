@@ -1,5 +1,5 @@
---- flat-root-prior-HRM/flat-root-prior-HRM.6abab95.edit-HRM.mc	2026-03-07 21:42:54.576177384 +0100
-+++ flat-root-prior-HRM/flat-root-prior-HRM.6abab95.renamed-HRM.mc	2026-03-07 20:13:46.011908056 +0100
+--- flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.edit-HRM.mc	2026-03-07 23:16:08.082408823 +0100
++++ flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.renamed-HRM.mc	2026-03-07 23:15:16.632799539 +0100
 @@ -2241,22 +2241,6 @@
                              exit 1)
                           1)
@@ -43,15 +43,6 @@
                  in
                  (st51, MsgNode
                    { age =
-@@ -2609,7 +2582,7 @@
-                    with
-                      true
-                    then
--                     log11 st755 (get param6 x1164)
-+                     log11 st755 (get param6 (subi x1164 1))
-                    else
-                      (st755, p_pure (log1 0.)))
-               x1163
 @@ -6059,7 +6032,7 @@
              with
                (st589, x920)

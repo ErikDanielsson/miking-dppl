@@ -1241,7 +1241,7 @@ let categoricalLogPmf: Int -> [Float] -> Float =
       with
         true
       then
-        log1 (get param6 (subi x152 1))
+        log1 (get param6 (subi (addi x152 1) 1))
       else
         log1 0.
 in
