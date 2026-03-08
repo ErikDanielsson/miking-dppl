@@ -1,4 +1,5 @@
-%.test.mc : %.mc
+.SECONDEXPANSION:
+%.test.mc : %.mc $$(dirname %)/input.mc
 	graph-scripts/patch-printed-mc.sh $< $$(dirname $<)/input.mc $@
 
 # Run the transformation (always keep this file)
@@ -25,6 +26,7 @@
 	sed -e "/{{HERE}}/{r $<" -e "d}" \
 	hrm-template.mc > $@
 
-
+# Compile the model
 %.out : %.mc
 	mi compile $< --output $@
+

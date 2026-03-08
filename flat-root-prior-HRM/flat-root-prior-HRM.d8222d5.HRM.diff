@@ -1,5 +1,5 @@
---- flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.edit-HRM.mc	2026-03-07 23:16:08.082408823 +0100
-+++ flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.renamed-HRM.mc	2026-03-07 23:15:16.632799539 +0100
+--- flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.edit-HRM.mc	2026-03-07 23:42:35.715046344 +0100
++++ flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.renamed-HRM.mc	2026-03-07 23:40:29.566629759 +0100
 @@ -2241,22 +2241,6 @@
                              exit 1)
                           1)
@@ -207,7 +207,7 @@
                        match
                          mtxMul
                            st492
-@@ -9056,27 +8989,19 @@
+@@ -9085,27 +9018,19 @@
    in
    let hostDistances = #var"X10" in
    let nHosts1 = length11 hostDistances in
@@ -238,7 +238,7 @@
    with
      (st500, beta)
    in
-@@ -9418,22 +9343,10 @@
+@@ -9447,22 +9372,10 @@
    in
    match bool2real st545 x856 with (st546, x857)
    in
@@ -262,7 +262,7 @@
        (lam x866.
           externalLog
             (addf
-@@ -9461,22 +9374,10 @@
+@@ -9490,22 +9403,10 @@
    with
      (st548, x858)
    in
@@ -286,7 +286,7 @@
        (lam x865.
           mulf
             (subf
-@@ -9505,9 +9406,6 @@
+@@ -9534,9 +9435,6 @@
    let foo4 = {} in
    match observationMessage1 st549 rootRep with (st550, newMsg1)
    in
@@ -296,7 +296,7 @@
    let rootAge =
      match postorderTree with MsgLeaf carried58
      then
-@@ -9622,45 +9520,44 @@
+@@ -9651,45 +9549,44 @@
    with
      (st556, x864)
    in

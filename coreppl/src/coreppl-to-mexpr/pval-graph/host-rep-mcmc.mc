@@ -187,7 +187,7 @@ lang HRMState = PValInterface
     -- 
     let instance = optResample st.mu (Some (lam. mkGaussian 1. 0.000001)) instance in 
     match getSt instance with HRMState st in
-    let instance = optResample st.lambda (Some (lam. mkDirichlet [1000., 50000., 50000., 500.])) instance in 
+    let instance = optResample st.lambda (Some (lam. mkDirichlet [10000., 10000., 10000., 10000.])) instance in 
     let instance = intermediateStep instance in
 
     let mendNode = lam label. lam instance.

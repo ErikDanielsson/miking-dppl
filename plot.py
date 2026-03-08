@@ -155,7 +155,7 @@ def print_statistics(samples):
             uniq = set(hashable_v)
             counter = Counter(hashable_v)
             print(f"{k}: {len(uniq)} (/{3**d - 2**d})")
-            for k, c in counter.items():
+            for k, c in counter.most_common():
                 print(f"\t{k}: {c / len(v)}")
 
 
