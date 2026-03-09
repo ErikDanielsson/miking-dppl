@@ -9091,12 +9091,15 @@ lam st.
   let subrootLength = #var"X11" in
   let nHosts1 = length11 hostDistances in
   -- Export the input tree
+  match input1 with {subrootLabel = #var"X13"}
+  in
+  let subrootLabel1 = #var"X13" in
   recursive let buildTree = lam stree.
     match stree with Leaf { label = label, age = _ } then 
       HRMLeaf { label = label }
     else match stree with Node { label = label, age = _, left = left, right = right } in 
       HRMNode { label = label, left = buildTree left, right = buildTree right } in
-  match p_export st (hrmStoreTree (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st in
+  match p_export st (hrmStoreTree (Some subrootLabel1) (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st in
   -- Done
   match
     p_assume
@@ -9334,9 +9337,6 @@ lam st.
   with
     (st486, postorderTree)
   in
-  match input1 with {subrootLabel = #var"X13"}
-  in
-  let subrootLabel1 = #var"X13" in
   match mtxSclrMul st486 subrootLength qMatrix2 with (st487, x763)
   in
   match matExpExn st487 x763 with (st488, subrootKernel)
@@ -9595,6 +9595,20 @@ lam st.
       in
       exit 1
   in
+  let rl = match postorderTree with MsgLeaf carried66
+    then
+      carried66.label
+    else match postorderTree with MsgNode carried67
+    then
+      carried67.label
+    else
+      let #var"2108" =
+        print
+          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 91:16-91:33>:\nField \'age\' not found\n[0m  let rootAge = [31mpostorderTree.age[0m[0m;\n"
+      in
+      exit 1
+  in
+
   match
     sampleBranch
       st511
@@ -9612,7 +9626,7 @@ lam st.
       (addf rootAge subrootLength)
       rootAge
       nHosts1
-      (negi 1)
+      rl
       modelParams2
       (match subrootInfo with SubrootInfo1 x1021
        then
@@ -9895,8 +9909,6 @@ lam st.
     p_apply st partres wrappedReps
   in
   match createExport st525 x797 x799 with (st525, res) in
-  -- Tell the inference that this model has a subroot
-  let st525 = p_export st525 hrmStoreModelType (p_pure true) in 
   -- Done
   p_export
     st525

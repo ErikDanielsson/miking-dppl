@@ -9091,7 +9091,7 @@ lam st.
       HRMLeaf { label = label }
     else match stree with Node { label = label, age = _, left = left, right = right } in 
       HRMNode { label = label, left = buildTree left, right = buildTree right } in
-  match p_export st (hrmStoreTree (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st in
+  match p_export st (hrmStoreTree (None ()) (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st in
   -- Done
   match
     p_assume
@@ -9688,8 +9688,6 @@ lam st.
     p_apply st partres wrappedReps
   in
   match createExport st556 x860 x862 with (st556, res) in
-  -- Tell the inference that this model does not have a subroot
-  let st556 = p_export st556 hrmStoreModelType (p_pure false) in 
   -- Done
   p_export
     st556

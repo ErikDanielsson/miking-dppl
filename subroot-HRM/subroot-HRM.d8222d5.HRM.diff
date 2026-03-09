@@ -1,4 +1,4 @@
---- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-09 21:38:59.627315720 +0100
+--- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-09 22:39:33.358016408 +0100
 +++ subroot-HRM/subroot-HRM.d8222d5.renamed-HRM.mc	2026-03-09 20:24:16.339148049 +0100
 @@ -2245,22 +2245,6 @@
                              exit 1)
@@ -207,17 +207,20 @@
                        match
                          mtxMul
                            st443
-@@ -9090,27 +9023,19 @@
+@@ -9090,30 +9023,19 @@
    in
    let subrootLength = #var"X11" in
    let nHosts1 = length11 hostDistances in
 -  -- Export the input tree
+-  match input1 with {subrootLabel = #var"X13"}
+-  in
+-  let subrootLabel1 = #var"X13" in
 -  recursive let buildTree = lam stree.
 -    match stree with Leaf { label = label, age = _ } then 
 -      HRMLeaf { label = label }
 -    else match stree with Node { label = label, age = _, left = left, right = right } in 
 -      HRMNode { label = label, left = buildTree left, right = buildTree right } in
--  match p_export st (hrmStoreTree (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st in
+-  match p_export st (hrmStoreTree (Some subrootLabel1) (buildTree symbiontTree) (match input1 with {interactions = ints} in ints)) (p_pure ()) with st in
 -  -- Done
    match
      p_assume
@@ -238,6 +241,16 @@
    with
      (st451, beta)
    in
+@@ -9337,6 +9259,9 @@
+   with
+     (st486, postorderTree)
+   in
++  match input1 with {subrootLabel = #var"X13"}
++  in
++  let subrootLabel1 = #var"X13" in
+   match mtxSclrMul st486 subrootLength qMatrix2 with (st487, x763)
+   in
+   match matExpExn st487 x763 with (st488, subrootKernel)
 @@ -9442,7 +9367,6 @@
    in
    match eitherEither st497 x776 with (st498, subrootSamplingProb)
@@ -296,7 +309,37 @@
        (lam x803.
           externalLog
             (addf
-@@ -9701,39 +9612,14 @@
+@@ -9595,20 +9506,6 @@
+       in
+       exit 1
+   in
+-  let rl = match postorderTree with MsgLeaf carried66
+-    then
+-      carried66.label
+-    else match postorderTree with MsgNode carried67
+-    then
+-      carried67.label
+-    else
+-      let #var"2108" =
+-        print
+-          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 91:16-91:33>:\nField \'age\' not found\n[0m  let rootAge = [31mpostorderTree.age[0m[0m;\n"
+-      in
+-      exit 1
+-  in
+-
+   match
+     sampleBranch
+       st511
+@@ -9626,7 +9523,7 @@
+       (addf rootAge subrootLength)
+       rootAge
+       nHosts1
+-      rl
++      (negi 1)
+       modelParams2
+       (match subrootInfo with SubrootInfo1 x1021
+        then
+@@ -9715,39 +9612,14 @@
    in
    match p_apply st517 x791 x794 with (st518, x795)
    in
@@ -337,7 +380,7 @@
    let rootAge1 =
      match postorderTree with MsgLeaf carried64
      then
-@@ -9855,50 +9741,44 @@
+@@ -9869,48 +9741,44 @@
    with
      (st525, x801)
    in
@@ -381,8 +424,6 @@
 -    p_apply st partres wrappedReps
 -  in
 -  match createExport st525 x797 x799 with (st525, res) in
--  -- Tell the inference that this model has a subroot
--  let st525 = p_export st525 hrmStoreModelType (p_pure true) in 
 -  -- Done
    p_export
      st525

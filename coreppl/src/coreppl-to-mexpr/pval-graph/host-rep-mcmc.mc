@@ -120,7 +120,7 @@ lang HRMState = PValInterface
     , preorderMsgs : Map Int (PExportRef (Mat Float))
     , below : [PSubmodelRef (HRMState ())]
     , export : x
-    , modelType : Option (PExportRef Bool)
+    , subrootLabel : Option Int
     }
 
   sem hrmInit : all x. x -> HRMState x
@@ -144,7 +144,7 @@ lang HRMState = PValInterface
       , nodeSampleMsgs = mapEmpty subi
       , preorderMsgs = mapEmpty subi
       , export = export
-      , modelType = None ()
+      , subrootLabel = None ()
       }
 
   sem hrmRejectionSampling : all x. Bool -> Int -> (PValInstance Partial (HRMState x) -> Bool)
@@ -321,29 +321,11 @@ lang HRMState = PValInterface
       , preorderMsgs = st.preorderMsgs
       , interactions = st.interactions
       , export = ref
-      , modelType = st.modelType
+      , subrootLabel = st.subrootLabel
       }
 
-  sem hrmStoreModelType : all x. HRMState x -> PExportRef Bool -> HRMState x
-  sem hrmStoreModelType st = | ref ->
-      match st with HRMState st in
-      HRMState {st with modelType = Some ref}
-
- -- Store local information about the topology. I think I am (mis|ab)using the export function here...
-  sem hrmStoreLocTopo : all x. (Int, Int, Int, Bool) -> HRMState x -> PExportRef Bool -> HRMState x
-  sem hrmStoreLocTopo topoLoc st = | ref ->
-    match st with HRMState st in
-    match topoLoc with (thisLabel, leftLabel, rightLabel, isRoot) in
-      HRMState
-        {st with topo = mapInsert thisLabel
-          { left = leftLabel
-          , right = rightLabel
-          , isRoot = isRoot
-          } st.topo
-        }
-  
-  sem hrmStoreTree : all x. HRMTree -> [[Int]] -> HRMState x -> PExportRef () -> HRMState x
-  sem hrmStoreTree tree interactions st = | ref -> 
+  sem hrmStoreTree : all x. Option Int -> HRMTree -> [[Int]] -> HRMState x -> PExportRef () -> HRMState x
+  sem hrmStoreTree optSubrootLabel tree interactions st = | ref -> 
     match st with HRMState st in
     let getLabel = lam t.
       match t with HRMNode n then
@@ -351,13 +333,26 @@ lang HRMState = PValInterface
       else match t with HRMLeaf n in
         n.label
     in 
+    let hasSubroot = match optSubrootLabel with None () then false else true in
     let insertNode = lam t. lam acc.
       match acc with (m, isRoot) in
       match t with HRMNode t then
         (mapInsert t.label { left = getLabel t.left, right = getLabel t.right, isRoot = isRoot} m, false)
       else (m, false)
     in
-    HRMState {st with tree = tree, interactions = interactions, topo = (foldLHRMTree insertNode (st.topo, true) tree).0}
+    -- Create the local topology
+    let topo = (foldLHRMTree insertNode (st.topo, not hasSubroot) tree).0 in
+    -- Handle the optional subroot
+    let topo = match optSubrootLabel with Some subrootLabel then
+      let rootLabel = getLabel tree in
+      mapInsert subrootLabel {left = rootLabel, right = rootLabel, isRoot = true} topo
+    else topo in
+    HRMState {st with tree = tree, interactions = interactions, topo = topo, subrootLabel = optSubrootLabel}
+
+  sem hrmHasSubroot : all x. HRMState x -> Bool
+  sem hrmHasSubroot = | st ->
+    match st with HRMState st in 
+    match st.subrootLabel with Some label then true  else false
 
   sem hrmStoreTransKernel : all x. Int -> HRMState x -> PExportRef (Mat Float) -> HRMState x
   sem hrmStoreTransKernel nodeLabel st = | ref -> 
@@ -380,14 +375,7 @@ lang HRMState = PValInterface
   sem hrmReadExport = | instance ->
     match getSt instance with HRMState st in
     readPreviousExport st.export instance 
-  
-  sem hrmHasSubroot : all x. all complete. PValInstance complete (HRMState x) -> Bool
-  sem hrmHasSubroot = | instance ->
-    match getSt instance with HRMState st in
-    match readPreviousExport st.modelType instance with Some modelType then
-      modelType
-    else
-      error "Missing model type"
+
 
   -- Resample an assume wrapped in an Option
   sem optResample : all a. all x. Option (PAssumeRef a) -> (Option (a -> Dist a)) -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
@@ -775,7 +763,25 @@ lang HRMState = PValInterface
     match x.mu with Some mu in 
     match x.beta with Some beta in 
     match x.lambda with Some lambda in 
-    let treelines = printTree x.tree "" false (depth x.tree) in
+    let treeDepth = depth x.tree in
+    let treelines = printTree x.tree "" false treeDepth in
+    let subrootLines = match x.subrootLabel with Some label then
+      match mapLookup label x.nodes with Some hosts in
+      match mapLookup label x.nodeSuppWeights with Some branchWeights in
+      match mapLookup label x.likrWeights with Some likw in
+        [join [ int2string label 
+        , ":"
+        , join (make (muli (addi treeDepth 1) 4 ) " ")
+        , "{"
+        , strJoin ", " (map (compose int2string readA) (mapValues hosts))
+        , "}, "
+        , "b: "
+        , checkW branchWeights
+        , ", likr: "
+        , float2string (readW likw)
+        ]]
+      else [] in
+    let treelines = concat subrootLines treelines in 
     -- let maxLength = foldl maxi 0 (map length lines) in
     let weightStr = join ["Total weight: ", float2string (getWeight instance)] in
     let instanceSt = if mode then "Complete" else "Partial" in
