@@ -1,4 +1,4 @@
---- flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.edit-HRM.mc	2026-03-07 23:42:35.715046344 +0100
+--- flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.edit-HRM.mc	2026-03-09 21:41:45.628006134 +0100
 +++ flat-root-prior-HRM/flat-root-prior-HRM.d8222d5.renamed-HRM.mc	2026-03-07 23:40:29.566629759 +0100
 @@ -2241,22 +2241,6 @@
                              exit 1)
@@ -296,7 +296,7 @@
    let rootAge =
      match postorderTree with MsgLeaf carried58
      then
-@@ -9651,45 +9549,44 @@
+@@ -9651,47 +9549,44 @@
    with
      (st556, x864)
    in
@@ -337,11 +337,14 @@
 -    p_apply st partres wrappedReps
 -  in
 -  match createExport st556 x860 x862 with (st556, res) in
+-  -- Tell the inference that this model does not have a subroot
+-  let st556 = p_export st556 hrmStoreModelType (p_pure false) in 
+-  -- Done
    p_export
      st556
      hrmStoreExport
 -    res
--  -- Done
+\ No newline at end of file
 +    (p_pure
 +       (dprint
 +          (ReturnType1

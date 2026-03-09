@@ -9688,8 +9688,10 @@ lam st.
     p_apply st partres wrappedReps
   in
   match createExport st556 x860 x862 with (st556, res) in
+  -- Tell the inference that this model does not have a subroot
+  let st556 = p_export st556 hrmStoreModelType (p_pure false) in 
+  -- Done
   p_export
     st556
     hrmStoreExport
     res
-  -- Done

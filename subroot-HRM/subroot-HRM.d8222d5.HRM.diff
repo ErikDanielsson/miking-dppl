@@ -1,4 +1,4 @@
---- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-09 21:17:53.299319265 +0100
+--- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-09 21:38:59.627315720 +0100
 +++ subroot-HRM/subroot-HRM.d8222d5.renamed-HRM.mc	2026-03-09 20:24:16.339148049 +0100
 @@ -2245,22 +2245,6 @@
                              exit 1)
@@ -337,7 +337,7 @@
    let rootAge1 =
      match postorderTree with MsgLeaf carried64
      then
-@@ -9855,48 +9741,44 @@
+@@ -9855,50 +9741,44 @@
    with
      (st525, x801)
    in
@@ -381,6 +381,8 @@
 -    p_apply st partres wrappedReps
 -  in
 -  match createExport st525 x797 x799 with (st525, res) in
+-  -- Tell the inference that this model has a subroot
+-  let st525 = p_export st525 hrmStoreModelType (p_pure true) in 
 -  -- Done
    p_export
      st525

@@ -21,7 +21,10 @@
 	graph-scripts/rename-stores.sh $< $@
 
 # Use the HRM interface for inference
-%.full-HRM.mc : %.edit-HRM.mc %.renamed-HRM.mc hrm-template.mc
+moves_file := coreppl/src/coreppl-to-mexpr/pval-graph/host-rep-mcmc.mc
+interface_file := hrm-template.mc
+inference_files := $(moves_file) $(interface_file)
+%.full-HRM.mc : %.edit-HRM.mc %.renamed-HRM.mc $(inference_files)
 	- diff -u $*.edit-HRM.mc $*.renamed-HRM.mc > $*.HRM.diff
 	sed -e "/{{HERE}}/{r $<" -e "d}" \
 	hrm-template.mc > $@

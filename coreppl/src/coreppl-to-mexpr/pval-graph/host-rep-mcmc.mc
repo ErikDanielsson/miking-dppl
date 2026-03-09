@@ -120,6 +120,7 @@ lang HRMState = PValInterface
     , preorderMsgs : Map Int (PExportRef (Mat Float))
     , below : [PSubmodelRef (HRMState ())]
     , export : x
+    , modelType : Option (PExportRef Bool)
     }
 
   sem hrmInit : all x. x -> HRMState x
@@ -143,6 +144,7 @@ lang HRMState = PValInterface
       , nodeSampleMsgs = mapEmpty subi
       , preorderMsgs = mapEmpty subi
       , export = export
+      , modelType = None ()
       }
 
   sem hrmRejectionSampling : all x. Bool -> Int -> (PValInstance Partial (HRMState x) -> Bool)
@@ -319,9 +321,15 @@ lang HRMState = PValInterface
       , preorderMsgs = st.preorderMsgs
       , interactions = st.interactions
       , export = ref
+      , modelType = st.modelType
       }
-  
-  -- Store local information about the topology. I think I am (mis|ab)using the export function here...
+
+  sem hrmStoreModelType : all x. HRMState x -> PExportRef Bool -> HRMState x
+  sem hrmStoreModelType st = | ref ->
+      match st with HRMState st in
+      HRMState {st with modelType = Some ref}
+
+ -- Store local information about the topology. I think I am (mis|ab)using the export function here...
   sem hrmStoreLocTopo : all x. (Int, Int, Int, Bool) -> HRMState x -> PExportRef Bool -> HRMState x
   sem hrmStoreLocTopo topoLoc st = | ref ->
     match st with HRMState st in
@@ -372,6 +380,14 @@ lang HRMState = PValInterface
   sem hrmReadExport = | instance ->
     match getSt instance with HRMState st in
     readPreviousExport st.export instance 
+  
+  sem hrmHasSubroot : all x. all complete. PValInstance complete (HRMState x) -> Bool
+  sem hrmHasSubroot = | instance ->
+    match getSt instance with HRMState st in
+    match readPreviousExport st.modelType instance with Some modelType then
+      modelType
+    else
+      error "Missing model type"
 
   -- Resample an assume wrapped in an Option
   sem optResample : all a. all x. Option (PAssumeRef a) -> (Option (a -> Dist a)) -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
