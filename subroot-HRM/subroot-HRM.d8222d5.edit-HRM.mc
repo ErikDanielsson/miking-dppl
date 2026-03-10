@@ -9442,7 +9442,20 @@ lam st.
   in
   match eitherEither st497 x776 with (st498, subrootSamplingProb)
   in
-  let st497 = p_export st497 (hrmStorePreorderMsg subrootLabel1) (p_pure b4) in
+  let st498 = p_export st498 (hrmStorePreorderMsg subrootLabel1) (p_pure b4) in
+  let rl = (match postorderTree with MsgLeaf carried56
+       then
+         carried56.label
+       else match postorderTree with MsgNode carried57
+       then
+         carried57.label
+       else
+         let #var"292" =
+           print
+             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 87:57-87:76>:\nField \'label\' not found\n[0m  let rootRep = suggestNodeRep(rootSamplingProb, nHosts, [31mpostorderTree.label[0m[0m);\n"
+         in
+         exit 1) in
+  let st498 = p_export st498 (hrmStoreTransKernel rl) subrootKernel in
   match
     suggestNodeRep st498 subrootSamplingProb nHosts1 (negi 1)
   with

@@ -1,4 +1,4 @@
---- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-09 22:39:33.358016408 +0100
+--- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-10 09:14:26.523343846 +0100
 +++ subroot-HRM/subroot-HRM.d8222d5.renamed-HRM.mc	2026-03-09 20:24:16.339148049 +0100
 @@ -2245,22 +2245,6 @@
                              exit 1)
@@ -251,15 +251,28 @@
    match mtxSclrMul st486 subrootLength qMatrix2 with (st487, x763)
    in
    match matExpExn st487 x763 with (st488, subrootKernel)
-@@ -9442,7 +9367,6 @@
+@@ -9442,20 +9367,6 @@
    in
    match eitherEither st497 x776 with (st498, subrootSamplingProb)
    in
--  let st497 = p_export st497 (hrmStorePreorderMsg subrootLabel1) (p_pure b4) in
+-  let st498 = p_export st498 (hrmStorePreorderMsg subrootLabel1) (p_pure b4) in
+-  let rl = (match postorderTree with MsgLeaf carried56
+-       then
+-         carried56.label
+-       else match postorderTree with MsgNode carried57
+-       then
+-         carried57.label
+-       else
+-         let #var"292" =
+-           print
+-             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 87:57-87:76>:\nField \'label\' not found\n[0m  let rootRep = suggestNodeRep(rootSamplingProb, nHosts, [31mpostorderTree.label[0m[0m);\n"
+-         in
+-         exit 1) in
+-  let st498 = p_export st498 (hrmStoreTransKernel rl) subrootKernel in
    match
      suggestNodeRep st498 subrootSamplingProb nHosts1 (negi 1)
    with
-@@ -9455,7 +9379,7 @@
+@@ -9468,7 +9379,7 @@
    let st502 =
      p_weight
        st501
@@ -268,7 +281,7 @@
        (lam x805.
           externalLog (addf x805 (mulf (int2float subrootLabel1) 0.)))
        x778
-@@ -9469,7 +9393,7 @@
+@@ -9482,7 +9393,7 @@
    let st504 =
      p_weight
        st503
@@ -277,7 +290,7 @@
        (lam x804.
           addf
             (subf
-@@ -9483,7 +9407,6 @@
+@@ -9496,7 +9407,6 @@
    let foo7 = {} in
    match observationMessage1 st504 subrootRep with (st505, x780)
    in
@@ -285,7 +298,7 @@
    match mtxMul st505 x780 subrootKernel with (st506, x781)
    in
    let subrootInfo =
-@@ -9543,22 +9466,10 @@
+@@ -9556,22 +9466,10 @@
    in
    match bool2real st509 x782 with (st510, x783)
    in
@@ -309,7 +322,7 @@
        (lam x803.
           externalLog
             (addf
-@@ -9595,20 +9506,6 @@
+@@ -9608,20 +9506,6 @@
        in
        exit 1
    in
@@ -330,7 +343,7 @@
    match
      sampleBranch
        st511
-@@ -9626,7 +9523,7 @@
+@@ -9639,7 +9523,7 @@
        (addf rootAge subrootLength)
        rootAge
        nHosts1
@@ -339,7 +352,7 @@
        modelParams2
        (match subrootInfo with SubrootInfo1 x1021
         then
-@@ -9715,39 +9612,14 @@
+@@ -9728,39 +9612,14 @@
    in
    match p_apply st517 x791 x794 with (st518, x795)
    in
@@ -380,7 +393,7 @@
    let rootAge1 =
      match postorderTree with MsgLeaf carried64
      then
-@@ -9869,48 +9741,44 @@
+@@ -9882,48 +9741,44 @@
    with
      (st525, x801)
    in

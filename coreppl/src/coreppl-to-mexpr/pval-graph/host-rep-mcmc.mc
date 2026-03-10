@@ -207,11 +207,12 @@ lang HRMState = PValInterface
       let l = match n with HRMNode t then t.label else match n with HRMLeaf t in t.label in
       longMend l instance in
     let nodeMend = lam n. lam instance. match n with HRMNode t then mendNode t.label instance else instance in
-    let postorderResampleBranch = lam tree. lam instance. foldLHRMTree branchMend instance tree in
     let postorderResampleNode = lam tree. lam instance. foldLHRMTree nodeMend instance tree in
+    let postorderResampleBranch = lam tree. lam instance. foldLHRMTree branchMend instance tree in
     
     hrmPrintState false instance;
     printLn "Resampling node repertoires...";
+    let instance = match st.subrootLabel with Some label then mendNode label instance else instance in
     let instance = postorderResampleNode st.tree instance in
     printLn "Done resampling node repertoires.";
     hrmPrintState false instance;
@@ -589,6 +590,7 @@ lang HRMState = PValInterface
   sem hrmResampleNodeLocalBP nodeLabel hKeys = | instance -> 
     match getSt instance with HRMState st in
     match mapLookup nodeLabel st.nodes with Some node in
+    let isSubroot = match st.subrootLabel with Some label then eqi label nodeLabel else false in
     -- Get the neighbourhood in the tree
     match mapLookup nodeLabel st.topo with Some {left = left, right = right, isRoot = isRoot} in 
     -- Get the states of the child nodes
@@ -596,16 +598,18 @@ lang HRMState = PValInterface
     let leftObsMsg = readPreviousExport (match mapLookup left st.nodeSampleMsgs with Some v in v) instance in
     let leftKernel = readPreviousExport (match mapLookup left st.transitionKernels with Some v in v) instance in
     let leftMsg = matMulExn leftObsMsg (matTranspose leftKernel) in 
-    -- Compute the right msg
-    let rightObsMsg = readPreviousExport (match mapLookup right st.nodeSampleMsgs with Some v in v) instance in
-    let rightKernel = readPreviousExport (match mapLookup right st.transitionKernels with Some v in v) instance in
-    let rightMsg = matMulExn rightObsMsg (matTranspose rightKernel) in 
-
+    -- If we are at the subroot, then we only have one incident branch
+    let combindMsgPart = if isSubroot then leftMsg else 
+      -- Compute the right msg
+      let rightObsMsg = readPreviousExport (match mapLookup right st.nodeSampleMsgs with Some v in v) instance in
+      let rightKernel = readPreviousExport (match mapLookup right st.transitionKernels with Some v in v) instance in
+      let rightMsg = matMulExn rightObsMsg (matTranspose rightKernel) in
+      matNormalize (_matElemMul leftMsg rightMsg)
+    in 
     -- Get the preordered message -- the state at the predecessor times the transition kernel
     let preorderMsg = readPreviousExport (match mapLookup nodeLabel st.preorderMsgs with Some v in v) instance in
 
-    -- Normalize twice to prevent floating point errors
-    let combindMsgPart = matNormalize (_matElemMul leftMsg rightMsg) in
+
     let combindMsg = matNormalize (_matElemMul preorderMsg combindMsgPart) in
       
     -- TODO(ed, 2026-02-22): Think about whether we should temper the distribution

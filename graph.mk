@@ -32,4 +32,5 @@ inference_files := $(moves_file) $(interface_file)
 # Compile the model
 %.out : %.mc
 	mi compile $< --output $@
+	./$@
 
