@@ -99,7 +99,7 @@ let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
 let iterations = 400000 in
-let samplingPeriod = 1000 in
+let samplingPeriod = 10 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (seqCmp subi) in
 let toString2 = lam s. join ["[", strJoin ", " (map int2string s), "]"] in

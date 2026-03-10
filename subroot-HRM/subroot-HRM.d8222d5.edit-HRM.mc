@@ -9065,20 +9065,49 @@ lam st.
             ""
   in
   let input1 =
-    { interactions = [ [ 2, 1 ],
-          [ 1, 2 ] ],
+    { interactions =
+        [ [ 0, 0, 2, 0, 2 ],
+          [ 0, 0, 2, 0, 1 ],
+          [ 0, 0, 2, 0, 1 ],
+          [ 0, 0, 2, 0, 2 ],
+          [ 0, 0, 2, 0, 1 ] ],
       subrootLabel = (negi 1),
       symbiontTree =
         Node
-          { age = 1.,
-            label = 3,
+          { age = 6.839526974,
+            label = 9,
             left = Leaf
                 { age = 0., label = 1 },
-            right = Leaf
-                { age = 0., label = 2 } },
-      hostDistances = [ [ 0., 1. ],
-          [ 1., 0. ] ],
-      subrootLength = 1. }
+            right =
+              Node
+                { age = 4.842443202,
+                  label = 8,
+                  left = Leaf
+                      { age = 0., label = 2 },
+                  right =
+                    Node
+                      { age = 3.501720109,
+                        label = 7,
+                        left =
+                          Leaf
+                            { age = 0., label = 3 },
+                        right =
+                          Node
+                            { age = 3.127609164,
+                              label = 6,
+                              left =
+                                Leaf
+                                  { age = 0., label = 4 },
+                              right =
+                                Leaf
+                                  { age = 0., label = 5 } } } } },
+      hostDistances =
+        [ [ 0., 1., 2., 2., 1. ],
+          [ 1., 0., 2., 2., 1. ],
+          [ 2., 2., 0., 1., 1. ],
+          [ 2., 2., 1., 0., 1. ],
+          [ 1., 1., 1., 1., 0. ] ],
+      subrootLength = 6.84 }
   in
   match input1 with {symbiontTree = #var"X9"}
   in

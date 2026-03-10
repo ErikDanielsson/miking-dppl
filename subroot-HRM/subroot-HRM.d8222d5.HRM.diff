@@ -1,5 +1,5 @@
---- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-10 09:14:26.523343846 +0100
-+++ subroot-HRM/subroot-HRM.d8222d5.renamed-HRM.mc	2026-03-09 20:24:16.339148049 +0100
+--- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-10 09:36:10.888055654 +0100
++++ subroot-HRM/subroot-HRM.d8222d5.renamed-HRM.mc	2026-03-10 09:34:46.592659463 +0100
 @@ -2245,22 +2245,6 @@
                              exit 1)
                           1)
@@ -207,7 +207,7 @@
                        match
                          mtxMul
                            st443
-@@ -9090,30 +9023,19 @@
+@@ -9119,30 +9052,19 @@
    in
    let subrootLength = #var"X11" in
    let nHosts1 = length11 hostDistances in
@@ -241,7 +241,7 @@
    with
      (st451, beta)
    in
-@@ -9337,6 +9259,9 @@
+@@ -9366,6 +9288,9 @@
    with
      (st486, postorderTree)
    in
@@ -251,7 +251,7 @@
    match mtxSclrMul st486 subrootLength qMatrix2 with (st487, x763)
    in
    match matExpExn st487 x763 with (st488, subrootKernel)
-@@ -9442,20 +9367,6 @@
+@@ -9471,20 +9396,6 @@
    in
    match eitherEither st497 x776 with (st498, subrootSamplingProb)
    in
@@ -272,7 +272,7 @@
    match
      suggestNodeRep st498 subrootSamplingProb nHosts1 (negi 1)
    with
-@@ -9468,7 +9379,7 @@
+@@ -9497,7 +9408,7 @@
    let st502 =
      p_weight
        st501
@@ -281,7 +281,7 @@
        (lam x805.
           externalLog (addf x805 (mulf (int2float subrootLabel1) 0.)))
        x778
-@@ -9482,7 +9393,7 @@
+@@ -9511,7 +9422,7 @@
    let st504 =
      p_weight
        st503
@@ -290,7 +290,7 @@
        (lam x804.
           addf
             (subf
-@@ -9496,7 +9407,6 @@
+@@ -9525,7 +9436,6 @@
    let foo7 = {} in
    match observationMessage1 st504 subrootRep with (st505, x780)
    in
@@ -298,7 +298,7 @@
    match mtxMul st505 x780 subrootKernel with (st506, x781)
    in
    let subrootInfo =
-@@ -9556,22 +9466,10 @@
+@@ -9585,22 +9495,10 @@
    in
    match bool2real st509 x782 with (st510, x783)
    in
@@ -322,7 +322,7 @@
        (lam x803.
           externalLog
             (addf
-@@ -9608,20 +9506,6 @@
+@@ -9637,20 +9535,6 @@
        in
        exit 1
    in
@@ -343,7 +343,7 @@
    match
      sampleBranch
        st511
-@@ -9639,7 +9523,7 @@
+@@ -9668,7 +9552,7 @@
        (addf rootAge subrootLength)
        rootAge
        nHosts1
@@ -352,7 +352,7 @@
        modelParams2
        (match subrootInfo with SubrootInfo1 x1021
         then
-@@ -9728,39 +9612,14 @@
+@@ -9757,39 +9641,14 @@
    in
    match p_apply st517 x791 x794 with (st518, x795)
    in
@@ -393,7 +393,7 @@
    let rootAge1 =
      match postorderTree with MsgLeaf carried64
      then
-@@ -9882,48 +9741,44 @@
+@@ -9911,48 +9770,44 @@
    with
      (st525, x801)
    in
