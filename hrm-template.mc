@@ -1,10 +1,12 @@
 include "coreppl::coreppl-to-mexpr/pval-graph/host-rep-mcmc.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-mut.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-debug.mc"
+include "coreppl::coreppl-to-mexpr/pval-graph/continues.mc"
 include "ext/mat-ext.mc"
 include "ext/file-ext.mc"
 include "common.mc"
 include "json.mc"
+include "sys.mc"
 
 -- NOTE(vipa, 2025-12-09): In lieu of proper distribution translations
 -- I'll make these easy to substitute in
@@ -90,6 +92,53 @@ let sampleToJson = lam sample.
 let samplesToJson = lam samples.
   JsonArray (map sampleToJson samples)
 
+let getSampleFn : () -> String = lam.
+  match sysGetEnv "PPL_OUTPUT" with Some fn
+    then fn
+    else error "No sample filename provided via PPL_OUTPUT!"
+
+let tryOpenSampleFile : String -> WriteChannel = lam fn.
+    match fileWriteOpen fn with Some wc then wc
+    else error (join ["Failed to open sample file ", fn])
+
+let sampleWriter = lam wc. lam i. lam s.
+  let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
+  fileWriteString wc jStr;
+  fileWriteFlush wc
+
+let usePigeons = lam exploreSteps. lam samplingPeriod.
+  let fn = getSampleFn () in
+  let wc = tryOpenSampleFile fn in
+  let writer = sampleWriter wc in
+  let continue = (lam c. lam sinfo. lam s.
+    continuePigeons exploreSteps samplingPeriod writer c sinfo s
+  ) in
+  { init = contStateInitPigeons
+  , continue = continue
+  , temp = temperaturePigeons
+  , wc = wc
+  }
+
+let useSingleChain = lam iterations. lam samplingPeriod.
+  let fn = getSampleFn () in
+  let wc = tryOpenSampleFile fn in
+  let writer = sampleWriter wc in
+  let continue = (lam c. lam sinfo. lam s.
+    continueBase iterations samplingPeriod writer c sinfo s
+  ) in
+  { init = (lam. contStateInitBase ())
+  , continue = continue
+  , temp = (lam c. temperatureBase c)
+  , wc = wc
+  }
+
+let getSeed : () -> Int = lam.
+  match sysGetEnv "PPL_SEED" with Some seedStr
+    then string2int seedStr
+    else error "No seed provided via PPL_SEED!"
+
+  
+
 mexpr
 
 
@@ -98,8 +147,8 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 400000 in
-let samplingPeriod = 10 in
+let iterations = 4000 in
+let samplingPeriod = 1 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (seqCmp subi) in
 let toString2 = lam s. join ["[", strJoin ", " (map int2string s), "]"] in
@@ -110,56 +159,51 @@ let summarizePVal = lam label. lam pair.
   printLn (join [float2string time, "ms (", label, ")"]);
   -- printLn (join ["Acceptance ratio: ", res.acceptanceRatio]);
   -- printLn (join (map (lam x. join [float2string x, "\t"]) res.samples));
-
-  let showAccept = lam acceptM. 
-    let ratio = lam a. lam n. divf (int2float a) (int2float n) in
-    strJoin "\n"
-      (map (lam t. match t with (m, (a, n)) in join [m, ": ", float2stringFixed (ratio a n) 10, " : ", int2string a, "/", int2string n])
-      (mapToSeq acceptM))
-  in
-  printLn "Acceptance ratios";
-  printLn (showAccept res.acceptanceRatio);
-  if showHistogram then
-    -- (map (lam s. printLn (join
-    --   [ "mu:", float2string s.mu
-    --   , ", beta: ", float2string s.beta
-    --   , ", lambda:[", (strJoin "," (map float2string s.lambda)), "]"
-    --   ]))
-    -- res.samples);
-    let muSamples = map (lam s. s.mu) res.samples in
-    printLn "------ Mu ------";
-    printLn (hist2string toString (mkHisto muSamples));
-    let betaSamples = map (lam s. s.beta) res.samples in
-    printLn "------ Beta ------";
-    printLn (hist2string toString (mkHisto betaSamples));
-    let lambdaSamples = map (lam s. s.lambda) res.samples in
-    map (lam i. 
-      let lamiSamples = map (lam s. get s i) lambdaSamples in
-      printLn (join ["------ Lambda ", int2string i, " ------"]);
-      printLn (hist2string toString (mkHisto lamiSamples))
-    ) [0, 1, 2, 3];
-    -- let rootRepSamples = map (lam s. s.rootRep) res.samples in
-    let reps = mapEmpty subi in
-    let reps = foldl (lam m. lam inner. foldl (lam im. lam kv. match kv with (k, v) in mapInsertOrAppend k v im) m (mapToSeq inner.reps)) reps res.samples in
-    mapMapWithKey (lam k. lam v.
-      printLn (join ["------ Node repertoire ", int2string k, " ----------"]);
-      printLn (hist2string toString2 (mkHisto2 v))
-    ) reps;
-    ()
-  else ()
+  ()
+  -- let showAccept = lam acceptM. 
+  --   let ratio = lam a. lam n. divf (int2float a) (int2float n) in
+  --   strJoin "\n"
+  --     (map (lam t. match t with (m, (a, n)) in join [m, ": ", float2stringFixed (ratio a n) 10, " : ", int2string a, "/", int2string n])
+  --     (mapToSeq acceptM))
+  -- in
+  -- printLn "Acceptance ratios";
+  -- printLn (showAccept res.acceptanceRatio);
+  -- if showHistogram then
+  --   -- (map (lam s. printLn (join
+  --   --   [ "mu:", float2string s.mu
+  --   --   , ", beta: ", float2string s.beta
+  --   --   , ", lambda:[", (strJoin "," (map float2string s.lambda)), "]"
+  --   --   ]))
+  --   -- res.samples);
+  --   let muSamples = map (lam s. s.mu) res.samples in
+  --   printLn "------ Mu ------";
+  --   printLn (hist2string toString (mkHisto muSamples));
+  --   let betaSamples = map (lam s. s.beta) res.samples in
+  --   printLn "------ Beta ------";
+  --   printLn (hist2string toString (mkHisto betaSamples));
+  --   let lambdaSamples = map (lam s. s.lambda) res.samples in
+  --   map (lam i. 
+  --     let lamiSamples = map (lam s. get s i) lambdaSamples in
+  --     printLn (join ["------ Lambda ", int2string i, " ------"]);
+  --     printLn (hist2string toString (mkHisto lamiSamples))
+  --   ) [0, 1, 2, 3];
+  --   -- let rootRepSamples = map (lam s. s.rootRep) res.samples in
+  --   let reps = mapEmpty subi in
+  --   let reps = foldl (lam m. lam inner. foldl (lam im. lam kv. match kv with (k, v) in mapInsertOrAppend k v im) m (mapToSeq inner.reps)) reps res.samples in
+  --   mapMapWithKey (lam k. lam v.
+  --     printLn (join ["------ Node repertoire ", int2string k, " ----------"]);
+  --     printLn (hist2string toString2 (mkHisto2 v))
+  --   ) reps;
+  --   ()
+  -- else ()
 
  in
-let sampleWriter = lam wc. lam i. lam s.
-  if eqi (modi i samplingPeriod) 0 then
-    let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
-    fileWriteString wc jStr;
-    fileWriteFlush wc
-  else ()
-in
+
 
 
 
 let run =
+  -- setSeed (getSeed ());
   setSeed 1234;
   use ComposedVisi in
   -- printJsonLn (graphToJson (instantiate model (hrmInit ())));
@@ -174,22 +218,26 @@ let run =
   -- match getSt instance with HRMState st in
   -- printLn (join [int2string (length st.here), ", ", int2string (length st.below)]);
   let printer = lam x.
-    if eqi (modi x 1000) 0 then
-      printLn (join ["Iteration", int2string x]); hrmPrintState
-    else
-      lam. lam. ()
+    lam. lam. ()
+    -- if eqi (modi x 1000) 0 then
+    --   -- printLn (join ["Iteration", int2string x]); hrmPrintState
+    -- else
+    --   lam. lam. ()
   in
   -- printLn (join ["Took ", float2string time, "ms to find good instance."]);
   lam.
-    match fileWriteOpen "hrm-samples.json" with Some wc in
-    let r = mcmc printer (mkMCMCConfig (sampleWriter wc) iterations globalProb) instance in
-    fileWriteClose wc;
+    -- let conts = usePigeons 100 10 in
+    let conts = useSingleChain iterations samplingPeriod in
+    let config = mkMCMCConfig conts.init conts.continue conts.temp in
+    let r = mcmc printer config instance in
+    fileWriteClose conts.wc;
     printLn "---- Finalize step JSON ----";
     hrmPrintState true instance; 
     printLn "----------------------------";
     let w = getWeight instance in
     println (join ["Final model weight: ", float2string w]);
-    r in
+    r
+  in
 summarizePVal "mut" (timeF run);
 
 ()

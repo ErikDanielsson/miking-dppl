@@ -110,11 +110,11 @@ lang MutPVal = PValInterface
       }
     else PVIPart x
 
-  sem finalizeStep pred = | pvi ->
+  sem finalizeStep weightMod pred = | pvi ->
     match intermediateStep pvi with PVIPart x in
     let acceptProb = minf 0.0
       (addf
-        (subf x.permanentWeight x.prevPermanentWeight)
+        (subf (weightMod x.permanentWeight) (weightMod x.prevPermanentWeight))
         x.temporaryWeight) in
     -- printLn (join
     --   [ "Perm weight: " , float2string x.permanentWeight

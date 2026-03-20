@@ -24,54 +24,69 @@ let mkReciprocal = lam a. lam b. use RuntimeDistElementary in DistReciprocal {a 
 let println = printLn
 let printArr = lam arr. printLn (join arr) 
 
+type SampleInfo = {
+  weight : Float
+}
+
 lang MCMCPVal = PValInterface
-  type MCMCConfig st a b =
-    { getSample : PValInstance Complete st -> a
-    , step : PValInstance Partial st -> (PValInstance Partial st, b)
-    , cmpMoves : b -> b -> Int
-    , sampleWriter : Int -> a -> ()
-    , iterations : Int  -- TODO(vipa, 2025-09-24): Make this something more general
+
+  type MCMCConfig st s k contState =
+    { getSample : PValInstance Complete st -> s
+    , step : PValInstance Partial st -> (PValInstance Partial st, k)
+    , contStateInit : () -> contState
+    , continue : contState -> SampleInfo -> s -> (k, Bool) -> (contState, Bool)
+    , temperature : contState -> Float
     }
 
-  type MCMCResult st a b c =
-    { samples : [a]
-    , acceptanceRatio : Map b c
+  type MCMCResult st c =
+    { contState : c
     , finalInstance : PValInstance Complete st
     }
 
-  sem mcmc : all st. all a. all b. all c. (Int -> Bool -> PValInstance Complete st -> ()) -> MCMCConfig st a String -> PValInstance Complete st -> MCMCResult st a String (Int, Int)
+  sem mcmc : all st. all a. all b. all c. (Int -> Bool -> PValInstance Complete st -> ()) -> MCMCConfig st a String c -> PValInstance Complete st -> MCMCResult st c
   sem mcmc printer config = | instance ->
     let acceptPred = lam prob. 
       -- printLn (join ["Accept prob: ", float2string prob]);
       -- printLn (join ["Current weight: ", float2string (getWeight instance)]);
       bernoulliSample (exp prob) in
-    recursive let work = lam acc.
-      if eqi acc.iterations 0 then acc else
-      -- println "Before step";
-      match (config.step (startStep acc.instance)) with (instance, moveId) in
-
-      match finalizeStep acceptPred instance with (accepted, instance) in
-      -- printArr ["Accepted: ", bool2string accepted];
-      printer acc.iterations true instance;
-      -- hrmPrintNode 3 instance;
-      -- (if and (eqi (cmpString moveId "Block node  ") 0) accepted then 
-      --   printLn (join ["Accepted: ", bool2string accepted]);
-      -- else ());
-      -- println "After finalize step";
-      -- printLn (join ["Accepted: ", bool2string accepted]);
-      let sample = config.getSample instance in
-      config.sampleWriter acc.iterations sample;
-      let acc =
-        { iterations = subi acc.iterations 1
-        , accepted = mapInsertOrAdd moveId (if accepted then 1 else 0) acc.accepted 
-        , samples = acc.samples
-        , instance = instance
-        } in
-      
-      work acc in
-    let res = work {iterations = config.iterations, accepted = mapEmpty config.cmpMoves, samples = [], instance = instance} in
-    { samples = res.samples
-    , acceptanceRatio = res.accepted
+    recursive let work :
+      { instance : PValInstance Complete st
+      , contState : (c, Bool)
+      } -> { instance : PValInstance Complete st
+      , contState : (c, Bool) 
+      } = lam acc.
+      match acc.contState with (contState, contSample) in
+      if contSample then
+        -- println "Before step";
+        match (config.step (startStep acc.instance)) with (instance, moveId) in
+        let beta = config.temperature contState in
+        let modWeight = if eqf beta 0.0
+          then (lam w. if (or (eqf w (negf inf)) (isNaN w))
+            then log 0.
+            else 0.0
+          )
+          else lam w. mulf beta w
+        in
+        match finalizeStep modWeight acceptPred instance with (accepted, instance) in
+        -- printArr ["Accepted: ", bool2string accepted];
+        -- hrmPrintNode 3 instance;
+        -- (if and (eqi (cmpString moveId "Block node  ") 0) accepted then 
+        --   printLn (join ["Accepted: ", bool2string accepted]);
+        -- else ());
+        -- println "After finalize step";
+        -- printLn (join ["Accepted: ", bool2string accepted]);
+        let sample = config.getSample instance in
+        let sinfo = { weight = getWeight instance } in
+        let contState = config.continue contState sinfo sample (moveId, accepted) in
+        let acc =
+          { contState = contState 
+          , instance = instance
+          } in
+        work acc 
+      else acc
+    in
+    let res = work {contState = (config.contStateInit (), true), instance = instance} in
+    { contState = res.contState.0
     , finalInstance = res.instance
     }
 end
@@ -220,7 +235,7 @@ lang HRMState = PValInterface
     let instance = postorderResampleBranch st.tree instance in
     printLn "Done resampling node repertoires.";
     hrmPrintState false instance;
-    (finalizeStep (lam. true) instance).1
+    (finalizeStep (lam x. x) (lam. true) instance).1
 
   --
   -- Assume stores
@@ -928,12 +943,16 @@ lang HRMState = PValInterface
 end
 
 lang HRMMCMCPVal = HRMState + MCMCPVal
-  sem mkMCMCConfig : all x. (Int -> x -> ()) -> Int -> Float -> MCMCConfig (HRMState (PExportRef x)) x String
-  sem mkMCMCConfig writer iterations = | globalProb ->
+  sem mkMCMCConfig : all x. all contState.
+    (() -> contState) ->
+    (contState -> SampleInfo -> x -> (String, Bool) -> (contState, Bool)) ->
+    (contState -> Float) -> 
+    MCMCConfig (HRMState (PExportRef x)) x String contState
+  sem mkMCMCConfig contStateInit continue = | temperature ->
     { getSample = hrmReadExport
-    , step = hrmResampleAligned globalProb
-    , cmpMoves = cmpString
-    , sampleWriter = writer 
-    , iterations = iterations
+    , step = hrmResampleAligned 0.0
+    , contStateInit = contStateInit
+    , continue = continue
+    , temperature = temperature
     }
 end

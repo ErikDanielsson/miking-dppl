@@ -1,8 +1,10 @@
 include "coreppl::coreppl-to-mexpr/pval-graph/simple-mcmc.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-mut.mc"
 include "coreppl::coreppl-to-mexpr/pval-graph/pval-debug.mc"
+include "coreppl::coreppl-to-mexpr/pval-graph/continues.mc"
 include "ext/mat-ext.mc"
 include "common.mc"
+include "sys.mc"
 
 -- NOTE(vipa, 2025-12-09): In lieu of proper distribution translations
 -- I'll make these easy to substitute in
@@ -69,12 +71,55 @@ let hist2string : all a. (a -> String) -> [(a, Float)] -> String
   = lam toStr. lam l.
     strJoin "\n" (map (lam pair. join [toStr pair.0, "\t", float2string pair.1, "\t", progressBarNoPad 100 pair.1]) l)
 
+let getSampleFn : () -> String = lam.
+  match sysGetEnv "PPL_OUTPUT" with Some fn
+    then fn
+    else error "No sample filename provided via PPL_OUTPUT!"
+
+let tryOpenSampleFile : String -> WriteChannel = lam fn.
+    match fileWriteOpen fn with Some wc then wc
+    else error (join ["Failed to open sample file ", fn])
+
+let sampleWriter = lam wc. lam i. lam s.
+  ()
+  -- let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
+  -- fileWriteString wc jStr;
+  -- fileWriteFlush wc
+
+let usePigeons = lam exploreSteps. lam samplingPeriod.
+  let fn = getSampleFn () in
+  let wc = tryOpenSampleFile fn in
+  let writer = sampleWriter wc in
+  let continue = (lam c. lam sinfo. lam s.
+    continuePigeons exploreSteps samplingPeriod writer c sinfo s
+  ) in
+  { init = contStateInitPigeons
+  , continue = continue
+  , temp = temperaturePigeons
+  , wc = wc
+  }
+
+let useSingleChain = lam iterations. lam samplingPeriod.
+  let fn = getSampleFn () in
+  let wc = tryOpenSampleFile fn in
+  let writer = sampleWriter wc in
+  let continue = (lam c. lam sinfo. lam s.
+    continueBase iterations samplingPeriod writer c sinfo s
+  ) in
+  { init = (lam. contStateInitBase ())
+  , continue = continue
+  , temp = (lam c. temperatureBase c)
+  , wc = wc
+  }
+
+
 mexpr
 
 let showHistogram : Bool = true in
 
 let globalProb = 1.0 in
 let iterations = 1000 in
+let samplingPeriod = 1 in
 let toString = lam. "()" in
 let mkHisto = histogram (lam. lam. 0) in
 -- let toString = interval2string in
@@ -99,7 +144,9 @@ let run =
   -- match getSt instance with SimpleState st in
   -- printLn (join [int2string (length st.here), ", ", int2string (length st.below)]);
   printLn (join ["Took ", float2string time, "ms to find good instance."]);
-  lam. mcmc (mkMCMCConfig iterations globalProb) instance in
+  let conts = useSingleChain iterations samplingPeriod in
+  let config = mkMCMCConfig conts.init conts.continue conts.temp globalProb in
+  lam. mcmc config instance in
 summarizePVal "mut" (timeF run);
 
 ()

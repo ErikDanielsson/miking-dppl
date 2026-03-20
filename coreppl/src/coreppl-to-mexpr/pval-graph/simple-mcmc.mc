@@ -4,11 +4,17 @@ include "json.mc"
 
 -- === General implementation of MCMC ===
 
+type SampleInfo = {
+  weight : Float
+}
+
 lang MCMCPVal = PValInterface
-  type MCMCConfig st a =
-    { getSample : PValInstance Complete st -> a
+  type MCMCConfig st s k contState =
+    { getSample : PValInstance Complete st -> s
     , step : PValInstance Partial st -> PValInstance Partial st
-    , iterations : Int  -- TODO(vipa, 2025-09-24): Make this something more general
+    , contStateInit : () -> contState
+    , continue : contState -> SampleInfo -> s -> (k, Bool) -> (contState, Bool)
+    , temperature : contState -> Float
     }
 
   type MCMCResult st a =
@@ -17,22 +23,37 @@ lang MCMCPVal = PValInterface
     , finalInstance : PValInstance Complete st
     }
 
-  sem mcmc : all st. all a. MCMCConfig st a -> PValInstance Complete st -> MCMCResult st a
+  sem mcmc : all st. all a. all k. all c. MCMCConfig st a () c-> PValInstance Complete st -> MCMCResult st a
   sem mcmc config = | instance ->
     let acceptPred = lam prob. bernoulliSample (exp prob) in
     recursive let work = lam acc.
-      if eqi acc.iterations 0 then acc else
-      match finalizeStep acceptPred (config.step (startStep acc.instance)) with (accepted, instance) in
-      let acc =
-        { iterations = subi acc.iterations 1
-        , accepted = addi acc.accepted (if accepted then 1 else 0)
-        , samples = snoc acc.samples (config.getSample instance)
-        , instance = instance
-        } in
-      work acc in
-    let res = work {iterations = config.iterations, accepted = 0, samples = [], instance = instance} in
+      match acc.contState with (contState, contSample) in
+      if contSample then
+        let beta = config.temperature contState in
+        let modWeight = if eqf beta 0.0
+          then (lam w. if (or (eqf w (negf inf)) (isNaN w))
+            then log 0.
+            else 0.0
+          )
+          else lam w. mulf beta w
+        in
+        match (config.step (startStep acc.instance)) with instance in
+        match finalizeStep modWeight acceptPred instance with (accepted, instance) in
+        let sample = config.getSample instance in
+        let sinfo = { weight = getWeight instance } in
+        let contState = config.continue contState sinfo sample ((), accepted) in
+        let acc =
+          { contState = contState
+          , accepted = addi acc.accepted (if accepted then 1 else 0)
+          , samples = snoc acc.samples sample
+          , instance = instance
+          } in
+        work acc
+      else acc
+    in
+    let res = work {contState = (config.contStateInit (), true), accepted = 0, samples = [], instance = instance} in
     { samples = res.samples
-    , acceptanceRatio = divf (int2float res.accepted) (int2float config.iterations)
+    , acceptanceRatio = int2float res.accepted
     , finalInstance = res.instance
     }
 end
@@ -98,10 +119,18 @@ lang SimpleState = PValInterface
 end
 
 lang SimpleMCMCPVal = SimpleState + MCMCPVal
-  sem mkMCMCConfig : all x. Int -> Float -> MCMCConfig (SimpleState (PExportRef x)) x
-  sem mkMCMCConfig iterations = | globalProb ->
+  sem mkMCMCConfig : all x. all contState. 
+    (() -> contState) ->
+    (contState -> SampleInfo -> x -> ((), Bool) -> (contState, Bool)) ->
+    (contState -> Float) -> 
+    Float -> 
+    MCMCConfig (SimpleState (PExportRef x)) x () contState
+
+  sem mkMCMCConfig contStateInit continue  temperature = | globalProb ->
     { getSample = simpleReadExport
     , step = simpleResampleAligned globalProb
-    , iterations = iterations
+    , contStateInit = contStateInit
+    , continue = continue
+    , temperature = temperature
     }
 end

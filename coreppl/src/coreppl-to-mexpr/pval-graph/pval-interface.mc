@@ -40,7 +40,10 @@ lang PValInterface = RuntimeDistBase
   -- to return the model instance as it was before the step (if false)
   -- or after (if true). The predicate is given the post-step instance
   -- and an mcmc acceptance (log-)ratio computed from the step itself.
-  sem finalizeStep : all st. (Float -> Bool) -> PValInstance Partial st -> (Bool, PValInstance Complete st)
+  -- NOTE(ed, 20-03-2026) The first argument is a weight modifier that 
+  -- does some change to the program weight before it is compared. This
+  -- is used in PT with `lam w. mulf beta w`.
+  sem finalizeStep : all st. (Float -> Float) -> (Float -> Bool) -> PValInstance Partial st -> (Bool, PValInstance Complete st)
   -- Mark a given assume to be resampled in the upcoming step with the
   -- given drift kernel, if any.
   sem resampleAssume : all st. all a. Option (a -> Dist a) -> PAssumeRef a -> PValInstance Partial st -> PValInstance Partial st
