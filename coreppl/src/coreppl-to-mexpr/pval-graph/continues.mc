@@ -1,4 +1,4 @@
-include "simple-mcmc.mc"
+include "host-rep-mcmc.mc"
 include "ext/file-ext.mc"
 -- 
 -- Single chain MCMC
@@ -26,7 +26,7 @@ recursive let listenPigeons : Float -> Option Float = lam weight.
   case Some ("log_potential(" ++ beta ++ ")") then
     let beta = string2float beta in
     -- printErrorLn (join ["weight: ", float2string weight, " priorWeight: ", float2string priorWeight, " beta: ", float2string beta]);
-    let valid = (or (eqf weight (negf inf)) (isNaN weight)) in
+    let valid = not (or (eqf weight (negf inf)) (isNaN weight)) in
     let result = if valid then mulf beta weight else log 0. in
     printLn (join ["response(", float2string result, ")"]);
     listenPigeons weight

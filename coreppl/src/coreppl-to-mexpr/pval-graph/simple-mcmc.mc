@@ -1,6 +1,19 @@
 include "pval-interface.mc"
 include "json.mc"
 
+-- NOTE(vipa, 2025-12-09, ed, 2026-01-23): In lieu of proper distribution translations
+-- I'll make these easy to substitute in
+let mkBernoulli = lam p. use RuntimeDistElementary in DistBernoulli {p = p}
+let mkExponential = lam rate. use RuntimeDistElementary in DistExponential {rate = rate}
+let mkGaussian = lam mu. lam sigma. use RuntimeDistElementary in DistGaussian {mu = mu, sigma = sigma}
+let mkGamma = lam shape. lam scale. use RuntimeDistElementary in DistGamma {shape = shape, scale = scale}
+let mkPoisson = lam lambda. use RuntimeDistElementary in DistPoisson {lambda = lambda}
+let mkUniform = lam a. lam b. use RuntimeDistElementary in DistUniform {a = a, b = b}
+let mkDirichlet = lam a. use RuntimeDistElementary in DistDirichlet {a = a}
+let mkCategorical = lam p. use RuntimeDistElementary in DistCategorical {p = p}
+let mkReciprocal = lam a. lam b. use RuntimeDistElementary in DistReciprocal {a = a, b = b}
+
+
 
 -- === General implementation of MCMC ===
 
@@ -72,10 +85,11 @@ lang SimpleState = PValInterface
   sem simpleInit = | export ->
     SimpleState {here = [], below = [], export = export}
 
-  sem simpleStoreAssume : all a. all x. SimpleState x -> PAssumeRef a -> SimpleState x
+  sem simpleStoreAssume : all a. all x. SimpleState x -> PAssumeRef Float -> SimpleState x
   sem simpleStoreAssume st = | ref ->
     match st with SimpleState st in
-    SimpleState {st with here = snoc st.here (asSomeAssume (None ()) ref)}
+    SimpleState {st with here = snoc st.here (asSomeAssume (Some (lam x. mkGaussian x 1.)) ref)}
+
 
   sem simpleStoreExport : all x1. all x2. SimpleState x1 -> PExportRef x2 -> SimpleState (PExportRef x2)
   sem simpleStoreExport st = | ref ->
@@ -121,10 +135,10 @@ end
 lang SimpleMCMCPVal = SimpleState + MCMCPVal
   sem mkMCMCConfig : all x. all contState. 
     (() -> contState) ->
-    (contState -> SampleInfo -> x -> ((), Bool) -> (contState, Bool)) ->
+    (contState -> SampleInfo -> Float -> ((), Bool) -> (contState, Bool)) ->
     (contState -> Float) -> 
     Float -> 
-    MCMCConfig (SimpleState (PExportRef x)) x () contState
+    MCMCConfig (SimpleState (PExportRef Float)) Float () contState
 
   sem mkMCMCConfig contStateInit continue  temperature = | globalProb ->
     { getSample = simpleReadExport

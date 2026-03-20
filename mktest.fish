@@ -7,10 +7,10 @@ and sed \
   -e '/^ *external /{s/^.*$//;N;/^\n *in$/d;D}' \
   -e "s/\(Bernoulli\|Exponential\|Gaussian\|Gamma\|Poisson\|Uniform\|Dirichlet\|Categorical\)/mk\1/g" \
   build/model.mc > build/transformed-model.mc
-and sed -e "/{{HERE}}/{r build/transformed-model.mc" -e "d}" \
+sed -e "/{{HERE}}/{r build/transformed-model.mc" -e "d}" \
   test-template.mc > build/full-temp.mc
 and echo fixing complete, compiling model
 and mi compile build/full-temp.mc --output build/full-temp
-and echo compilation complete, running
-and time build/full-temp
-and echo running complete, done
+# and echo compilation complete, running
+# -- and PPL_OUTPUT=test-samples.json time build/full-temp
+# -- and echo running complete, done

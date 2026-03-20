@@ -81,10 +81,9 @@ let tryOpenSampleFile : String -> WriteChannel = lam fn.
     else error (join ["Failed to open sample file ", fn])
 
 let sampleWriter = lam wc. lam i. lam s.
-  ()
-  -- let jStr = join [int2string i, "\t", json2string (sampleToJson s), "\n"] in
-  -- fileWriteString wc jStr;
-  -- fileWriteFlush wc
+  let jStr = join [int2string i, "\t", float2string s, "\n"] in
+  fileWriteString wc jStr;
+  fileWriteFlush wc
 
 let usePigeons = lam exploreSteps. lam samplingPeriod.
   let fn = getSampleFn () in
@@ -118,12 +117,12 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 1.0 in
-let iterations = 1000 in
+let iterations = 1000000 in
 let samplingPeriod = 1 in
 let toString = lam. "()" in
-let mkHisto = histogram (lam. lam. 0) in
--- let toString = interval2string in
--- let mkHisto = bucket 10 0.0 1. in
+-- let mkHisto = histogram (lam. lam. 0) in
+let toString = interval2string in
+let mkHisto = bucket 40 0.0 1. in
 let summarizePVal = lam label. lam pair.
   match pair with (time, res) in
   printLn (join [float2string time, "ms (", label, ")"]);
