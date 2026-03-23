@@ -1,5 +1,5 @@
---- subroot-HRM/subroot-HRM.d8222d5.edit-HRM.mc	2026-03-23 07:49:45.563926436 +0100
-+++ subroot-HRM/subroot-HRM.d8222d5.renamed-HRM.mc	2026-03-23 13:11:11.447116387 +0100
+--- subroot-HRM/subroot-HRM.b256a8d.edit-HRM.mc	2026-03-23 13:07:59.134363781 +0100
++++ subroot-HRM/subroot-HRM.b256a8d.renamed-HRM.mc	2026-03-23 12:45:21.769480764 +0100
 @@ -2245,22 +2245,6 @@
                              exit 1)
                           1)
@@ -23,12 +23,13 @@
                    (st40, MsgLeaf
                      { age = 0.,
                        label =
-@@ -2428,18 +2412,7 @@
+@@ -2428,18 +2412,8 @@
                  with
                    (st50, rightInMsg)
                  in
 -                match mtxElemMul st50 leftInMsg rightInMsg with (st51, x50) 
--                in
++                match mtxElemMul st50 leftInMsg rightInMsg with (st51, x50)
+                 in
 -                -- Export transition kernels
 -                let getLabel = lam n.
 -                  match n with MsgLeaf l then l.label
@@ -37,96 +38,95 @@
 -                let leftLabel = getLabel left in
 -                let rightLabel = getLabel right in
 -                let st51 = p_export st51 (hrmStoreTransKernel rightLabel) rightKernel in 
--                let st51 = p_export st51 (hrmStoreTransKernel leftLabel) leftKernel
+-                let st51 = p_export st51 (hrmStoreTransKernel leftLabel) leftKernel in 
 -                -- Done
-+                match mtxElemMul st50 leftInMsg rightInMsg with (st51, x50)
-                 in
                  (st51, MsgNode
                    { age =
-@@ -6070,7 +6043,7 @@
+                       match tree1 with Leaf carried18
+@@ -6172,7 +6146,7 @@
              with
-               (st608, x946)
+               (st613, x953)
              in
--            p_assume st608 (hrmStoreNode nodeLabel51 x941) x946
-+            p_assume st608 hrmStoreAssume x946
+-            p_assume st613 (hrmStoreNode nodeLabel51 x947) x953
++            p_assume st613 hrmStoreAssume x953
    in
    recursive
      let rec15 =
-@@ -6235,7 +6208,7 @@
+@@ -6337,7 +6311,7 @@
                                 in
-                                match p_apply st288 x427 x429 with (st289, x430)
+                                match p_apply st293 x433 x435 with (st294, x436)
                                 in
--                               match p_assume st289 (hrmStoreBranchState nodeLabel host) x430 with (st290, nextState11)
-+                               match p_assume st289 hrmStoreAssume x430 with (st290, nextState11)
-                                in
-                                match
-                                  p_traverseSeq
-@@ -6282,7 +6255,7 @@
-                                in
-                                match p_apply st294 x436 x438 with (st295, x439)
-                                in
--                               match p_assume st295 (hrmStoreBranchTime nodeLabel host) x439 with (st296, x440)
-+                               match p_assume st295 hrmStoreAssume x439 with (st296, x440)
-                                in
-                                match
-                                  p_map
-@@ -6472,7 +6445,7 @@
-                                in
-                                match p_apply st316 x473 x475 with (st317, x476)
-                                in
--                               match p_assume st317 (hrmStoreBranchState nodeLabel1 host1) x476 with (st318, nextState12)
-+                               match p_assume st317 hrmStoreAssume x476 with (st318, nextState12)
+-                               match p_assume st294 (hrmStoreBranchState nodeLabel host) x436 with (st295, nextState11)
++                               match p_assume st294 hrmStoreAssume x436 with (st295, nextState11)
                                 in
                                 match
                                   p_traverseSeq
-@@ -6519,7 +6492,7 @@
+@@ -6384,7 +6358,7 @@
                                 in
-                                match p_apply st322 x482 x484 with (st323, x485)
+                                match p_apply st299 x442 x444 with (st300, x445)
                                 in
--                               match p_assume st323 (hrmStoreBranchTime nodeLabel1 host1) x485 with (st324, x486)
-+                               match p_assume st323 hrmStoreAssume x485 with (st324, x486)
+-                               match p_assume st300 (hrmStoreBranchTime nodeLabel host) x445 with (st301, x446)
++                               match p_assume st300 hrmStoreAssume x445 with (st301, x446)
                                 in
                                 match
                                   p_map
-@@ -6705,7 +6678,7 @@
+@@ -6574,7 +6548,7 @@
+                                in
+                                match p_apply st321 x479 x481 with (st322, x482)
+                                in
+-                               match p_assume st322 (hrmStoreBranchState nodeLabel1 host1) x482 with (st323, nextState12)
++                               match p_assume st322 hrmStoreAssume x482 with (st323, nextState12)
+                                in
+                                match
+                                  p_traverseSeq
+@@ -6621,7 +6595,7 @@
+                                in
+                                match p_apply st327 x488 x490 with (st328, x491)
+                                in
+-                               match p_assume st328 (hrmStoreBranchTime nodeLabel1 host1) x491 with (st329, x492)
++                               match p_assume st328 hrmStoreAssume x491 with (st329, x492)
+                                in
+                                match
+                                  p_map
+@@ -6807,7 +6781,7 @@
                      in
-                     match p_apply st594 x928 x930 with (st595, x931)
+                     match p_apply st599 x934 x936 with (st600, x937)
                      in
--                    match p_assume st595 (hrmStoreBranchTime nodeLabel13 x922) x931 with (st596, x932)
-+                    match p_assume st595 hrmStoreAssume x931 with (st596, x932)
+-                    match p_assume st600 (hrmStoreBranchTime nodeLabel13 x928) x937 with (st601, x938)
++                    match p_assume st600 hrmStoreAssume x937 with (st601, x938)
                      in
                      match
                        p_map
-@@ -6751,7 +6724,7 @@
-                     let st601 =
+@@ -6853,7 +6827,7 @@
+                     let st606 =
                        p_weight
-                         st600
--                        (hrmStoreBridgeSuppWeight nodeLabel13 x922)
+                         st605
+-                        (hrmStoreBridgeSuppWeight nodeLabel13 x928)
 +                        hrmStoreWeight
-                         (lam x939.
+                         (lam x945.
                             externalLog
                               (addf
-@@ -6840,7 +6813,7 @@
+@@ -6942,7 +6916,7 @@
                      in
-                     match p_apply st582 x908 x910 with (st583, x912)
+                     match p_apply st587 x915 x917 with (st588, x918)
                      in
--                    match p_assume st583 (hrmStoreBranchTime nodeLabel12 x902) x912 with (st584, x913)
-+                    match p_assume st583 hrmStoreAssume x912 with (st584, x913)
+-                    match p_assume st588 (hrmStoreBranchTime nodeLabel12 x908) x918 with (st589, x919)
++                    match p_assume st588 hrmStoreAssume x918 with (st589, x919)
                      in
                      match
                        p_map
-@@ -6886,7 +6859,7 @@
-                     let st589 =
+@@ -6988,7 +6962,7 @@
+                     let st594 =
                        p_weight
-                         st588
--                        (hrmStoreBridgeSuppWeight nodeLabel12 x902)
+                         st593
+-                        (hrmStoreBridgeSuppWeight nodeLabel12 x908)
 +                        hrmStoreWeight
-                         (lam x920.
+                         (lam x927.
                             externalLog
                               (addf
-@@ -8557,22 +8530,10 @@
+@@ -8659,22 +8633,10 @@
                          in
-                         match p_apply st426 x673 x675 with (st427, x676)
+                         match p_apply st431 x679 x681 with (st432, x682)
                          in
 -                        let nl = (match tree2 with MsgLeaf carried24
 -                                             then
@@ -140,17 +140,17 @@
 -                                                   "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/flat-root-prior-HRM.tppl 129:90-129:100>:\nField \'label\' not found\n[0m    logWeight (branchSample.logModelDensity - branchSample.logSamplingDensity) * exp(Real([31mtree.label[0m[0m) * 0.);\n"
 -                                               in
 -                                               exit 1) in
-                         let st428 =
+                         let st433 =
                            p_weight
-                             st427
+                             st432
 -                            (hrmStoreLikrWeight nl)
 +                            hrmStoreWeight
-                             (/-temp-/lam x679.
-                                x679)
-                             x676
-@@ -8669,22 +8630,10 @@
+                             (/-temp-/lam x685.
+                                x685)
+                             x682
+@@ -8771,22 +8733,10 @@
                        in
-                       match bool2real st432 x680 with (st433, x681)
+                       match bool2real st437 x686 with (st438, x687)
                        in
 -                      let nl = (match tree2 with MsgLeaf carried50
 -                                         then
@@ -164,17 +164,17 @@
 -                                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/flat-root-prior-HRM.tppl 141:43-141:53>:\nField \'label\' not found\n[0m    weight bool2real(any(is2, rep)) + Real([31mtree.label[0m[0m) * 0.;\n"
 -                                           in
 -                                           exit 1) in
-                       let st434 =
+                       let st439 =
                          p_weight
-                           st433
+                           st438
 -                          (hrmStoreNodeSuppWeight nl)
 +                          hrmStoreWeight
-                           (lam x702.
+                           (lam x708.
                               externalLog
                                 (addf
-@@ -8818,22 +8767,10 @@
+@@ -8920,22 +8870,10 @@
                        in
-                       match p_apply st440 x688 x691 with (st441, x692)
+                       match p_apply st445 x694 x697 with (st446, x698)
                        in
 -                      let nl = (match tree2 with MsgLeaf carried40
 -                                         then
@@ -188,26 +188,26 @@
 -                                               "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 211:113-211:123>:\nField \'label\' not found\n[0m    logWeight branchSample.logModelDensity - branchSample.logSamplingDensity - nodeLogSamplingDensity * exp(Real([31mtree.label[0m[0m) * 0.);\n"
 -                                           in
 -                                           exit 1) in
-                       let st442 =
+                       let st447 =
                          p_weight
-                           st441
+                           st446
 -                          (hrmStoreLikrWeight nl)
 +                          hrmStoreWeight
-                           (/-temp-/lam x700.
-                              x700)
-                           x692
-@@ -8841,10 +8778,6 @@
+                           (/-temp-/lam x707.
+                              x707)
+                           x698
+@@ -8943,10 +8881,6 @@
                        let foo2 = {} in
-                       match observationMessage1 st442 rep2 with (st443, newMsg)
+                       match observationMessage1 st447 rep2 with (st448, newMsg)
                        in
 -                      -- Export node messages
--                      let st443 = p_export st443 (hrmStoreNodeMsg nl) newMsg in
--                      let st443 = p_export st443 (hrmStorePreorderMsg nl) preorderMsg in
+-                      let st448 = p_export st448 (hrmStoreNodeMsg nl) newMsg in
+-                      let st448 = p_export st448 (hrmStorePreorderMsg nl) preorderMsg in
 -                      -- Done
                        match
                          mtxMul
-                           st443
-@@ -9119,30 +9052,19 @@
+                           st448
+@@ -9221,30 +9155,19 @@
    in
    let subrootLength = #var"X11" in
    let nHosts1 = length11 hostDistances in
@@ -227,35 +227,35 @@
 -      st hrmStoreLambda (p_pure (mkDirichlet [ 1., 1., 1., 1. ]))
 +      st hrmStoreAssume (p_pure (mkDirichlet [ 1., 1., 1., 1. ]))
    with
-     (st449, lambda)
+     (st454, lambda)
    in
    match
--    p_assume st449 hrmStoreMu (p_pure (mkExponential 10.))
-+    p_assume st449 hrmStoreAssume (p_pure (mkExponential 10.))
+-    p_assume st454 hrmStoreMu (p_pure (mkExponential 10.))
++    p_assume st454 hrmStoreAssume (p_pure (mkExponential 10.))
    with
-     (st450, mu)
+     (st455, mu)
    in
    match
--    p_assume st450 hrmStoreBeta (p_pure (mkExponential 1.))
-+    p_assume st450 hrmStoreAssume (p_pure (mkExponential 1.))
+-    p_assume st455 hrmStoreBeta (p_pure (mkExponential 1.))
++    p_assume st455 hrmStoreAssume (p_pure (mkExponential 1.))
    with
-     (st451, beta)
+     (st456, beta)
    in
-@@ -9366,6 +9288,9 @@
+@@ -9468,6 +9391,9 @@
    with
-     (st486, postorderTree)
+     (st491, postorderTree)
    in
 +  match input1 with {subrootLabel = #var"X13"}
 +  in
 +  let subrootLabel1 = #var"X13" in
-   match mtxSclrMul st486 subrootLength qMatrix2 with (st487, x763)
+   match mtxSclrMul st491 subrootLength qMatrix2 with (st492, x769)
    in
-   match matExpExn st487 x763 with (st488, subrootKernel)
-@@ -9471,20 +9396,6 @@
+   match mtxExpRateSafe st492 x769 with (st493, subrootKernel)
+@@ -9573,20 +9499,6 @@
    in
-   match eitherEither st497 x776 with (st498, subrootSamplingProb)
+   match eitherEither st502 x782 with (st503, subrootSamplingProb)
    in
--  let st498 = p_export st498 (hrmStorePreorderMsg subrootLabel1) (p_pure b4) in
+-  let st503 = p_export st503 (hrmStorePreorderMsg subrootLabel1) (p_pure b4) in
 -  let rl = (match postorderTree with MsgLeaf carried56
 -       then
 -         carried56.label
@@ -268,39 +268,31 @@
 -             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 87:57-87:76>:\nField \'label\' not found\n[0m  let rootRep = suggestNodeRep(rootSamplingProb, nHosts, [31mpostorderTree.label[0m[0m);\n"
 -         in
 -         exit 1) in
--  let st498 = p_export st498 (hrmStoreTransKernel rl) subrootKernel in
+-  let st503 = p_export st503 (hrmStoreTransKernel rl) subrootKernel in
    match
-     suggestNodeRep st498 subrootSamplingProb nHosts1 (negi 1)
+     suggestNodeRep st503 subrootSamplingProb nHosts1 subrootLabel1
    with
-@@ -9497,7 +9408,7 @@
-   let st502 =
+@@ -9599,7 +9511,7 @@
+   let st507 =
      p_weight
-       st501
+       st506
 -      (hrmStoreNodeSuppWeight subrootLabel1)
 +      hrmStoreWeight
-       (lam x805.
-          externalLog (addf x805 (mulf (int2float subrootLabel1) 0.)))
-       x778
-@@ -9511,7 +9422,7 @@
-   let st504 =
+       (lam x811.
+          externalLog (addf x811 (mulf (int2float subrootLabel1) 0.)))
+       x784
+@@ -9613,7 +9525,7 @@
+   let st509 =
      p_weight
-       st503
+       st508
 -      (hrmStoreLikrWeight subrootLabel1)
 +      hrmStoreWeight
-       (lam x804.
+       (lam x810.
           addf
             (subf
-@@ -9525,7 +9436,6 @@
-   let foo7 = {} in
-   match observationMessage1 st504 subrootRep with (st505, x780)
+@@ -9686,22 +9598,10 @@
    in
--  let st505 = p_export st505 (hrmStoreNodeMsg subrootLabel1) x780 in
-   match mtxMul st505 x780 subrootKernel with (st506, x781)
-   in
-   let subrootInfo =
-@@ -9585,22 +9495,10 @@
-   in
-   match bool2real st509 x782 with (st510, x783)
+   match bool2real st514 x788 with (st515, x789)
    in
 -  let rl = (match postorderTree with MsgLeaf carried56
 -       then
@@ -314,47 +306,17 @@
 -             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 87:57-87:76>:\nField \'label\' not found\n[0m  let rootRep = suggestNodeRep(rootSamplingProb, nHosts, [31mpostorderTree.label[0m[0m);\n"
 -         in
 -         exit 1) in
-   let st511 =
+   let st516 =
      p_weight
-       st510
+       st515
 -      (hrmStoreNodeSuppWeight rl)
 +      hrmStoreWeight
-       (lam x803.
+       (lam x809.
           externalLog
             (addf
-@@ -9637,20 +9535,6 @@
-       in
-       exit 1
+@@ -9855,39 +9755,14 @@
    in
--  let rl = match postorderTree with MsgLeaf carried66
--    then
--      carried66.label
--    else match postorderTree with MsgNode carried67
--    then
--      carried67.label
--    else
--      let #var"2108" =
--        print
--          "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 91:16-91:33>:\nField \'age\' not found\n[0m  let rootAge = [31mpostorderTree.age[0m[0m;\n"
--      in
--      exit 1
--  in
--
-   match
-     sampleBranch
-       st511
-@@ -9668,7 +9552,7 @@
-       (addf rootAge subrootLength)
-       rootAge
-       nHosts1
--      rl
-+      (negi 1)
-       modelParams2
-       (match subrootInfo with SubrootInfo1 x1021
-        then
-@@ -9757,39 +9641,14 @@
-   in
-   match p_apply st517 x791 x794 with (st518, x795)
+   match p_apply st522 x797 x800 with (st523, x801)
    in
 -  let rl = (match postorderTree with MsgLeaf carried58
 -                     then
@@ -368,17 +330,17 @@
 -                           "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 110:40-110:59>:\nField \'label\' not found\n[0m    - rootLogSamplingDensity * exp(Real([31mpostorderTree.label[0m[0m) * 0.)\n"
 -                       in
 -                       exit 1) in
-   let st519 =
+   let st524 =
      p_weight
--      st518 (hrmStoreLikrWeight rl) (/-temp-/lam x802.
-+      st518 hrmStoreWeight (/-temp-/lam x802.
-          x802) x795
+-      st523 (hrmStoreLikrWeight rl) (/-temp-/lam x808.
++      st523 hrmStoreWeight (/-temp-/lam x808.
+          x808) x801
    in
    let foo4 = {} in
-   match observationMessage1 st519 rootRep with (st520, newMsg1)
+   match observationMessage1 st524 rootRep with (st525, newMsg1)
    in
 -  -- Export root messages
--  let st520 = p_export st520 (hrmStoreNodeMsg rl) newMsg1 in
+-  let st525 = p_export st525 (hrmStoreNodeMsg rl) newMsg1 in
 -  let subrootMsg = (match subrootInfo with SubrootInfo1 x1091
 -       then
 -         x1091.msg
@@ -388,14 +350,14 @@
 -             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 86:36-86:51>:\nField \'msg\' not found\n[0m  let rootSamplingProb = mtxElemMul([31msubrootInfo.msg[0m[0m, postorderTree.outMsg);\n"
 -         in
 -         p_pure (exit 1)) in
--  let st520 = p_export st520 (hrmStorePreorderMsg rl) subrootMsg in
+-  let st525 = p_export st525 (hrmStorePreorderMsg rl) subrootMsg in
 -  -- Done
    let rootAge1 =
-     match postorderTree with MsgLeaf carried64
+     match postorderTree with MsgLeaf carried66
      then
-@@ -9911,48 +9770,44 @@
+@@ -10009,48 +9884,44 @@
    with
-     (st525, x801)
+     (st530, x807)
    in
 -  -- Set up exports
 -  let createExport = lam st. lam left. lam right.
@@ -436,10 +398,10 @@
 -    match p_apply st partres lambda with (st, partres) in
 -    p_apply st partres wrappedReps
 -  in
--  match createExport st525 x797 x799 with (st525, res) in
+-  match createExport st530 x803 x805 with (st530, res) in
 -  -- Done
    p_export
-     st525
+     st530
      hrmStoreExport
 -    res
 \ No newline at end of file
@@ -451,33 +413,33 @@
 +               tree =
 +                 HistoryNode
 +                   { age =
-+                       match symbiontTree with Leaf carried60
-+                       then
-+                         carried60.age
-+                       else match symbiontTree with Node carried61
-+                       then
-+                         carried61.age
-+                       else
-+                         let #var"2105" =
-+                           print
-+                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 130:10-130:26>:\nField \'age\' not found\n[0m    age = [31msymbiontTree.age[0m[0m, label = symbiontTree.label,\n"
-+                         in
-+                         exit 1,
-+                     label =
 +                       match symbiontTree with Leaf carried62
 +                       then
-+                         carried62.label
++                         carried62.age
 +                       else match symbiontTree with Node carried63
 +                       then
-+                         carried63.label
++                         carried63.age
 +                       else
 +                         let #var"2106" =
 +                           print
-+                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 130:36-130:54>:\nField \'label\' not found\n[0m    age = symbiontTree.age, label = [31msymbiontTree.label[0m[0m,\n"
++                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 128:10-128:26>:\nField \'age\' not found\n[0m    age = [31msymbiontTree.age[0m[0m, label = symbiontTree.label,\n"
 +                         in
 +                         exit 1,
-+                     left = x797,
-+                     right = x799,
-+                     history = x801,
++                     label =
++                       match symbiontTree with Leaf carried64
++                       then
++                         carried64.label
++                       else match symbiontTree with Node carried65
++                       then
++                         carried65.label
++                       else
++                         let #var"2107" =
++                           print
++                             "ERROR </home/ed/treeppl-compiler-chain/treeppl/models/host-repertoire-evolution/subroot-HRM.tppl 128:36-128:54>:\nField \'label\' not found\n[0m    age = symbiontTree.age, label = [31msymbiontTree.label[0m[0m,\n"
++                         in
++                         exit 1,
++                     left = x803,
++                     right = x805,
++                     history = x807,
 +                     repertoire = rootRep },
 +               lambda = lambda })))

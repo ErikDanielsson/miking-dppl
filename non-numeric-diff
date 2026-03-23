@@ -1,2 +1,2 @@
 #! /bin/env bash
-diff -u <(cat $1 | sed 's/[0-9]/_/g') <(cat $2 | sed 's/[0-9]/_/g')
+diff -u <(cat $1 | sed 's/[0-9]\+/_/g') <(cat $2 | sed 's/[0-9]\+/_/g')
