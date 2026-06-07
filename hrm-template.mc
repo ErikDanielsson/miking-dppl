@@ -147,8 +147,8 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 4000 in
-let samplingPeriod = 1 in
+let iterations = 400000 in
+let samplingPeriod = 100 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (seqCmp subi) in
 let toString2 = lam s. join ["[", strJoin ", " (map int2string s), "]"] in
@@ -203,8 +203,8 @@ let summarizePVal = lam label. lam pair.
 
 
 let run =
-  -- setSeed (getSeed ());
-  setSeed 1234;
+  setSeed (getSeed ());
+  -- setSeed 1234;
   use ComposedVisi in
   -- printJsonLn (graphToJson (instantiate model (hrmInit ())));
   -- exit 0;
@@ -217,16 +217,17 @@ let run =
   -- printJsonLn (hrmStateToDebugJson instance (getSt instance));
   -- match getSt instance with HRMState st in
   -- printLn (join [int2string (length st.here), ", ", int2string (length st.below)]);
-  let printer = lam x.
-    lam. lam. ()
-    -- if eqi (modi x 1000) 0 then
-    --   -- printLn (join ["Iteration", int2string x]); hrmPrintState
+  let printer = hrmPrintState
+    -- lam x.
+    -- -- lam. lam. ()
+    -- if eqi (modi x 10) 0 then
+    --   printLn (join ["Iteration", int2string x]); hrmPrintState
     -- else
     --   lam. lam. ()
   in
   -- printLn (join ["Took ", float2string time, "ms to find good instance."]);
   lam.
-    -- let conts = usePigeons 100 10 in
+    -- let conts = usePigeons samplingPeriod samplingPeriod in
     let conts = useSingleChain iterations samplingPeriod in
     let config = mkMCMCConfig conts.init conts.continue conts.temp in
     let r = mcmc printer config instance in

@@ -1,5 +1,5 @@
---- subroot-HRM/subroot-HRM.b256a8d.edit-HRM.mc	2026-03-23 13:07:59.134363781 +0100
-+++ subroot-HRM/subroot-HRM.b256a8d.renamed-HRM.mc	2026-03-23 12:45:21.769480764 +0100
+--- subroot-HRM/subroot-HRM.b256a8d.edit-HRM.mc	2026-04-17 10:48:33.372736635 +0200
++++ subroot-HRM/subroot-HRM.b256a8d.renamed-HRM.mc	2026-04-17 10:48:33.364736758 +0200
 @@ -2245,22 +2245,6 @@
                              exit 1)
                           1)
@@ -207,7 +207,7 @@
                        match
                          mtxMul
                            st448
-@@ -9221,30 +9155,19 @@
+@@ -9435,30 +9369,19 @@
    in
    let subrootLength = #var"X11" in
    let nHosts1 = length11 hostDistances in
@@ -241,7 +241,7 @@
    with
      (st456, beta)
    in
-@@ -9468,6 +9391,9 @@
+@@ -9682,6 +9605,9 @@
    with
      (st491, postorderTree)
    in
@@ -251,7 +251,7 @@
    match mtxSclrMul st491 subrootLength qMatrix2 with (st492, x769)
    in
    match mtxExpRateSafe st492 x769 with (st493, subrootKernel)
-@@ -9573,20 +9499,6 @@
+@@ -9787,20 +9713,6 @@
    in
    match eitherEither st502 x782 with (st503, subrootSamplingProb)
    in
@@ -272,7 +272,7 @@
    match
      suggestNodeRep st503 subrootSamplingProb nHosts1 subrootLabel1
    with
-@@ -9599,7 +9511,7 @@
+@@ -9813,7 +9725,7 @@
    let st507 =
      p_weight
        st506
@@ -281,7 +281,7 @@
        (lam x811.
           externalLog (addf x811 (mulf (int2float subrootLabel1) 0.)))
        x784
-@@ -9613,7 +9525,7 @@
+@@ -9827,7 +9739,7 @@
    let st509 =
      p_weight
        st508
@@ -290,7 +290,7 @@
        (lam x810.
           addf
             (subf
-@@ -9686,22 +9598,10 @@
+@@ -9900,22 +9812,10 @@
    in
    match bool2real st514 x788 with (st515, x789)
    in
@@ -314,7 +314,7 @@
        (lam x809.
           externalLog
             (addf
-@@ -9855,39 +9755,14 @@
+@@ -10069,39 +9969,14 @@
    in
    match p_apply st522 x797 x800 with (st523, x801)
    in
@@ -355,7 +355,7 @@
    let rootAge1 =
      match postorderTree with MsgLeaf carried66
      then
-@@ -10009,48 +9884,44 @@
+@@ -10223,48 +10098,44 @@
    with
      (st530, x807)
    in

@@ -32,7 +32,7 @@ lang MCMCPVal = PValInterface
 
   type MCMCConfig st s k contState =
     { getSample : PValInstance Complete st -> s
-    , step : PValInstance Partial st -> (PValInstance Partial st, k)
+    , step : Float ->  PValInstance Partial st -> (PValInstance Partial st, k)
     , contStateInit : () -> contState
     , continue : contState -> SampleInfo -> s -> (k, Bool) -> (contState, Bool)
     , temperature : contState -> Float
@@ -43,7 +43,7 @@ lang MCMCPVal = PValInterface
     , finalInstance : PValInstance Complete st
     }
 
-  sem mcmc : all st. all a. all b. all c. (Int -> Bool -> PValInstance Complete st -> ()) -> MCMCConfig st a String c -> PValInstance Complete st -> MCMCResult st c
+  sem mcmc : all st. all a. all b. all c. (Bool -> PValInstance Complete st -> ()) -> MCMCConfig st a String c -> PValInstance Complete st -> MCMCResult st c
   sem mcmc printer config = | instance ->
     let acceptPred = lam prob. 
       -- printLn (join ["Accept prob: ", float2string prob]);
@@ -58,8 +58,9 @@ lang MCMCPVal = PValInterface
       match acc.contState with (contState, contSample) in
       if contSample then
         -- println "Before step";
-        match (config.step (startStep acc.instance)) with (instance, moveId) in
         let beta = config.temperature contState in
+        -- printer true acc.instance;
+        match (config.step beta (startStep acc.instance)) with (instance, moveId) in
         let modWeight = if eqf beta 0.0
           then (lam w. if (or (eqf w (negf inf)) (isNaN w))
             then log 0.
@@ -201,11 +202,11 @@ lang HRMState = PValInterface
     match getSt instance with HRMState st in
 
     let aHugeNumber = 10000000 in
-    -- 
-    let instance = optResample st.mu (Some (lam. mkGaussian 1. 0.000001)) instance in 
-    match getSt instance with HRMState st in
-    let instance = optResample st.lambda (Some (lam. mkDirichlet [10000., 10000., 10000., 10000.])) instance in 
-    let instance = intermediateStep instance in
+
+    -- let instance = optResample st.mu (Some (lam. mkGaussian 1. 0.000001)) instance in 
+    -- match getSt instance with HRMState st in
+    -- let instance = optResample st.lambda (Some (lam. mkDirichlet [10000., 10000., 10000., 10000.])) instance in 
+    -- let instance = intermediateStep instance in
 
     let mendNode = lam label. lam instance.
       match getSt instance with HRMState st in
@@ -292,19 +293,16 @@ lang HRMState = PValInterface
   sem hrmStoreLikrWeight : all x. Int -> HRMState x -> PWeightRef -> HRMState x
   sem hrmStoreLikrWeight nodeLabel st = | ref -> 
     match st with HRMState st in 
-    -- printLn (join ["Likrweight: ", int2string nodeLabel]);
     HRMState {st with likrWeights = mapInsert nodeLabel ref st.likrWeights}
 
   sem hrmStoreNodeSuppWeight : all x.Int -> HRMState x -> PWeightRef -> HRMState x
   sem hrmStoreNodeSuppWeight nodeLabel st = | ref -> 
     match st with HRMState st in 
-    -- printLn (join ["NodeSuppWeight: ", int2string nodeLabel]);
     HRMState {st with nodeSuppWeights = mapInsert nodeLabel ref st.nodeSuppWeights}
 
   sem hrmStoreBridgeSuppWeight : all x. Int -> Int -> HRMState x -> PWeightRef -> HRMState x
   sem hrmStoreBridgeSuppWeight nodeLabel hostLabel st = | ref -> 
     match st with HRMState st in 
-    -- printLn (join ["BridgeSuppWeight: ", int2string nodeLabel, ", ", int2string hostLabel]);
     HRMState {st with bridgeSuppWeights = mapInsertOrCreate nodeLabel hostLabel subi ref st.bridgeSuppWeights}
 
   sem hrmStoreSubmodel : all x. HRMState x -> PSubmodelRef (HRMState ()) -> HRMState x
@@ -392,7 +390,6 @@ lang HRMState = PValInterface
     match getSt instance with HRMState st in
     readPreviousExport st.export instance 
 
-
   -- Resample an assume wrapped in an Option
   sem optResample : all a. all x. Option (PAssumeRef a) -> (Option (a -> Dist a)) -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
   sem optResample optRef drift = | instance -> 
@@ -407,33 +404,28 @@ lang HRMState = PValInterface
 
   -- Equivalent of RevBayes simplexMove
   sem simplexMove : Float -> Option ([Float] -> Dist [Float])
-  sem simplexMove = | d -> Some (lam x. mkDirichlet (map (lam v. divf (mulf d v) (foldl addf 0. x)) x))
+  sem simplexMove = | d -> Some (lam x. mkDirichlet (map (mulf d) (normalize x)))
 
-  sem hrmResampleMu : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
-  sem hrmResampleMu l = | instance -> 
+  sem hrmResampleMu : all x. Option Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleMu optL = | instance -> 
     -- printLn "Resampling mu";
     match getSt instance with HRMState st in
-    -- printLn "Performing move on mu";
-    -- hrmPrintState false instance;
-    -- hrmPrintBranch 1 instance;
-    -- hrmPrintBranch 2 instance;
-    let instance = intermediateStep (optResample st.mu (scaleMove l) instance) in
-    -- hrmPrintState false instance;
-    -- printLn "Done performing move on mu";
-    match getSt instance with HRMState newSt in
-    instance
+    let drift = match optL with Some l then scaleMove l else None () in
+    optResample st.mu drift instance
 
-  sem hrmResampleBeta : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
-  sem hrmResampleBeta l = | instance -> 
+  sem hrmResampleBeta : all x. Option Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleBeta optL = | instance -> 
     -- printLn "Resampling beta";
     match getSt instance with HRMState st in
-    optResample st.beta (scaleMove l) instance
+    let drift = match optL with Some l then scaleMove l else None () in
+    optResample st.beta drift instance
 
-  sem hrmResampleLambda : all x. Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
-  sem hrmResampleLambda a = | instance -> 
+  sem hrmResampleLambda : all x. Option Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
+  sem hrmResampleLambda optA = | instance -> 
     -- printLn "Resampling Lambda";
     match getSt instance with HRMState st in
-    optResample st.lambda (simplexMove a) instance
+    let drift = match optA with Some a then simplexMove a else None () in
+    optResample st.lambda drift instance
  
   sem hrmMendBranch : all x. Int -> Int -> Int -> Int -> PValInstance Partial (HRMState x) -> (PValInstance Partial (HRMState x), Bool)
   sem hrmMendBranch topLevelDepth repairDepth resampleDepth node = | instance ->
@@ -479,24 +471,17 @@ lang HRMState = PValInterface
   -- Pick an inner node at random and pick each host to be resampled with probability p
   sem hrmResampleABlockNode : all x. Int -> Int -> Int -> Int -> Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
   sem hrmResampleABlockNode rejectionDepthNode mendDepth repairDepth branchDepth p = | instance -> 
-
-    -- printLn "Inside blocknode";
     match getSt instance with HRMState st in
     let node = _chooseUniform (mapKeys st.nodes) in
-    -- printLn (join ["Trying to resample node ", int2string node]);
     match mapLookup node st.nodes with Some hrefs in 
     match mapLookup node st.nodeSuppWeights with Some wref in
     -- Pick which hosts to resample
-    -- printArr ["Before node sampling ", int2string node];
     let hKeys = foldr (
       lam hKey. lam acc.
         if bernoulliSample p then cons hKey acc else acc
     ) [] (mapKeys hrefs) in
     match hrmRejectionSampling true rejectionDepthNode (checkPreviousWeight wref) (hrmResampleNodeLocalBP node hKeys) instance with (instance, success) in
     let strH = lam href. int2string (readPreviousAssume href instance) in
-    -- printArr ["Suggested node state: ", strJoin ", " (map strH (mapValues hrefs)), ", ", bool2string success];
-    -- printArr ["After node sampling ", int2string node];
-    -- hrmPrintState false instance;
     let instance = if success then
       match mapLookup node st.topo with Some {left = left, right = right, isRoot = isRoot} then 
         let branches = if isRoot then [left, right] else [node, left, right] in
@@ -508,10 +493,7 @@ lang HRMState = PValInterface
         printLn (join ["Node: ", int2string node, " is missing from stored topology"]);
         exit 1
       else instance in
-
-    -- printArr ["Node ", int2string node, " finished"];
-    -- hrmPrintState false instance;
-    instance
+   instance
 
   sem hrmResampleABranch : all x. Int -> Int -> Int -> Float -> PValInstance Partial (HRMState x) -> PValInstance Partial (HRMState x)
   sem hrmResampleABranch mendDepth repairDepth branchDepth p = | instance -> 
@@ -530,7 +512,6 @@ lang HRMState = PValInterface
   sem hrmResampleBridge : all x. Int -> Int -> Int -> PValInstance Partial (HRMState x) -> (PValInstance Partial (HRMState x), Bool)
   sem hrmResampleBridge rejectionDepth nodeLabel hostLabel = | instance -> 
     match getSt instance with HRMState st in
-    -- println (join ["nodeLabel: ", int2string nodeLabel, "hostLabel", int2string hostLabel]);
     match mapLookup nodeLabel st.branchTimes with Some hostMap in
     match mapLookup hostLabel hostMap with Some href in
     -- Here we only resample from the prior but we could consider doing something fancier
@@ -583,7 +564,6 @@ lang HRMState = PValInterface
   sem hrmResampleHost nodeRef = | instance -> 
     match getSt instance with HRMState st in
     let catMove = lam x. mkCategorical (normalize (map (lam c. if neqi x c then 1. else 0.) [0, 1, 2])) in
-    -- let catMove = lam. lam x. mkCategorical [0., 0., 1.] in
     resampleAssume (Some catMove) nodeRef instance
 
   -- Resample some hosts at a node from the independence model
@@ -628,7 +608,7 @@ lang HRMState = PValInterface
     let combindMsg = matNormalize (_matElemMul preorderMsg combindMsgPart) in
       
     -- TODO(ed, 2026-02-22): Think about whether we should temper the distribution
-    let temper = lam s. map (lam s. pow s 0.9) s in 
+    let temper = lam s. map (lam s. pow s 1.0) s in 
     let getDist = lam r. normalize (temper (matGetRowAsSeq r combindMsg)) in
     let resampleHost = lam instance. lam h. 
       let dist = getDist (subi h 1) in
@@ -643,55 +623,43 @@ lang HRMState = PValInterface
 
   -- MCMC move entrypoint
   sem hrmResampleAligned : all x. Float -> PValInstance Partial (HRMState x) -> (PValInstance Partial (HRMState x), String)
-  sem hrmResampleAligned globalProb = | instance ->
+  sem hrmResampleAligned temp = | instance ->
     match getSt instance with HRMState st in
     let nLeafs = length st.interactions in
     let nB = int2float (muli (subi nLeafs 1) 2) in
-    let rbSchedule =
-      [ (2.,         "Huge mu      ", hrmResampleMu 5.0)
-      , (2.,         "Large mu     ", hrmResampleMu 1.0)
-      , (5.,         "Medium mu    ", hrmResampleMu 0.2)
-      , (1.,         "Beta         ", hrmResampleBeta 1.)
-      , (2.,         "Large  lambda", hrmResampleLambda 10.)
-      , (5.,         "Small  lambda", hrmResampleLambda 25.)
-      , (5.,         "Minute lambda", hrmResampleLambda 100.)
-      , (divf nB 2., "Block node l ", hrmResampleABlockNode 5 10 10 10 0.75) 
+    let paramLocalMoves =
+      [ (2.,         "Huge mu      ", hrmResampleMu (Some 5.0))
+      , (2.,         "Large mu     ", hrmResampleMu (Some 1.0))
+      , (5.,         "Medium mu    ", hrmResampleMu (Some 0.2))
+      , (1.,         "Beta         ", hrmResampleBeta (Some 1.))
+      , (2.,         "Large  lambda", hrmResampleLambda (Some 10.))
+      , (5.,         "Small  lambda", hrmResampleLambda (Some 25.))
+      , (5.,         "Minute lambda", hrmResampleLambda (Some 100.))
+      ] in
+    let paramPriorMoves =
+      [ (1.,         "Mu     prior ", hrmResampleMu (None ()))
+      , (1.,         "Beta   prior ", hrmResampleBeta (None ()))
+      , (1.,         "Lambda prior ", hrmResampleLambda (None ()))
+      ] in
+    let topoMoves =
+      [ (divf nB 2., "Block node l ", hrmResampleABlockNode 5 10 10 10 0.75) 
       , (nB,         "Branch     l ", hrmResampleABranch      10 10 10 0.75) 
       , (nB,         "Block node s ", hrmResampleABlockNode 10 10 10 10 0.2) 
       , (mulf nB 2., "Branch     s ", hrmResampleABranch      5 10 10 0.2) 
       ] in
-    -- let rbSchedule =
-    --   [ (1., "Large mu     ", hrmResampleMu 1.0)
-    --   , (1., "Medium mu    ", hrmResampleMu 0.2)
-    --   , (1., "Super mu     ", hrmResampleMu 10.)
-    --   -- , (1., "Minute mu   ", hrmResampleMu 0.01)
-    --   , (1., "Beta         ", hrmResampleBeta 4.)
-    --   , (1., "Large  lambda", hrmResampleLambda 10.)
-    --   , (1., "Small  lambda", hrmResampleLambda 25.)
-    --   , (1., "Minute lambda", hrmResampleLambda 50.)
-    --   , (1., "Tiny lambda  ", hrmResampleLambda 100.)
-    --   , (50., "Block node   ", hrmResampleABlockNode 5 10 10 10 0.2) -- Weight should depend on the number of branches!
-    --   , (50., "Branch       ", hrmResampleABranch 10 10 10 0.2) -- Weight should depend on the number of branches!
-    --   , (25., "Block node   ", hrmResampleABlockNode 5 10 10 10 0.75) -- Weight should depend on the number of branches!
-    --   , (25., "Branch       ", hrmResampleABranch 10 10 10 0.75) -- Weight should depend on the number of branches!
-    --   ] in
+    -- We want the sampler to produce indepedent samples at 
+    -- temperature 0.0
+    let rbSchedule = if eqf temp 0.0
+      then concat paramPriorMoves topoMoves
+      else concat paramLocalMoves topoMoves
+    in
     let weights = map (lam t. t.0) rbSchedule in
     let moveNames = map (lam t. t.1) rbSchedule in
     let moves = map (lam t. t.2) rbSchedule in
-    -- printLn "Starting move";
     let moveId = _sampleNonUniform weights in
     let moveName = get moveNames moveId in
     let instance = (get moves moveId) instance in
-    -- printLn "Done with move";
-    -- recursive let applyn = lam n. lam f. lam x.
-    --   if leqi n 0 then x
-    --   else applyn (subi n 1) f (f x)
-    -- in
-    -- let instance = foldl (lam ist. lam mw. match mw with (w, m) in applyn (roundfi w) m ist) instance rbSchedule in
-    -- printJsonLn (hrmStateToDebugJson instance (getSt instance));
     let instance = intermediateStep instance in
-    -- printLn "Done with intermediate step";
-    -- hrmPrintState false instance;
     (instance, moveName)
   
   sem hrmPrintState : all partial. all x. all y. Bool -> PValInstance partial (HRMState x) -> ()
@@ -844,9 +812,6 @@ lang HRMState = PValInterface
     match getSt instance with HRMState st in
     match mapLookup nodeLabel st.nodes with Some node in
     let strH = lam href. int2string (readPreviousAssume href instance) in ()
-    -- printArr ["INSIDE ACCEPT: New node state: ", strJoin ", " (map strH (mapValues node))]
-
- 
 
   sem hrmPrintBridge : all partial. all x. all y. Int -> Int -> PValInstance partial (HRMState x) -> ()
   sem hrmPrintBridge node host = | instance -> 
@@ -921,20 +886,12 @@ lang HRMState = PValInterface
       ]) in
     let submodels = (map (lam ref. hrmStateToDebugJsonHelper instance (readPreviousSubmodel ref instance)) x.below) in
     let v =  (mapFromSeq cmpString (join
-      -- Global parameters
-      -- [ maybeShowOpt (compose showFloat readA) "mu" x.mu 
-      -- , maybeShowOpt (compose showFloat readA) "beta" x.beta 
-      -- , maybeShowOpt (compose (showSeq showFloat) readA) "lambda" x.lambda
       -- Topology assume refs
       [ maybeShowMap int2string (showMap int2string (compose showInt readA)) "nodes" x.nodes
-      -- , maybeShowMap int2string (showMap int2string (compose showFloat readA)) "branchTimes" x.branchTimes
-      -- , maybeShowMap int2string (showMap int2string (showEither (compose showFloat readA) (compose showInt readA))) "branches" x.branches
       -- Weight refs
       , maybeShowMap int2string (showMap int2string (compose showFloat readW)) "bridge-supp-weights" x.bridgeSuppWeights
       , maybeShowMap int2string (compose showFloat readW) "node-supp-weights" x.nodeSuppWeights
       , maybeShowMap int2string (compose showFloat readW) "likr-weights" x.likrWeights
-      -- Topology (abused export (?))
-      -- , maybeShowMap int2string showLocTop "topology" x.topo
       -- Submodels
       , pruneSubmodels submodels
       ]
@@ -950,7 +907,7 @@ lang HRMMCMCPVal = HRMState + MCMCPVal
     MCMCConfig (HRMState (PExportRef x)) x String contState
   sem mkMCMCConfig contStateInit continue = | temperature ->
     { getSample = hrmReadExport
-    , step = hrmResampleAligned 0.0
+    , step = hrmResampleAligned
     , contStateInit = contStateInit
     , continue = continue
     , temperature = temperature

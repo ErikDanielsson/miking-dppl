@@ -9168,48 +9168,262 @@ lam st.
   in
   let input1 =
     { interactions =
-        [ [ 0, 0, 2, 0, 2 ],
-          [ 0, 0, 2, 0, 1 ],
-          [ 0, 0, 2, 0, 1 ],
-          [ 0, 0, 2, 0, 2 ],
-          [ 0, 0, 2, 0, 1 ] ],
+        [ [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 0 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 1 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 2, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ],
+          [ 1, 2 ] ],
       subrootLabel = (negi 1),
       symbiontTree =
         Node
-          { age = 6.839526974,
-            label = 9,
-            left = Leaf
-                { age = 0., label = 1 },
-            right =
+          { age = 5.,
+            label = 33,
+            left =
               Node
-                { age = 4.842443202,
-                  label = 8,
-                  left = Leaf
-                      { age = 0., label = 2 },
-                  right =
+                { age = 4.,
+                  label = 34,
+                  left =
                     Node
-                      { age = 3.501720109,
-                        label = 7,
+                      { age = 3.,
+                        label = 35,
                         left =
-                          Leaf
-                            { age = 0., label = 3 },
+                          Node
+                            { age = 2.,
+                              label = 36,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 37,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 1 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 2 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 38,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 3 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 4 } } },
                         right =
                           Node
-                            { age = 3.127609164,
-                              label = 6,
+                            { age = 2.,
+                              label = 39,
                               left =
-                                Leaf
-                                  { age = 0., label = 4 },
+                                Node
+                                  { age = 0.,
+                                    label = 40,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 5 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 6 } },
                               right =
-                                Leaf
-                                  { age = 0., label = 5 } } } } },
-      hostDistances =
-        [ [ 0., 1., 2., 2., 1. ],
-          [ 1., 0., 2., 2., 1. ],
-          [ 2., 2., 0., 1., 1. ],
-          [ 2., 2., 1., 0., 1. ],
-          [ 1., 1., 1., 1., 0. ] ],
-      subrootLength = 6.84 }
+                                Node
+                                  { age = 0.,
+                                    label = 41,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 7 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 8 } } } },
+                  right =
+                    Node
+                      { age = 3.,
+                        label = 42,
+                        left =
+                          Node
+                            { age = 2.,
+                              label = 43,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 44,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 9 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 10 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 45,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 11 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 12 } } },
+                        right =
+                          Node
+                            { age = 2.,
+                              label = 46,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 47,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 13 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 14 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 48,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 15 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 16 } } } } },
+            right =
+              Node
+                { age = 4.,
+                  label = 49,
+                  left =
+                    Node
+                      { age = 3.,
+                        label = 50,
+                        left =
+                          Node
+                            { age = 2.,
+                              label = 51,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 52,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 17 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 18 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 53,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 19 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 20 } } },
+                        right =
+                          Node
+                            { age = 2.,
+                              label = 54,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 55,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 21 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 22 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 56,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 23 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 24 } } } },
+                  right =
+                    Node
+                      { age = 3.,
+                        label = 57,
+                        left =
+                          Node
+                            { age = 2.,
+                              label = 58,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 59,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 25 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 26 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 60,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 27 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 28 } } },
+                        right =
+                          Node
+                            { age = 2.,
+                              label = 61,
+                              left =
+                                Node
+                                  { age = 0.,
+                                    label = 62,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 29 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 30 } },
+                              right =
+                                Node
+                                  { age = 0.,
+                                    label = 63,
+                                    left =
+                                      Leaf
+                                        { age = 0., label = 31 },
+                                    right =
+                                      Leaf
+                                        { age = 0., label = 32 } } } } } },
+      hostDistances = [ [ 0., 2. ],
+          [ 2., 0. ] ],
+      subrootLength = 5. }
   in
   match input1 with {symbiontTree = #var"X9"}
   in
