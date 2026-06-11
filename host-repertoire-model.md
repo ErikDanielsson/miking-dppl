@@ -42,3 +42,13 @@ The simplest approach is to change the edit script with the new input, and rerun
 Alternatively, you might succeed in recompiling and transforming the model with the new in data, and then applying the diff.
 This worked fairly well for me, but tends to be fragile, especially since there has been changes to the transformation since I last used it.
 
+### Analytical posterior
+
+The code for the analytical posterior is given in `analytical-posterior`.
+The `concentrated-tree.jl` script generates input data, exports it to phyjson, `.mc` (Miking struct that can be inserted into the graph code) and RevBayes formats, and generates a `Turing` Julia script with the input data inserted.
+Note that the tree and input data generated corresponds to a very artificial example, but the tree generation and interaction data can be changed if you feel like writing some Julia code (:
+
+With a current installation of Julia you should be able to activate the environment with all dependencies by running `julia --project`, and then running `include("concentrated-tree.jl")`.
+This will generate a folder called `concentrated-tree` with all files.
+To generate the RevBayes input data you need R and some dependencies installed.
+Please comment out this section or look at the relevant files in `R-scripts/` for details. 

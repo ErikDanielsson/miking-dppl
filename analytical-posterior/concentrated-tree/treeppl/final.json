@@ -1,0 +1,447 @@
+{
+  "hostDistances": [[0.0,2.0],[2.0,0.0]],
+  "interactions": [[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2]],
+  "subrootLabel": -1,
+  "subrootLength": 5.0,
+  "symbiontTree": {
+    "__constructor__": "Node",
+    "__data__": {
+      "age": 5.0,
+      "label": 33,
+      "left": {
+        "__constructor__": "Node",
+        "__data__": {
+          "age": 4.0,
+          "label": 34,
+          "left": {
+            "__constructor__": "Node",
+            "__data__": {
+              "age": 3.0,
+              "label": 35,
+              "left": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 36,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 37,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 1
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 2
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 38,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 3
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 39,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 40,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 5
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 6
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 41,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 7
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 8
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "right": {
+            "__constructor__": "Node",
+            "__data__": {
+              "age": 3.0,
+              "label": 42,
+              "left": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 43,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 44,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 9
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 10
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 45,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 11
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 12
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 46,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 47,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 13
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 14
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 48,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 15
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 16
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "__constructor__": "Node",
+        "__data__": {
+          "age": 4.0,
+          "label": 49,
+          "left": {
+            "__constructor__": "Node",
+            "__data__": {
+              "age": 3.0,
+              "label": 50,
+              "left": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 51,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 52,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 17
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 18
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 53,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 19
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 20
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 54,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 55,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 21
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 22
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 56,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 23
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 24
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "right": {
+            "__constructor__": "Node",
+            "__data__": {
+              "age": 3.0,
+              "label": 57,
+              "left": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 58,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 59,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 25
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 26
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 60,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 27
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 28
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "__constructor__": "Node",
+                "__data__": {
+                  "age": 2.0,
+                  "label": 61,
+                  "left": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 62,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 29
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 30
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "__constructor__": "Node",
+                    "__data__": {
+                      "age": 0.0,
+                      "label": 63,
+                      "left": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 31
+                        }
+                      },
+                      "right": {
+                        "__constructor__": "Leaf",
+                        "__data__": {
+                          "age": 0.0,
+                          "label": 32
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
