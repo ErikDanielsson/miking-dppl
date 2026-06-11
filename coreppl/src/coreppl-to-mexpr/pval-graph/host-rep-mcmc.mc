@@ -41,28 +41,23 @@ lang MCMCPVal = PValInterface
   type MCMCResult st c =
     { contState : c
     , finalInstance : PValInstance Complete st
+    , acceptStats : Map String (Int, Int)
     }
 
   -- === MCMC with(/out) Pigeons support === ---
 
   sem mcmc : all st. all a. all b. all c. (Bool -> PValInstance Complete st -> ()) -> MCMCConfig st a String c -> PValInstance Complete st -> MCMCResult st c
   sem mcmc printer config = | instance ->
-    let acceptPred = lam prob. 
-      -- printLn (join ["Accept prob: ", float2string prob]);
-      -- printLn (join ["Current weight: ", float2string (getWeight instance)]);
-      bernoulliSample (exp prob) in
-    recursive let work :
-      { instance : PValInstance Complete st
-      , contState : (c, Bool)
-      } -> { instance : PValInstance Complete st
-      , contState : (c, Bool) 
-      } = lam acc.
+    let acceptPred = lam w. 
+      -- printLn (join ["Accept prob: ", float2string (exp w)]);
+      bernoulliSample (exp w) in
+    recursive let work = lam acc.
       match acc.contState with (contState, contSample) in
       if contSample then
         -- println "Before step";
         let beta = config.temperature contState in
         -- printer true acc.instance;
-        match (config.step beta (startStep acc.instance)) with (instance, moveId) in
+        match (config.step beta (startStep acc.instance)) with (instance, moveName) in
         let modWeight = if eqf beta 0.0
           then (lam w. if (or (eqf w (negf inf)) (isNaN w))
             then log 0.
@@ -73,24 +68,33 @@ lang MCMCPVal = PValInterface
         match finalizeStep modWeight acceptPred instance with (accepted, instance) in
         -- printArr ["Accepted: ", bool2string accepted];
         -- hrmPrintNode 3 instance;
-        -- (if and (eqi (cmpString moveId "Block node  ") 0) accepted then 
+        -- (if and (eqi (cmpString moveName "Block node  ") 0) accepted then 
         --   printLn (join ["Accepted: ", bool2string accepted]);
         -- else ());
         -- println "After finalize step";
         -- printLn (join ["Accepted: ", bool2string accepted]);
+        -- printLn (join ["Current weight: ", float2string (getWeight instance)]);
+        let addTup = lam a. lam b.
+          match a with (a1, a2) in
+          match b with (b1, b2) in
+          (addi a1 b1, addi a2 b2)
+        in
+        let acceptStats = mapInsertOrMod addTup moveName (if accepted then 1 else 0, 1) acc.acceptStats in
         let sample = config.getSample instance in
         let sinfo = { weight = getWeight instance } in
-        let contState = config.continue contState sinfo sample (moveId, accepted) in
+        let contState = config.continue contState sinfo sample (moveName, accepted) in
         let acc =
           { contState = contState 
           , instance = instance
+          , acceptStats = acceptStats 
           } in
         work acc 
       else acc
     in
-    let res = work {contState = (config.contStateInit (), true), instance = instance} in
+    let res = work {contState = (config.contStateInit (), true), instance = instance, acceptStats = mapEmpty cmpString} in
     { contState = res.contState.0
     , finalInstance = res.instance
+    , acceptStats = res.acceptStats
     }
 end
 
@@ -790,7 +794,7 @@ lang HRMState = PValInterface
           , bridgeVis label
           ]]
       else match tree with HRMNode { label = label, left = left, right = right } in 
-        printArr ["Node ", int2string label];
+        -- printArr ["Node ", int2string label];
         match mapLookup label x.nodes with Some hosts in
         let optSuppWeights = mapLookup label x.bridgeSuppWeights in
         match mapLookup label x.nodeSuppWeights with Some branchWeights in

@@ -49,6 +49,13 @@ let cmpTup : (Int, Int) -> (Int, Int) -> Int = lam kva. lam kvb.
   let cmp1 = subi kva.0 kvb.0 in
   if eqi cmp1 0 then subi kva.1 kvb.1 else cmp1 
 
+let mapInsertOrMod : all k. all v. (v -> v -> v) -> k -> v -> Map k v -> Map k v = 
+  lam f. lam k. lam v. lam m.  
+    match mapLookup k m with Some prev then
+      mapInsert k (f prev v) m
+    else
+      mapInsert k v m
+
 let mapInsertOrAppend : all k. all v. k -> v -> Map k [v] -> Map k [v]= 
   lam k. lam v. lam m.  
     match mapLookup k m with Some prev then

@@ -147,7 +147,7 @@ mexpr
 let showHistogram : Bool = true in
 
 let globalProb = 0.0 in
-let iterations = 400000 in
+let iterations = 400 in
 let samplingPeriod = 100 in
 -- let toString = lam. "()" in
 let mkHisto2 = histogram (seqCmp subi) in
@@ -156,47 +156,19 @@ let toString = interval2string in
 let mkHisto = bucket 10 0.0 1. in
 let summarizePVal = lam label. lam pair.
   match pair with (time, res) in
+  printLn "Summarize PVal";
   printLn (join [float2string time, "ms (", label, ")"]);
-  -- printLn (join ["Acceptance ratio: ", res.acceptanceRatio]);
-  -- printLn (join (map (lam x. join [float2string x, "\t"]) res.samples));
+  let showAccept = lam acceptM. 
+    let ratio = lam a. lam n. divf (int2float a) (int2float n) in
+    concat
+      "Move name    : acc. ratio :  a/n \n"
+      (strJoin "\n"
+        (map (lam t. match t with (m, (a, n)) in join [m, ": ", float2stringFixed (ratio a n) 10, " : ", int2string a, "/", int2string n])
+        (mapToSeq acceptM))
+      )
+  in
+  println (showAccept res.acceptStats);
   ()
-  -- let showAccept = lam acceptM. 
-  --   let ratio = lam a. lam n. divf (int2float a) (int2float n) in
-  --   strJoin "\n"
-  --     (map (lam t. match t with (m, (a, n)) in join [m, ": ", float2stringFixed (ratio a n) 10, " : ", int2string a, "/", int2string n])
-  --     (mapToSeq acceptM))
-  -- in
-  -- printLn "Acceptance ratios";
-  -- printLn (showAccept res.acceptanceRatio);
-  -- if showHistogram then
-  --   -- (map (lam s. printLn (join
-  --   --   [ "mu:", float2string s.mu
-  --   --   , ", beta: ", float2string s.beta
-  --   --   , ", lambda:[", (strJoin "," (map float2string s.lambda)), "]"
-  --   --   ]))
-  --   -- res.samples);
-  --   let muSamples = map (lam s. s.mu) res.samples in
-  --   printLn "------ Mu ------";
-  --   printLn (hist2string toString (mkHisto muSamples));
-  --   let betaSamples = map (lam s. s.beta) res.samples in
-  --   printLn "------ Beta ------";
-  --   printLn (hist2string toString (mkHisto betaSamples));
-  --   let lambdaSamples = map (lam s. s.lambda) res.samples in
-  --   map (lam i. 
-  --     let lamiSamples = map (lam s. get s i) lambdaSamples in
-  --     printLn (join ["------ Lambda ", int2string i, " ------"]);
-  --     printLn (hist2string toString (mkHisto lamiSamples))
-  --   ) [0, 1, 2, 3];
-  --   -- let rootRepSamples = map (lam s. s.rootRep) res.samples in
-  --   let reps = mapEmpty subi in
-  --   let reps = foldl (lam m. lam inner. foldl (lam im. lam kv. match kv with (k, v) in mapInsertOrAppend k v im) m (mapToSeq inner.reps)) reps res.samples in
-  --   mapMapWithKey (lam k. lam v.
-  --     printLn (join ["------ Node repertoire ", int2string k, " ----------"]);
-  --     printLn (hist2string toString2 (mkHisto2 v))
-  --   ) reps;
-  --   ()
-  -- else ()
-
  in
 
 
@@ -231,6 +203,7 @@ let run =
     let conts = useSingleChain iterations samplingPeriod in
     let config = mkMCMCConfig conts.init conts.continue conts.temp in
     let r = mcmc printer config instance in
+    let instance = r.finalInstance in
     fileWriteClose conts.wc;
     printLn "---- Finalize step JSON ----";
     hrmPrintState true instance; 
