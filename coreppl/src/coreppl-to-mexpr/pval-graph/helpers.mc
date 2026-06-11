@@ -1,5 +1,8 @@
 include "ext/mat-ext.mc"
 include "either.mc"
+
+-- === Misc. seq./iteration === --
+
 let _iterateni = lam bound. lam f.
   recursive let work = lam i. lam acc.
     if lti i bound
@@ -14,6 +17,12 @@ let maybeFoldl : all a. all b. all c. (a -> b -> (a, Bool)) -> a -> [b] -> (a, B
 let take : all a. Int -> [a] -> [a] = 
   lam n. lam s.
     (foldl (lam acc. lam s. if leqi acc.0 0 then acc else (subi acc.0 1, snoc acc.1 s)) (n, []) s).1
+  
+let normalize : [Float] -> [Float] = lam ws.
+  let s = foldl addf 0. ws in
+  map ((flip divf) s) ws
+
+--- === Printing === --
 
 let roundf = lam f. lam d.
     let p = pow 10. (int2float d) in
@@ -26,6 +35,8 @@ let float2stringFixed = lam f. lam d.
     let s1 = float2string f in 
     if gti (length s1) d then take d s1
     else join [s1, make (subi d (length s1)) '0']
+
+-- === Maps === --
 
 let mapInsertOrAdd  =
  lam k. lam v. lam m.  
@@ -52,6 +63,9 @@ let mapInsertOrCreate =
     else
       mapInsert k1 (mapSingleton cmp k2 v) m
 
+
+-- === Matrix stuff === --
+
 let matGetRowAsSeq : all a. Int -> Mat a -> [a] = lam row. lam mtx.
   map (lam i. matGetExn mtx row i) (range 0 mtx.n 1) 
 
@@ -64,3 +78,15 @@ let matNormalize = lam mtx.
   let mtx = matCopy mtx in
   repeati (lam i. extArrSetExn mtx.arr i (divf (extArrGetExn mtx.arr i) sum)) (muli mtx.m mtx.n);
   mtx
+
+-- === Sampling === --
+let _chooseUniform : all a. [a] -> a
+  = lam l. get l (uniformDiscreteSample 0 (subi (length l) 1))
+
+let _sampleNonUniform : all a. [Float] -> Int =
+  lam ws. categoricalSample (normalize ws)
+
+let _chooseNonUniform : all a. [a] -> [Float] -> a
+  = lam l. lam ws.
+    let c = _sampleNonUniform ws in
+    get l c

@@ -1,8 +1,9 @@
 include "host-rep-mcmc.mc"
 include "ext/file-ext.mc"
--- 
--- Single chain MCMC
--- 
+
+
+-- === Single chain MCMC === -- 
+
 let contStateInitBase : () -> Int = lam. 0
 
 let continueBase : all a. all b. all k. Int -> Int -> (Int -> a -> ()) -> Int -> b -> a -> (k, Bool) -> (Int, Bool) =
@@ -18,9 +19,9 @@ let continueBase : all a. all b. all k. Int -> Int -> (Int -> a -> ()) -> Int ->
 
 let temperatureBase : Int -> Float = lam. 1.
 
--- 
--- Pigeons
---
+
+-- === Non-reversible PT with Pigeons === -- 
+
 recursive let listenPigeons : Float -> Option Float = lam weight.
   switch fileReadLine fileStdin
   case Some ("log_potential(" ++ beta ++ ")") then
