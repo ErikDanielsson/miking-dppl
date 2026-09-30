@@ -54,6 +54,17 @@ lang MutPVal = PValInterface
     , reset : [() -> ()]
     }
 
+  sem _impossible : PState -> Bool
+  sem _impossible = | st ->
+    let tempW = deref st.temporaryWeight in
+    let permW = deref st.permanentWeight in
+    let invalid = lam w. or (eqf (negf inf) w) (isNaN w) in
+    or (invalid tempW) (invalid permW)
+
+  sem _runUpdates : [PState -> ()] -> PState -> ()
+  sem _runUpdates updates = | st ->
+    foldl (lam. lam up. if _impossible st then () else up st) () updates
+
   sem initModel : all st. all st2. all a. st -> (PValState st -> PValState st2) -> (st2, Float, UpdateFunction)
   sem initModel initSt = | f -> _initModel 0 initSt f
   sem _initModel : all st. all st2. all a. IterationID -> st -> (PValState st -> PValState st2) -> (st2, Float, UpdateFunction)
@@ -67,7 +78,8 @@ lang MutPVal = PValInterface
     match f st with PVS st in
     let updates = st.updates in
     let update = lam st.
-      for_ updates (lam up. up st) in
+      _runUpdates updates st in
+
     (st.st, st.initWeight, update)
 
   sem instantiate f += | st ->
@@ -351,7 +363,7 @@ lang MutPVal = PValInterface
     let value = ref value in
     let changeId = ref st.initId in
     let ist2 = ref ist2 in
-    let updates = ref (lam st. for_ updates (lam up. up st)) in
+    let updates = ref (lam st. _runUpdates updates st) in
 
     let update = lam st.
       if eqi st.id (deref a.changeId) then
@@ -364,7 +376,7 @@ lang MutPVal = PValInterface
         modref value newValue;
         modref changeId st.id;
         modref ist2 newIst2;
-        modref updates (lam st. for_ newUpdates (lam up. up st));
+        modref updates (lam st. _runUpdates newUpdates st);
         let reset = lam.
           modref value prevValue;
           modref ist2 prevIst2;
@@ -392,7 +404,7 @@ lang MutPVal = PValInterface
     let value = ref value in
     let changeId = ref st.initId in
     let ist2 = ref ist2 in
-    let updates = ref (lam st. for_ updates (lam up. up st)) in
+    let updates = ref (lam st. _runUpdates updates st) in
 
     let update = lam st.
       if or (eqi st.id (deref f.changeId)) (eqi st.id (deref a.changeId)) then
@@ -406,7 +418,7 @@ lang MutPVal = PValInterface
         modref value newValue;
         modref changeId st.id;
         modref ist2 newIst2;
-        modref updates (lam st. for_ newUpdates (lam up. up st));
+        modref updates (lam st. _runUpdates newUpdates st);
         let reset = lam.
           modref value prevValue;
           modref ist2 prevIst2;
@@ -496,7 +508,8 @@ lang MutPVal = PValInterface
           else
             let newValue = sample (deref dist.value) in
             let newWeight = logObserve (deref dist.value) newValue in
-            (newValue, newWeight, subf newWeight prevWeight)
+            let newPrevWeight = logObserve (deref dist.value) prevValue in
+            (newValue, newWeight, subf newPrevWeight prevWeight)
         with (newValue, newWeight, newTemp) in
 
         modref value newValue;
@@ -513,7 +526,6 @@ lang MutPVal = PValInterface
       else if eqi st.id (deref dist.changeId) then
         -- Reuse current sample, i.e., value doesn't change
         let newWeight = logObserve (deref dist.value) (deref value) in
-        if eqf newWeight (negf inf) then drawNew (None ()) st else
         let prevWeight = deref w in
         modref w newWeight;
         modref st.reset (snoc (deref st.reset) (lam. modref w prevWeight));
